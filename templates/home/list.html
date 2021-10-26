@@ -1,11 +1,17 @@
 <!doctype html>
 <html>
-   <body>
+   <tbody>
     {% for user in users %}
     <tr>
-       <td>{{ user['name'] }}</td><br>
-       <td>{{ user['password'] }}</td><br>
-       <td>{{ user['email'] }}</td><br><br>
+       <td>{{ user['name'] }} </td>
+       <td>{{ user['password'] }}</td>
+       <td>{{ user['email'] }}</td>
+      <td>Editar</td>
+      <td><div>
+         <form method="DELETE" action="/delete/{{ user['_id'] }}">
+             <button type="submit">DELETE
+            </form>
+     </div></td><br>
     </tr>
     {% endfor %}
    </body>

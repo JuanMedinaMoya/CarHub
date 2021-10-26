@@ -3,6 +3,7 @@ from flask import Flask, json ,request ,jsonify
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
+from werkzeug.utils import redirect
 
 
 app = Flask (__name__)
@@ -43,10 +44,10 @@ def GetUsers():
 
     return render_template('/home/list.html', users=users)
     
-@app.route('/users/<id>' , methods = ['DELETE'])
+@app.route('/delete/<id>' , methods = ['DELETE'])
 def DeleteUser(id):
     db.delete_one({'_id': ObjectId(id)})
-    return jsonify({'msg': 'usuario eliminado'})
+    return redirect('/')
 
 @app.route('/users/<id>' , methods = ['PUT'])
 def UpdateUser(id):
@@ -56,6 +57,7 @@ def UpdateUser(id):
         'password': request.json['password']
     }})
     return jsonify({'msg': 'usuario actualizado'})
+
 @app.route('/')
 def index():
     return render_template('home/index.html')
