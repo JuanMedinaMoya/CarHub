@@ -17,6 +17,11 @@ db = mongo.db.Users
 def create():
     return render_template('home/create.html')
 
+@app.route('/edit/<id>')
+def edit(id):
+    user = db.find_one({'_id': ObjectId(id)})
+    return render_template('home/edit.html', user = user )
+
 @app.route('/users' , methods = ['POST'])
 def CreateUser():
     _name = request.form['txtNombre']
@@ -44,19 +49,23 @@ def GetUsers():
 
     return render_template('/home/list.html', users=users)
     
-@app.route('/delete/<id>' , methods = ['DELETE'])
+@app.route('/delete/<id>' , methods = ['GET'])
 def DeleteUser(id):
     db.delete_one({'_id': ObjectId(id)})
     return redirect('/')
 
-@app.route('/users/<id>' , methods = ['PUT'])
+@app.route('/users/<id>' , methods = ['POST'])
 def UpdateUser(id):
+    _name = request.form['txtNombre']
+    _correo = request.form['txtCorreo']
+    _password = request.form['txtPassword']
+
     db.update_one({'_id': ObjectId(id)},{'$set':{
-        'name': request.json['name'],
-        'email': request.json['email'],
-        'password': request.json['password']
+        'name': _name,
+        'email': _correo,
+        'password': _password
     }})
-    return jsonify({'msg': 'usuario actualizado'})
+    return GetUsers()
 
 @app.route('/')
 def index():
