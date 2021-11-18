@@ -7,7 +7,7 @@ from werkzeug.utils import redirect
 
 
 app = Flask (__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/CarHub"
+app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 
 mongo = PyMongo(app)
 
