@@ -40,5 +40,34 @@ def mostrarusuarios():
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
+@app.route('/buscarusuario/<id>', methods=['GET'])
+def buscarusuario(id):
+    usuario = Usuarios.find_one({'_id': ObjectId(id)})
+    resp = json_util.dumps(usuario)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/borrarusuario/<id>', methods=['GET'])
+def borrarusuario(id):
+    usuario = Usuarios.delete_one({'_id': ObjectId(id)})
+    resp = jsonify("Usuario eliminado")
+    return resp
+
+@app.route('/actualizarusuario/<id>' , methods = ['POST'])
+def actualizarusuario(id):
+    nombre = request.json['nombre']
+    apellidos = request.json['apellidos']
+    coche = request.json['coche']
+    correo = request.json['correo']
+    contrasena = request.json['contrasena']
+    dni = request.json['dni']
+    fechanacimiento = request.json['fechanacimiento']
+    telefono = request.json['telefono']
+    paypal = request.json['paypal']
+    foto = request.json['foto']
+
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
+    resp = jsonify("Usuario eliminado")
+    return resp
+
 if __name__ == '__main__':
     app.run(debug=True)
