@@ -1,10 +1,10 @@
 from bson.objectid import ObjectId
-from flask import Flask, json ,request ,jsonify
+from flask import Flask, json, request, jsonify, Response 
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
 from werkzeug.utils import redirect
-
+from bson import json_util
 
 app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
@@ -33,6 +33,12 @@ def crearusuario():
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
         return resp
+
+@app.route('/mostrarusuarios', methods=['GET'])
+def mostrarusuarios():
+    usuarios = Usuarios.find()
+    resp = json_util.dumps(usuarios)
+    return Response(resp, mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(debug=True)
