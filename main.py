@@ -16,6 +16,7 @@ Trayectos = mongo.db.Trayectos
 
 @app.route('/crearusuario', methods=['POST'])
 def crearusuario():
+    username = request.json['username']
     nombre = request.json['nombre']
     apellidos = request.json['apellidos']
     coche = request.json['coche']
@@ -29,7 +30,7 @@ def crearusuario():
 
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         id = Usuarios.insert(
-            {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
+            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -47,6 +48,12 @@ def buscarusuario(id):
     resp = json_util.dumps(usuario)
     return Response(resp, mimetype='application/json')
 
+@app.route('/buscarnombre/<filtro>', methods=['GET'])
+def buscarnombre(filtro):
+    usuarios = Usuarios.find({'nombre': filtro})
+    resp = json_util.dumps(usuarios)
+    return Response(resp, mimetype='application/json')
+
 @app.route('/borrarusuario/<id>', methods=['GET'])
 def borrarusuario(id):
     usuario = Usuarios.delete_one({'_id': ObjectId(id)})
@@ -55,6 +62,7 @@ def borrarusuario(id):
 
 @app.route('/actualizarusuario/<id>' , methods = ['POST'])
 def actualizarusuario(id):
+    username = request.json['username']
     nombre = request.json['nombre']
     apellidos = request.json['apellidos']
     coche = request.json['coche']
@@ -66,7 +74,7 @@ def actualizarusuario(id):
     paypal = request.json['paypal']
     foto = request.json['foto']
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario eliminado")
     return resp
 
