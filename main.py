@@ -50,7 +50,7 @@ def buscarusuario(id):
 
 @app.route('/buscarnombre/<filtro>', methods=['GET'])
 def buscarnombre(filtro):
-    usuarios = Usuarios.find({'nombre': filtro})
+    usuarios = Usuarios.find({'nombre': {'$regex':filtro}})
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
