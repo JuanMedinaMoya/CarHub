@@ -6,7 +6,6 @@ from pymongo import mongo_client
 from werkzeug.utils import redirect
 from bson import json_util
 
-
 app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 
@@ -30,7 +29,7 @@ def crearusuario():
 
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         id = Usuarios.insert(
-            {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
+            {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -70,10 +69,6 @@ def actualizarusuario(id):
     Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario eliminado")
     return resp
-
-#-----------------------------------------------------------------------------#
-
-
 
 @app.route('/creartrayecto', methods=['POST'])
 def creartrayecto():
