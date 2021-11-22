@@ -13,6 +13,7 @@ app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.n
 mongo = PyMongo(app)
 
 Usuarios = mongo.db.Usuarios
+Trayectos = mongo.db.Trayectos
 
 @app.route('/crearusuario', methods=['POST'])
 def crearusuario():
@@ -27,7 +28,7 @@ def crearusuario():
     paypal = request.json['paypal']
     foto = request.json['foto']
 
-    if nombre and apellidos and coche and correo and contrasena and dni and fechanacimiento and telefono and paypal and foto:
+    if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         id = Usuarios.insert(
             {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
         )
@@ -68,6 +69,63 @@ def actualizarusuario(id):
 
     Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario eliminado")
+    return resp
+
+#-----------------------------------------------------------------------------#
+
+
+
+@app.route('/creartrayecto', methods=['POST'])
+def creartrayecto():
+    conductor = request.json['conductor']
+    origen = request.json['origen']
+    destino = request.json['destino']
+    horasalida = request.json['horasalida']
+    precio = request.json['precio']
+    numeropasajeros = request.json['numeropasajeros']
+    pasajeros = ""
+    finalizado = "0"
+
+    if conductor and origen and destino and horasalida and precio and numeropasajeros :
+        id = Trayectos.insert(
+            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado}
+        )
+        resp = jsonify("Usuario añadido")
+        resp.status_code = 200
+        return resp
+
+
+@app.route('/mostrartrayectos', methods=['GET'])
+def mostrartrayectos():
+    trayectos = Trayectos.find()
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/buscartrayecto/<id>', methods=['GET'])
+def buscartrayecto(id):
+    trayectos = Trayectos.find_one({'_id': ObjectId(id)})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/borrartrayecto/<id>', methods=['GET'])
+def borrartrayecto(id):
+    trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
+    resp = jsonify("Trayecto eliminado")
+    return resp
+
+@app.route('/actualizartrayecto/<id>' , methods = ['POST'])
+def actualizartrayecto(id):
+
+    origen = request.json['origen']
+    destino = request.json['destino']
+    horasalida = request.json['horasalida']
+    precio = request.json['precio']
+    numeropasajeros = request.json['numeropasajeros']
+    pasajeros = ""
+    finalizado = request.json['finalizado']
+
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    resp = jsonify("Trayecto actualizado")
     return resp
 
 if __name__ == '__main__':
