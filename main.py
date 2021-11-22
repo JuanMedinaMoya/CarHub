@@ -3,6 +3,7 @@ from flask import Flask, json, request, jsonify, Response
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
+from werkzeug.security import generate_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
 
@@ -29,8 +30,9 @@ def crearusuario():
     foto = request.json['foto']
 
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
+        hashed_contrasena = generate_password_hash(contrasena)
         id = Usuarios.insert(
-            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
+            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -73,8 +75,9 @@ def actualizarusuario(id):
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
+    hashed_contrasena = generate_password_hash(contrasena)
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario eliminado")
     return resp
 
@@ -86,14 +89,13 @@ def creartrayecto():
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
-    pasajeros = ""
     finalizado = "0"
 
     if conductor and origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros': ""}
+            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado}
         )
-        resp = jsonify("Usuario añadido")
+        resp = jsonify("Trayecto añadido")
         resp.status_code = 200
         return resp
 
@@ -124,10 +126,9 @@ def actualizartrayecto(id):
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
-    pasajeros = ""
     finalizado = request.json['finalizado']
 
-    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
