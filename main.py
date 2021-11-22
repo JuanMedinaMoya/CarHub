@@ -127,5 +127,23 @@ def actualizartrayecto(id):
     resp = jsonify("Trayecto actualizado")
     return resp
 
+@app.route('/buscarorigen/<origen>', methods = ['GET'])
+def buscarorigen(origen):
+    trayectos = Trayectos.find({'origen': origen})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/buscardestino/<destino>', methods = ['GET'])
+def buscardestino(destino):
+    trayectos = Trayectos.find({'destino': destino})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/buscarorigendestino/<origen>/<destino>', methods = ['GET'])
+def buscarorigendestino(origen, destino):
+    trayectos = Trayectos.find({'origen': origen, 'destino': destino})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
 if __name__ == '__main__':
     app.run(debug=True)
