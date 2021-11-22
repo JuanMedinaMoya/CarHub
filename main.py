@@ -78,7 +78,7 @@ def actualizarusuario(id):
     hashed_contrasena = generate_password_hash(contrasena)
 
     Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
-    resp = jsonify("Usuario eliminado")
+    resp = jsonify("Usuario actualizado")
     return resp
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
