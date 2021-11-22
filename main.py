@@ -155,11 +155,12 @@ def buscar_trayecto_origendestino(origen, destino):
 
 @app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
 def anadir_pasajero(idtrayecto, idpasajero):
-    numpasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).numeropasajeros
-    pasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).pasajeros
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    numpasajeros = trayecto['numeropasajeros']
+    pasajeros = trayecto['pasajeros']
     pasajeros.append(ObjectId(idpasajero))
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
-
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros}})
+    
     resp = jsonify("Pasajero añadido")
     return resp
 
