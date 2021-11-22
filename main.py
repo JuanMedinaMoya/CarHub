@@ -78,14 +78,13 @@ def creartrayecto():
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
-    pasajeros = ""
     finalizado = "0"
 
     if conductor and origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros': ""}
+            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado}
         )
-        resp = jsonify("Usuario añadido")
+        resp = jsonify("Trayecto añadido")
         resp.status_code = 200
         return resp
 
@@ -116,10 +115,9 @@ def actualizartrayecto(id):
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
-    pasajeros = ""
     finalizado = request.json['finalizado']
 
-    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
