@@ -6,6 +6,7 @@ from pymongo import mongo_client
 from werkzeug.utils import redirect
 from bson import json_util
 
+
 app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 
