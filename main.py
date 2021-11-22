@@ -81,6 +81,8 @@ def actualizarusuario(id):
     resp = jsonify("Usuario eliminado")
     return resp
 
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 @app.route('/creartrayecto', methods=['POST'])
 def creartrayecto():
     conductor = request.json['conductor']
