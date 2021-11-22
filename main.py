@@ -32,7 +32,7 @@ def crear_usuario():
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         hashed_contrasena = generate_password_hash(contrasena)
         id = Usuarios.insert(
-            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
+            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -83,19 +83,20 @@ def actualizar_usuario(id):
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@app.route('/crear_trayecto', methods=['POST'])
-def crear_trayecto():
-    conductor = request.json['conductor']
+@app.route('/crear_trayecto/<idconductor>', methods=['POST'])
+def crear_trayecto(idconductor):
+    conductor = ObjectId(idconductor)
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = "0"
+    pasajeros = []
 
-    if conductor and origen and destino and horasalida and precio and numeropasajeros :
+    if origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado}
+            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
         resp.status_code = 200
@@ -110,8 +111,8 @@ def mostrar_trayectos():
 
 @app.route('/buscar_trayecto_id/<id>', methods=['GET'])
 def buscar_trayecto_id(id):
-    trayectos = Trayectos.find_one({'_id': ObjectId(id)})
-    resp = json_util.dumps(trayectos)
+    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+    resp = json_util.dumps(trayecto)
     return Response(resp, mimetype='application/json')
 
 @app.route('/borrar_trayecto/<id>', methods=['GET'])
@@ -130,7 +131,7 @@ def actualizar_trayecto(id):
     numeropasajeros = request.json['numeropasajeros']
     finalizado = request.json['finalizado']
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
@@ -151,6 +152,16 @@ def buscar_trayecto_origendestino(origen, destino):
     trayectos = Trayectos.find({'origen': origen, 'destino': destino})
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
+
+@app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
+def anadir_pasajero(idtrayecto, idpasajero):
+    numpasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).numeropasajeros
+    pasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).pasajeros
+    pasajeros.append(ObjectId(idpasajero))
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
+
+    resp = jsonify("Pasajero añadido")
+    return resp
 
 if __name__ == '__main__':
     app.run(debug=True)
