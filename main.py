@@ -15,8 +15,8 @@ mongo = PyMongo(app)
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
 
-@app.route('/crearusuario', methods=['POST'])
-def crearusuario():
+@app.route('/crear_usuario', methods=['POST'])
+def crear_usuario():
     username = request.json['username']
     nombre = request.json['nombre']
     apellidos = request.json['apellidos']
@@ -38,32 +38,32 @@ def crearusuario():
         resp.status_code = 200
         return resp
 
-@app.route('/mostrarusuarios', methods=['GET'])
-def mostrarusuarios():
+@app.route('/mostrar_usuarios', methods=['GET'])
+def mostrar_usuarios():
     usuarios = Usuarios.find()
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscarusuario/<id>', methods=['GET'])
-def buscarusuario(id):
+@app.route('/buscar_usuario_id/<id>', methods=['GET'])
+def buscar_usuario_id(id):
     usuario = Usuarios.find_one({'_id': ObjectId(id)})
     resp = json_util.dumps(usuario)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscarnombre/<filtro>', methods=['GET'])
-def buscarnombre(filtro):
+@app.route('/buscar_usuario_nombre/<filtro>', methods=['GET'])
+def buscar_usuario_nombre(filtro):
     usuarios = Usuarios.find({'nombre': {'$regex':filtro}})
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
-@app.route('/borrarusuario/<id>', methods=['GET'])
-def borrarusuario(id):
+@app.route('/borrar_usuario/<id>', methods=['GET'])
+def borrar_usuario(id):
     usuario = Usuarios.delete_one({'_id': ObjectId(id)})
     resp = jsonify("Usuario eliminado")
     return resp
 
-@app.route('/actualizarusuario/<id>' , methods = ['POST'])
-def actualizarusuario(id):
+@app.route('/actualizar_usuario/<id>' , methods = ['POST'])
+def actualizar_usuario(id):
     username = request.json['username']
     nombre = request.json['nombre']
     apellidos = request.json['apellidos']
@@ -83,8 +83,8 @@ def actualizarusuario(id):
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-@app.route('/creartrayecto', methods=['POST'])
-def creartrayecto():
+@app.route('/crear_trayecto', methods=['POST'])
+def crear_trayecto():
     conductor = request.json['conductor']
     origen = request.json['origen']
     destino = request.json['destino']
@@ -102,26 +102,26 @@ def creartrayecto():
         return resp
 
 
-@app.route('/mostrartrayectos', methods=['GET'])
-def mostrartrayectos():
+@app.route('/mostrar_trayectos', methods=['GET'])
+def mostrar_trayectos():
     trayectos = Trayectos.find()
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscartrayecto/<id>', methods=['GET'])
-def buscartrayecto(id):
+@app.route('/buscar_trayecto_id/<id>', methods=['GET'])
+def buscar_trayecto_id(id):
     trayectos = Trayectos.find_one({'_id': ObjectId(id)})
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/borrartrayecto/<id>', methods=['GET'])
-def borrartrayecto(id):
+@app.route('/borrar_trayecto/<id>', methods=['GET'])
+def borrar_trayecto(id):
     trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
     resp = jsonify("Trayecto eliminado")
     return resp
 
-@app.route('/actualizartrayecto/<id>' , methods = ['POST'])
-def actualizartrayecto(id):
+@app.route('/actualizar_trayecto/<id>' , methods = ['POST'])
+def actualizar_trayecto(id):
 
     origen = request.json['origen']
     destino = request.json['destino']
@@ -134,20 +134,20 @@ def actualizartrayecto(id):
     resp = jsonify("Trayecto actualizado")
     return resp
 
-@app.route('/buscarorigen/<origen>', methods = ['GET'])
-def buscarorigen(origen):
+@app.route('/buscar_trayecto_origen/<origen>', methods = ['GET'])
+def buscar_trayecto_origen(origen):
     trayectos = Trayectos.find({'origen': origen})
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscardestino/<destino>', methods = ['GET'])
-def buscardestino(destino):
+@app.route('/buscar_trayecto_destino/<destino>', methods = ['GET'])
+def buscar_trayecto_destino(destino):
     trayectos = Trayectos.find({'destino': destino})
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscarorigendestino/<origen>/<destino>', methods = ['GET'])
-def buscarorigendestino(origen, destino):
+@app.route('/buscar_trayecto_origendestino/<origen>/<destino>', methods = ['GET'])
+def buscar_trayecto_origendestino(origen, destino):
     trayectos = Trayectos.find({'origen': origen, 'destino': destino})
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
