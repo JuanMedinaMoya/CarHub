@@ -113,7 +113,7 @@ def crear_trayecto(idconductor):
     horasalida = request.json['horasalida']
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
-    finalizado = "0"
+    finalizado = 0
     pasajeros = []
 
     if origen and destino and horasalida and precio and numeropasajeros :
@@ -180,10 +180,12 @@ def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     numpasajeros = trayecto['numeropasajeros']
     pasajeros = trayecto['pasajeros']
-    pasajeros.append(ObjectId(idpasajero))
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros}})
-    
-    resp = jsonify("Pasajero añadido")
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros:
+        pasajeros.append(ObjectId(idpasajero))
+        Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
+        resp = jsonify("Pasajero añadido")
+    else:
+        resp = jsonify("No se puede añadir pasajero")
     return resp
 
 if __name__ == '__main__':
