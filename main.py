@@ -60,11 +60,23 @@ def buscar_usuario_id(id):
     resp = json_util.dumps(usuario)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscar_usuario_nombre/<filtro>', methods=['GET'])
-def buscar_usuario_nombre(filtro):
-    usuarios = Usuarios.find({'nombre': {'$regex':filtro}})
+@app.route('/buscar_usuario_username/<filtro>', methods=['GET'])
+def buscar_usuario_username(filtro):
+    usuarios = Usuarios.find({'username': {'$regex':filtro}})
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
+
+@app.route('/buscar_usuario_nombre_apellidos/<filtro>', methods=['GET'])
+def buscar_usuario_nombre_apellidos(filtro):
+    if ' ' in filtro:
+        palabras = filtro.split(' ', 1)
+        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':palabras[0]}}, {'apellidos':{'$regex':palabras[1]}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
+        resp = json_util.dumps(usuarios)
+        return Response(resp, mimetype='application/json')
+    else:   
+        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':filtro}}, {'apellidos':{'$regex':filtro}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
+        resp = json_util.dumps(usuarios)
+        return Response(resp, mimetype='application/json')
 
 @app.route('/borrar_usuario/<id>', methods=['GET'])
 def borrar_usuario(id):
@@ -165,11 +177,12 @@ def buscar_trayecto_origendestino(origen, destino):
 
 @app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
 def anadir_pasajero(idtrayecto, idpasajero):
-    numpasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).numeropasajeros
-    pasajeros = Trayectos.find_one({'_id': ObjectId(idtrayecto)}).pasajeros
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    numpasajeros = trayecto['numeropasajeros']
+    pasajeros = trayecto['pasajeros']
     pasajeros.append(ObjectId(idpasajero))
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
-
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros}})
+    
     resp = jsonify("Pasajero añadido")
     return resp
 
