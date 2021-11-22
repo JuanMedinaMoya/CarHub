@@ -29,7 +29,7 @@ def crearusuario():
 
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         id = Usuarios.insert(
-            {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
+            {'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto, 'trayectos' : []}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -70,10 +70,6 @@ def actualizarusuario(id):
     resp = jsonify("Usuario eliminado")
     return resp
 
-#-----------------------------------------------------------------------------#
-
-
-
 @app.route('/creartrayecto', methods=['POST'])
 def creartrayecto():
     conductor = request.json['conductor']
@@ -87,7 +83,7 @@ def creartrayecto():
 
     if conductor and origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado}
+            {'conductor':conductor,'origen': origen, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros': ""}
         )
         resp = jsonify("Usuario añadido")
         resp.status_code = 200
@@ -123,7 +119,7 @@ def actualizartrayecto(id):
     pasajeros = ""
     finalizado = request.json['finalizado']
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
