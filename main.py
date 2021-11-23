@@ -179,8 +179,10 @@ def buscar_trayecto_origendestino(origen, destino):
 def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     numpasajeros = trayecto['numeropasajeros']
+    conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros:
+    finalizado = trayecto['finalizado']
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor):
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
