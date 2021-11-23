@@ -24,7 +24,9 @@ Trayectos = mongo.db.Trayectos
 #  \____/|_____/ \____/_/    \_\_|  \_\_____\____/|_____/      
 #                                                    
 #------------------------------------------------------------
-           
+
+#CRUD
+
 @app.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
     username = request.json['username']
@@ -54,30 +56,6 @@ def mostrar_usuarios():
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscar_usuario_id/<id>', methods=['GET'])
-def buscar_usuario_id(id):
-    usuario = Usuarios.find_one({'_id': ObjectId(id)})
-    resp = json_util.dumps(usuario)
-    return Response(resp, mimetype='application/json')
-
-@app.route('/buscar_usuario_username/<filtro>', methods=['GET'])
-def buscar_usuario_username(filtro):
-    usuarios = Usuarios.find({'username': {'$regex':filtro}})
-    resp = json_util.dumps(usuarios)
-    return Response(resp, mimetype='application/json')
-
-@app.route('/buscar_usuario_nombre_apellidos/<filtro>', methods=['GET'])
-def buscar_usuario_nombre_apellidos(filtro):
-    if ' ' in filtro:
-        palabras = filtro.split(' ', 1)
-        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':palabras[0]}}, {'apellidos':{'$regex':palabras[1]}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
-        resp = json_util.dumps(usuarios)
-        return Response(resp, mimetype='application/json')
-    else:   
-        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':filtro}}, {'apellidos':{'$regex':filtro}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
-        resp = json_util.dumps(usuarios)
-        return Response(resp, mimetype='application/json')
-
 @app.route('/borrar_usuario/<id>', methods=['GET'])
 def borrar_usuario(id):
     usuario = Usuarios.delete_one({'_id': ObjectId(id)})
@@ -103,7 +81,45 @@ def actualizar_usuario(id):
     resp = jsonify("Usuario actualizado")
     return resp
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#OP CONSULTA O BUSQ PARAMETRIZADA
+
+
+@app.route('/buscar_usuario_id/<id>', methods=['GET'])
+def buscar_usuario_id(id):
+    usuario = Usuarios.find_one({'_id': ObjectId(id)})
+    resp = json_util.dumps(usuario)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/buscar_usuario_username/<filtro>', methods=['GET'])
+def buscar_usuario_username(filtro):
+    usuarios = Usuarios.find({'username': {'$regex':filtro}})
+    resp = json_util.dumps(usuarios)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/buscar_usuario_nombre_apellidos/<filtro>', methods=['GET'])
+def buscar_usuario_nombre_apellidos(filtro):
+    if ' ' in filtro:
+        palabras = filtro.split(' ', 1)
+        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':palabras[0]}}, {'apellidos':{'$regex':palabras[1]}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
+        resp = json_util.dumps(usuarios)
+        return Response(resp, mimetype='application/json')
+    else:   
+        usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':filtro}}, {'apellidos':{'$regex':filtro}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
+        resp = json_util.dumps(usuarios)
+        return Response(resp, mimetype='application/json')
+
+#------------------------------------------------------------------
+#  _______ _____        __     ________ _____ _______ ____   _____ 
+# |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
+#    | |  | |__) |   /  \\ \_/ /| |__ | |       | | | |  | | (___  
+#    | |  |  _  /   / /\ \\   / |  __|| |       | | | |  | |\___ \ 
+#    | |  | | \ \  / ____ \| |  | |___| |____   | | | |__| |____) |
+#    |_|  |_|  \_\/_/    \_\_|  |______\_____|  |_|  \____/|_____/ 
+#
+#------------------------------------------------------------------                                                                  
+                                                                 
+#CRUD
 
 @app.route('/crear_trayecto/<idconductor>', methods=['POST'])
 def crear_trayecto(idconductor):
@@ -131,12 +147,6 @@ def mostrar_trayectos():
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/buscar_trayecto_id/<id>', methods=['GET'])
-def buscar_trayecto_id(id):
-    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
-    resp = json_util.dumps(trayecto)
-    return Response(resp, mimetype='application/json')
-
 @app.route('/borrar_trayecto/<id>', methods=['GET'])
 def borrar_trayecto(id):
     trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
@@ -156,6 +166,16 @@ def actualizar_trayecto(id):
     Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
+
+
+#OP CONSULTA O BUSQ PARAMETRIZADA
+
+
+@app.route('/buscar_trayecto_id/<id>', methods=['GET'])
+def buscar_trayecto_id(id):
+    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+    resp = json_util.dumps(trayecto)
+    return Response(resp, mimetype='application/json')
 
 @app.route('/buscar_trayecto_origen/<origen>', methods = ['GET'])
 def buscar_trayecto_origen(origen):
@@ -189,6 +209,9 @@ def anadir_pasajero(idtrayecto, idpasajero):
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
