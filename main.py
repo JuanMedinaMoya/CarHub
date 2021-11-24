@@ -6,6 +6,7 @@ from pymongo import mongo_client
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
+import requests
 
 app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
@@ -210,8 +211,10 @@ def anadir_pasajero(idtrayecto, idpasajero):
         resp = jsonify("No se puede añadir pasajero")
     return resp
 
-
-
+@app.route('/test_API/',methods =['GET'])
+def mostrarAPI():
+    api = requests.get("https://randomuser.me/api/")
+    return api.text
 
 if __name__ == '__main__':
     app.run(debug=True)
