@@ -6,12 +6,16 @@ from pymongo import mongo_client
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 import requests
 
 app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
+app.config['GOOGLEMAPS_KEY'] = "8JZ7i18MjFuM35dJHq70n3Hx4"
 
 mongo = PyMongo(app)
+maps = GoogleMaps(app)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
@@ -215,6 +219,16 @@ def anadir_pasajero(idtrayecto, idpasajero):
 def mostrarAPI():
     api = requests.get("https://randomuser.me/api/")
     return api.text
+
+@app.route('/buscagasolineras/')
+def buscagasolineras():
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+    payload={}
+    headers = {}
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    return(response.text)
 
 if __name__ == '__main__':
     app.run(debug=True)
