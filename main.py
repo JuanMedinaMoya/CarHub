@@ -214,7 +214,7 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor):
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): #la condicion de numpasajeros > 0 puede dar infinitos pasajeros para un viaje
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
@@ -222,6 +222,15 @@ def anadir_pasajero(idtrayecto, idpasajero):
         resp = jsonify("No se puede añadir pasajero")
     return resp
 
+#------------------------------------------------------------------
+#           _____ _____      __  __          _____   _____ 
+#     /\   |  __ \_   _|    |  \/  |   /\   |  __ \ / ____|
+#    /  \  | |__) || |      | \  / |  /  \  | |__) | (___  
+#   / /\ \ |  ___/ | |      | |\/| | / /\ \ |  ___/ \___ \ 
+#  / ____ \| |    _| |_     | |  | |/ ____ \| |     ____) |
+# /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/ 
+#------------------------------------------------------------------                                                       
+                                                       
 @app.route('/test_API/',methods =['GET'])
 def mostrarAPI():
     api = requests.get("https://randomuser.me/api/")
@@ -238,8 +247,8 @@ def buscagasolineras(locationdata):
 
     return(response.text)
 
-@app.route('/inforuta/<origen>/<destino>', methods=['GET'])
-def ruta(origen, destino):                                                                                               # devuelve el json con toda la informacion
+@app.route('/inforuta/<origen>/<destino>', methods=['GET'])      # principal para consultas en maps teniendo origen y destino
+def ruta(origen, destino):                                       # devuelve el json con toda la informacion
     directions_api_url = "https://maps.googleapis.com/maps/api/directions/json?"
     url = directions_api_url + urllib.parse.urlencode({"origin":origen, "destination":destino, "key":API_KEY_MAPS})
     json_data = requests.get(url).json()
@@ -247,13 +256,13 @@ def ruta(origen, destino):                                                      
     return json_data
 
 @app.route('/distancia/<origen>/<destino>', methods=['GET'])
-def distancia(origen, destino):                                                                                          # devuelve la distancia entre origen y destino
+def distancia(origen, destino):                                  # devuelve la distancia entre origen y destino
     json_data = ruta(origen,destino)
     distancia = json_data['routes'][0]['legs'][0]['distance']['text'] #hay que controlar el error por si no encuentra ruta
     return distancia
 
 @app.route('/duracion/<origen>/<destino>', methods=['GET'])
-def duracion(origen, destino):                                                                                          # devuelve la distancia entre origen y destino
+def duracion(origen, destino):                                   # devuelve la duracion entre origen y destino
     json_data = ruta(origen,destino)
     distancia = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
     return distancia
