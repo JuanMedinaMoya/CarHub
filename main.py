@@ -9,10 +9,17 @@ from bson import json_util
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 import requests
+import urllib
 
 app = Flask (__name__)
+
+
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
-app.config['GOOGLEMAPS_KEY'] = "8JZ7i18MjFuM35dJHq70n3Hx4"
+
+API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
+
+
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
@@ -220,15 +227,36 @@ def mostrarAPI():
     api = requests.get("https://randomuser.me/api/")
     return api.text
 
-@app.route('/buscagasolineras/')
-def buscagasolineras():
-    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+@app.route('/buscagasolineras/<locationdata>', methods= ['GET'])
+def buscagasolineras(locationdata):
+    #url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+locationdata+"&radius=1000&type=gas_station&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
     payload={}
     headers = {}
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
     return(response.text)
+
+@app.route('/inforuta/<origen>/<destino>', methods=['GET'])
+def ruta(origen, destino):                                                                                               # devuelve el json con toda la informacion
+    directions_api_url = "https://maps.googleapis.com/maps/api/directions/json?"
+    url = directions_api_url + urllib.parse.urlencode({"origin":origen, "destination":destino, "key":API_KEY_MAPS})
+    json_data = requests.get(url).json()
+    print(url)
+    return json_data
+
+@app.route('/distancia/<origen>/<destino>', methods=['GET'])
+def distancia(origen, destino):                                                                                          # devuelve la distancia entre origen y destino
+    json_data = ruta(origen,destino)
+    distancia = json_data['routes'][0]['legs'][0]['distance']['text'] #hay que controlar el error por si no encuentra ruta
+    return distancia
+
+@app.route('/duracion/<origen>/<destino>', methods=['GET'])
+def duracion(origen, destino):                                                                                          # devuelve la distancia entre origen y destino
+    json_data = ruta(origen,destino)
+    distancia = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
+    return distancia
 
 if __name__ == '__main__':
     app.run(debug=True)
