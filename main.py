@@ -361,8 +361,8 @@ def distancia(origen, destino):                                  # devuelve la d
 @app.route('/duracion/<origen>/<destino>', methods=['GET'])
 def duracion(origen, destino):                                   # devuelve la duracion entre origen y destino
     json_data = ruta(origen,destino)
-    distancia = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
-    return distancia
+    duracion = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
+    return duracion
 
 
 #------------------------------------------------------------------
@@ -397,6 +397,8 @@ def lluvias(lugar, fechayhora):
                 return "0"
 
     return str(lluvia)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
