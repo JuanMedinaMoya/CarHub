@@ -215,13 +215,30 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): #la condicion de numpasajeros > 0 puede dar infinitos pasajeros para un viaje
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): 
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
+
+@app.route('/pasajeros_trayecto/<idtrayecto>', methods = ['GET'])
+def pasajeros_trayecto(idtrayecto):
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    pasajeros = trayecto['pasajeros']
+    pasajerosPerfil = []
+    if pasajeros :
+        for id in pasajeros :
+            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+            pasajerosPerfil.append(usuario)
+    resp = json_util.dumps(pasajerosPerfil)
+    return Response(resp, mimetype='application/json')
+    
+
+
+    
+
 
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____ 
