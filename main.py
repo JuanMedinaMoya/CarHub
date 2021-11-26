@@ -238,13 +238,19 @@ def mostrarAPI():
 
 @app.route('/buscagasolineras/<locationdata>', methods= ['GET'])
 def buscagasolineras(locationdata):
+    place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
+    url = place_api_url + urllib.parse.urlencode({"input":locationdata,"inputtype":'textquery',"fields":'geometry', "key":API_KEY_MAPS})
+    json_data_place = requests.get(url).json()
+    latitud = str(json_data_place['candidates'][0]['geometry']['location']['lat'])
+    longitud = str(json_data_place['candidates'][0]['geometry']['location']['lng'])
+
     #url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
-    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+locationdata+"&radius=1000&type=gas_station&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latitud+"%2C"+longitud+"&radius=1000&type=gas_station&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
     payload={}
     headers = {}
 
     response = requests.request("GET", url, headers=headers, data=payload)
-
+    
     return(response.text)
 
 @app.route('/inforuta/<origen>/<destino>', methods=['GET'])      # principal para consultas en maps teniendo origen y destino
