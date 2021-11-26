@@ -273,7 +273,7 @@ def ruta(origen, destino):                                       # devuelve el j
     directions_api_url = "https://maps.googleapis.com/maps/api/directions/json?"
     url = directions_api_url + urllib.parse.urlencode({"origin":origen, "destination":destino, "key":API_KEY_MAPS})
     json_data = requests.get(url).json()
-    print(url)
+
     return json_data
 
 @app.route('/distancia/<origen>/<destino>', methods=['GET'])
@@ -302,9 +302,23 @@ def duracion(origen, destino):                                   # devuelve la d
 def tiempo(lugar):  
     #LLAMADA "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}"
     tiempo_url = "https://api.openweathermap.org/data/2.5/onecall?"
-    url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar),  "appid":API_KEY_TIEMPO})
+    url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar), "appid":API_KEY_TIEMPO})
     json_data = requests.get(url).json()
     return json_data
+
+@app.route('/lluvias/<lugar>/<fechayhora>', methods=['GET'])
+def lluvias(lugar, fechayhora):
+    json_data_lugar = tiempo(lugar)
+    dt = str(fechayhora)
+    list = json_data_lugar['hourly']
+    lluvia = 0
+    for i in list:
+        if dt == str(i['dt']):
+            print("es igual")
+            print (i['dt'])
+            lluvia = i['rain']['1h']
+
+    return str(lluvia)
 
 if __name__ == '__main__':
     app.run(debug=True)
