@@ -299,9 +299,6 @@ def borrar_valoracion(id):
 
 
 
-
-
-
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____ 
 #     /\   |  __ \_   _|    |  \/  |   /\   |  __ \ / ____|
@@ -378,8 +375,8 @@ def duracion(origen, destino):                                   # devuelve la d
 #                                                                                                                                     
 #------------------------------------------------------------------   
 
-@app.route('/tiempo/<lugar>', methods=['GET'])
-def tiempo(lugar):  
+@app.route('/infotiempo/<lugar>', methods=['GET'])
+def infotiempo(lugar):  
     #LLAMADA "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}"
     tiempo_url = "https://api.openweathermap.org/data/2.5/onecall?"
     url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar), "appid":API_KEY_TIEMPO})
@@ -388,14 +385,12 @@ def tiempo(lugar):
 
 @app.route('/lluvias/<lugar>/<fechayhora>', methods=['GET'])
 def lluvias(lugar, fechayhora):
-    json_data_lugar = tiempo(lugar)
+    json_data_lugar = infotiempo(lugar)
     dt = str(fechayhora)
     list = json_data_lugar['hourly']
     lluvia = 0
     for i in list:
         if dt == str(i['dt']):
-            print("es igual")
-            print (i['dt'])
             lluvia = i['rain']['1h']
 
     return str(lluvia)
