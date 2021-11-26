@@ -27,6 +27,7 @@ maps = GoogleMaps(app)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
+Valoraciones = mongo.db.Valoraciones
 
 #------------------------------------------------------------
 #  _    _  _____ _    _         _____  _____ ____   _____ 
@@ -122,6 +123,13 @@ def buscar_usuario_nombre_apellidos(filtro):
         resp = json_util.dumps(usuarios)
         return Response(resp, mimetype='application/json')
 
+@app.route('/mis_viajes/<idusuario>', methods=['GET'])
+def mis_viajes(idusuario):
+    trayectos = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
 # |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
@@ -208,6 +216,10 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+
+#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
+
+
 @app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
 def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
@@ -215,13 +227,80 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): #la condicion de numpasajeros > 0 puede dar infinitos pasajeros para un viaje
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): 
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
+
+@app.route('/pasajeros_trayecto/<idtrayecto>', methods = ['GET'])
+def pasajeros_trayecto(idtrayecto):
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    pasajeros = trayecto['pasajeros']
+    pasajerosPerfil = []
+    if pasajeros :
+        for id in pasajeros :
+            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+            pasajerosPerfil.append(usuario)
+    resp = json_util.dumps(pasajerosPerfil)
+    return Response(resp, mimetype='application/json')
+    
+
+
+    
+
+
+#------------------------------------------------------------------
+# __      __     _      ____  _____            _____ _____ ____  _   _ ______  _____ 
+# \ \    / /\   | |    / __ \|  __ \     /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
+#  \ \  / /  \  | |   | |  | | |__) |   /  \ | |      | || |  | |  \| | |__  | (___  
+#   \ \/ / /\ \ | |   | |  | |  _  /   / /\ \| |      | || |  | | . ` |  __|  \___ \ 
+#    \  / ____ \| |___| |__| | | \ \  / ____ \ |____ _| || |__| | |\  | |____ ____) |
+#     \/_/    \_\______\____/|_|  \_\/_/    \_\_____|_____\____/|_| \_|______|_____/                                                                                                                                                                                                                                                                                                                   
+#
+#------------------------------------------------------------------ 
+
+#CRUD
+
+@app.route('/crear_valoracion/<idvalorado>/<idtrayecto>/<idvalorador>', methods=['POST'])
+def crear_valoracion(idvalorado, idtrayecto, idvalorador):
+    valorado = ObjectId(idvalorado)
+    trayecto = ObjectId(idtrayecto)
+    valorador = ObjectId(idvalorador)
+    puntuacion = request.json['puntuacion']
+    comentario = request.json['comentario']
+
+    if puntuacion and comentario:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion, 'comentario': comentario}
+        )
+    else:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion}
+        )
+    resp = jsonify("Valoracion añadida")
+    resp.status_code = 200
+    return resp
+    
+
+@app.route('/mostrar_valoraciones', methods=['GET'])
+def mostrar_valoraciones():
+    trayectos = Trayectos.find()
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/borrar_valoracion/<id>', methods=['GET'])
+def borrar_valoracion(id):
+    valoraciones = Valoraciones.delete_one({'_id': ObjectId(id)})
+    resp = jsonify("Valoracion eliminada")
+    return resp
+
+
+
+
+
 
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____ 
@@ -290,12 +369,13 @@ def duracion(origen, destino):                                   # devuelve la d
 
 
 #------------------------------------------------------------------
-#           _____ _____    
-#     /\   |  __ \_   _|   
-#    /  \  | |__) || |     
-#   / /\ \ |  ___/ | |       TIEMPO
-#  / ____ \| |    _| |_     
-# /_/    \_\_|   |_____|    
+#           _____ _____   _______ _____ ______ __  __ _____   ____  
+#     /\   |  __ \_   _| |__   __|_   _|  ____|  \/  |  __ \ / __ \ 
+#    /  \  | |__) || |      | |    | | | |__  | \  / | |__) | |  | |
+#   / /\ \ |  ___/ | |      | |    | | |  __| | |\/| |  ___/| |  | |
+#  / ____ \| |    _| |_     | |   _| |_| |____| |  | | |    | |__| |
+# /_/    \_\_|   |_____|    |_|  |_____|______|_|  |_|_|     \____/ 
+#                                                                                                                                     
 #------------------------------------------------------------------   
 
 @app.route('/tiempo/<lugar>', methods=['GET'])
