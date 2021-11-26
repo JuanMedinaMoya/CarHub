@@ -122,6 +122,13 @@ def buscar_usuario_nombre_apellidos(filtro):
         resp = json_util.dumps(usuarios)
         return Response(resp, mimetype='application/json')
 
+@app.route('/mis_viajes/<idusuario>', methods=['GET'])
+def mis_viajes(idusuario):
+    trayectos = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
 # |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
