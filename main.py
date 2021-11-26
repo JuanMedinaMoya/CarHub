@@ -391,7 +391,10 @@ def lluvias(lugar, fechayhora):
     lluvia = 0
     for i in list:
         if dt == str(i['dt']):
-            lluvia = i['rain']['1h']
+            try:
+               lluvia = i['rain']['1h'] 
+            except KeyError:
+                return "0"
 
     return str(lluvia)
 
