@@ -17,6 +17,7 @@ app = Flask (__name__)
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 
 API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
 
@@ -238,11 +239,11 @@ def mostrarAPI():
 
 @app.route('/buscagasolineras/<locationdata>', methods= ['GET'])
 def buscagasolineras(locationdata):
-    place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
-    url = place_api_url + urllib.parse.urlencode({"input":locationdata,"inputtype":'textquery',"fields":'geometry', "key":API_KEY_MAPS})
-    json_data_place = requests.get(url).json()
-    latitud = str(json_data_place['candidates'][0]['geometry']['location']['lat'])
-    longitud = str(json_data_place['candidates'][0]['geometry']['location']['lng'])
+   # place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
+   # url = place_api_url + urllib.parse.urlencode({"input":locationdata,"inputtype":'textquery',"fields":'geometry', "key":API_KEY_MAPS})
+   # json_data_place = requests.get(url).json()
+    latitud = str(getLatitud(locationdata))
+    longitud = str(getLongitud(locationdata))
 
     #url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latitud+"%2C"+longitud+"&radius=1000&type=gas_station&key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
@@ -252,6 +253,20 @@ def buscagasolineras(locationdata):
     response = requests.request("GET", url, headers=headers, data=payload)
     
     return(response.text)
+
+def getLatitud(lugar):
+    place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
+    url = place_api_url + urllib.parse.urlencode({"input":lugar,"inputtype":'textquery',"fields":'geometry', "key":API_KEY_MAPS})
+    json_data_place = requests.get(url).json()
+    latitud = str(json_data_place['candidates'][0]['geometry']['location']['lat'])
+    return latitud    
+
+def getLongitud(lugar):
+    place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
+    url = place_api_url + urllib.parse.urlencode({"input":lugar,"inputtype":'textquery',"fields":'geometry', "key":API_KEY_MAPS})
+    json_data_place = requests.get(url).json()
+    longitud = str(json_data_place['candidates'][0]['geometry']['location']['lng'])
+    return longitud 
 
 @app.route('/inforuta/<origen>/<destino>', methods=['GET'])      # principal para consultas en maps teniendo origen y destino
 def ruta(origen, destino):                                       # devuelve el json con toda la informacion
@@ -272,6 +287,24 @@ def duracion(origen, destino):                                   # devuelve la d
     json_data = ruta(origen,destino)
     distancia = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
     return distancia
+
+
+#------------------------------------------------------------------
+#           _____ _____    
+#     /\   |  __ \_   _|   
+#    /  \  | |__) || |     
+#   / /\ \ |  ___/ | |       TIEMPO
+#  / ____ \| |    _| |_     
+# /_/    \_\_|   |_____|    
+#------------------------------------------------------------------   
+
+@app.route('/tiempo/<lugar>', methods=['GET'])
+def tiempo(lugar):  
+    #LLAMADA "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}"
+    tiempo_url = "https://api.openweathermap.org/data/2.5/onecall?"
+    url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar),  "appid":API_KEY_TIEMPO})
+    json_data = requests.get(url).json()
+    return json_data
 
 if __name__ == '__main__':
     app.run(debug=True)
