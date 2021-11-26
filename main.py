@@ -27,6 +27,7 @@ maps = GoogleMaps(app)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
+Valoraciones = mongo.db.Valoraciones
 
 #------------------------------------------------------------
 #  _    _  _____ _    _         _____  _____ ____   _____ 
@@ -208,6 +209,10 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+
+#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
+
+
 @app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
 def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
@@ -222,6 +227,56 @@ def anadir_pasajero(idtrayecto, idpasajero):
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
+
+#------------------------------------------------------------------
+# __      __     _      ____  _____            _____ _____ ____  _   _ ______  _____ 
+# \ \    / /\   | |    / __ \|  __ \     /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
+#  \ \  / /  \  | |   | |  | | |__) |   /  \ | |      | || |  | |  \| | |__  | (___  
+#   \ \/ / /\ \ | |   | |  | |  _  /   / /\ \| |      | || |  | | . ` |  __|  \___ \ 
+#    \  / ____ \| |___| |__| | | \ \  / ____ \ |____ _| || |__| | |\  | |____ ____) |
+#     \/_/    \_\______\____/|_|  \_\/_/    \_\_____|_____\____/|_| \_|______|_____/                                                                                                                                                                                                                                                                                                                   
+#
+#------------------------------------------------------------------ 
+
+#CRUD
+
+@app.route('/crear_valoracion/<idvalorado>/<idtrayecto>/<idvalorador>', methods=['POST'])
+def crear_valoracion(idvalorado, idtrayecto, idvalorador):
+    valorado = ObjectId(idvalorado)
+    trayecto = ObjectId(idtrayecto)
+    valorador = ObjectId(idvalorador)
+    puntuacion = request.json['puntuacion']
+    comentario = request.json['comentario']
+
+    if puntuacion and comentario:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion, 'comentario': comentario}
+        )
+    else:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion}
+        )
+    resp = jsonify("Valoracion añadida")
+    resp.status_code = 200
+    return resp
+    
+
+@app.route('/mostrar_valoraciones', methods=['GET'])
+def mostrar_valoraciones():
+    trayectos = Trayectos.find()
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/borrar_valoracion/<id>', methods=['GET'])
+def borrar_valoracion(id):
+    valoraciones = Valoraciones.delete_one({'_id': ObjectId(id)})
+    resp = jsonify("Valoracion eliminada")
+    return resp
+
+
+
+
+
 
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____ 
@@ -290,12 +345,13 @@ def duracion(origen, destino):                                   # devuelve la d
 
 
 #------------------------------------------------------------------
-#           _____ _____    
-#     /\   |  __ \_   _|   
-#    /  \  | |__) || |     
-#   / /\ \ |  ___/ | |       TIEMPO
-#  / ____ \| |    _| |_     
-# /_/    \_\_|   |_____|    
+#           _____ _____   _______ _____ ______ __  __ _____   ____  
+#     /\   |  __ \_   _| |__   __|_   _|  ____|  \/  |  __ \ / __ \ 
+#    /  \  | |__) || |      | |    | | | |__  | \  / | |__) | |  | |
+#   / /\ \ |  ___/ | |      | |    | | |  __| | |\/| |  ___/| |  | |
+#  / ____ \| |    _| |_     | |   _| |_| |____| |  | | |    | |__| |
+# /_/    \_\_|   |_____|    |_|  |_____|______|_|  |_|_|     \____/ 
+#                                                                                                                                     
 #------------------------------------------------------------------   
 
 @app.route('/tiempo/<lugar>', methods=['GET'])
