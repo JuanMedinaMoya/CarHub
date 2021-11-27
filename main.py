@@ -247,8 +247,11 @@ def pasajeros_trayecto(idtrayecto):
     resp = json_util.dumps(pasajerosPerfil)
     return Response(resp, mimetype='application/json')
     
-
-
+@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
+def finalizar_trayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
+    resp = jsonify("Trayecto finalizado")
+    return resp
     
 
 
