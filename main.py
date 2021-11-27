@@ -10,6 +10,7 @@ from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 import requests
 import urllib
+from datetime import datetime
 
 app = Flask (__name__)
 
@@ -148,6 +149,7 @@ def crear_trayecto(idconductor):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = 0
@@ -155,7 +157,7 @@ def crear_trayecto(idconductor):
 
     if origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
+            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
         resp.status_code = 200
@@ -216,6 +218,18 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+#ARREGLAR
+@app.route('/buscar_trayecto_completo', methods = ['GET'])
+def buscar_trayecto_completo():
+    origen = request.json['origen']
+    destino = request.json['destino']
+    horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    numeropasajeros = request.json['numeropasajeros']
+
+    trayectos = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
 
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
