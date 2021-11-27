@@ -398,6 +398,21 @@ def lluvias(lugar, fechayhora):
 
     return str(lluvia)
 
+@app.route('/nieve/<lugar>/<fechayhora>', methods=['GET'])
+def nieve(lugar, fechayhora):
+    json_data_lugar = infotiempo(lugar)
+    dt = str(fechayhora)
+    list = json_data_lugar['hourly']
+    nieve = 0
+    for i in list:
+        if dt == str(i['dt']):
+            try:
+               nieve = i['snow']['1h'] 
+            except KeyError:
+                return "0"
+
+    return str(nieve)
+
 
 
 if __name__ == '__main__':
