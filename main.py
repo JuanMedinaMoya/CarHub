@@ -401,7 +401,8 @@ def lluvias(lugar, fechayhora):
 @app.route('/nieve/<lugar>/<fechayhora>', methods=['GET'])
 def nieve(lugar, fechayhora):
     json_data_lugar = infotiempo(lugar)
-    dt = str(fechayhora)
+    fechayhora_int = int(fechayhora) - (int(fechayhora) % 3600)
+    dt = str(fechayhora_int)
     list = json_data_lugar['hourly']
     nieve = 0
     for i in list:
@@ -413,7 +414,21 @@ def nieve(lugar, fechayhora):
 
     return str(nieve)
 
+@app.route('/visibilidad/<lugar>/<fechayhora>', methods=['GET'])
+def visibilidad(lugar, fechayhora):
+    json_data_lugar = infotiempo(lugar)
+    fechayhora_int = int(fechayhora) - (int(fechayhora) % 3600)
+    dt = str(fechayhora_int)
+    list = json_data_lugar['hourly']
+    visibilidad = 0
+    for i in list:
+        if dt == str(i['dt']):
+            try:
+               visibilidad = i['visibility'] 
+            except KeyError:
+                return "0"
 
+    return str(visibilidad)
 
 if __name__ == '__main__':
     app.run(debug=True)
