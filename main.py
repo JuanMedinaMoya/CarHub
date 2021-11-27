@@ -129,6 +129,12 @@ def mis_viajes(idusuario):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+@app.route('/mis_trayectos_creados/<idusuario>', methods = ['GET'])
+def mis_trayectos_creados(idusuario):
+    trayectos = Trayectos.find({'conductor': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
 
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
