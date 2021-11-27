@@ -130,6 +130,12 @@ def mis_viajes(idusuario):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+@app.route('/mis_trayectos_creados/<idusuario>', methods = ['GET'])
+def mis_trayectos_creados(idusuario):
+    trayectos = Trayectos.find({'conductor': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
 
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
@@ -261,8 +267,11 @@ def pasajeros_trayecto(idtrayecto):
     resp = json_util.dumps(pasajerosPerfil)
     return Response(resp, mimetype='application/json')
     
-
-
+@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
+def finalizar_trayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
+    resp = jsonify("Trayecto finalizado")
+    return resp
     
 
 
