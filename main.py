@@ -452,12 +452,6 @@ def actualizar_valoracion(id):
 # /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/ 
 #------------------------------------------------------------------                                                       
 
-
-@app.route('/test_API/',methods =['GET'])
-def mostrarAPI():
-    api = requests.get("https://randomuser.me/api/")
-    return api.text
-
 @app.route('/buscagasolineras/<locationdata>', methods= ['GET'])
 def buscagasolineras(locationdata):
    # place_api_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?"
