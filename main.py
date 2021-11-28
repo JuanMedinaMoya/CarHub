@@ -59,7 +59,7 @@ def crear_usuario():
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%y')
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
@@ -96,7 +96,7 @@ def actualizar_usuario(id):
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%y')
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
