@@ -151,7 +151,7 @@ def mis_trayectos_creados(idusuario):
     return Response(resp, mimetype='application/json')
 
 
-#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 #
 #   _____ ____  _   ___      ________ _____   _____         _____ _____ ____  _   _ ______  _____ 
 #  / ____/ __ \| \ | \ \    / /  ____|  __ \ / ____|  /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
@@ -160,7 +160,7 @@ def mis_trayectos_creados(idusuario):
 # | |___| |__| | |\  |  \  /  | |____| | \ \ ____) / ____ \ |____ _| || |__| | |\  | |____ ____) |
 #  \_____\____/|_| \_|   \/   |______|_|  \_\_____/_/    \_\_____|_____\____/|_| \_|______|_____/                                                                                                                                                                                                  
 #                                                                         
-#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 
 @app.route('/crear_conversacion/<id1>/<id2>', methods=['POST'])
 def crear_conversacion(id1, id2):
@@ -195,7 +195,7 @@ def mostrar_conversaciones():
 def buscar_conversacion_id(id):
     conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
     response = json_util.dumps(conversacion)
-    return response
+    return Response(response, mimetype="application/json")
 
 @app.route('/borrar_conversacion/<id>', methods=['DELETE'])
 def borrar_conversacion(id):
