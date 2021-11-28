@@ -165,10 +165,10 @@ def mis_trayectos_creados(idusuario):
 @app.route('/crear_conversacion/<id1>/<id2>', methods=['POST'])
 def crear_conversacion(id1, id2):
     listMensajes = []
-    if id1 and id2:
+    if id1 and id2 and id1 != id2:
         conversacion = Conversaciones.find_one({'$or': [
             {'user1': ObjectId(id1), 'user2': ObjectId(id2)},
-            {'user2': ObjectId(id2), 'user2': ObjectId(id1)}
+            {'user1': ObjectId(id2), 'user2': ObjectId(id1)}
         ]})
         if conversacion == None :
             id = Conversaciones.insert(
@@ -211,10 +211,7 @@ def borrar_conversacion(id):
 @app.route('/enviar_mensaje/<idc>/<idu>', methods=['PATCH'])
 def enviar_mensaje(idc, idu):
     contenido = request.json['contenido']
-    conver_incluido = Conversaciones.count_documents({'$or': {
-        {'_id': ObjectId(idc), 'user1': ObjectId(idu)},
-        {'_id': ObjectId(idc), 'user2': ObjectId(idu)}
-    }}) == 1
+    conver_incluido = Conversaciones.count_documents({'_id': ObjectId(idc),'$or': [ {'user1': ObjectId(idu)}, {'user2': ObjectId(idu)}]}) == 1
     if contenido and conver_incluido:
         Conversaciones.update_one({'_id': ObjectId(idc)}, {'$push': {
             'listMensajes': {
@@ -231,7 +228,7 @@ def enviar_mensaje(idc, idu):
     
     return response
 
-@app.route('/buscar_conversaciones_usuario/user/<id>', methods=['GET'])
+@app.route('/buscar_conversaciones_usuario/<id>', methods=['GET'])
 def buscar_conversaciones_usuario(id):
     conversaciones = Conversaciones.find({'$or': [
         {'user1': ObjectId(id)},
@@ -360,7 +357,7 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): 
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(idpasajero): 
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
