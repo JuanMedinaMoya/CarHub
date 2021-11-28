@@ -422,8 +422,8 @@ def crear_valoracion(idvalorado, idtrayecto, idvalorador):
 
 @app.route('/mostrar_valoraciones', methods=['GET'])
 def mostrar_valoraciones():
-    trayectos = Trayectos.find()
-    resp = json_util.dumps(trayectos)
+    valoraciones = Valoraciones.find()
+    resp = json_util.dumps(valoraciones)
     return Response(resp, mimetype='application/json')
 
 @app.route('/borrar_valoracion/<id>', methods=['DELETE'])
@@ -438,7 +438,7 @@ def actualizar_valoracion(id):
     puntuacion = request.json['puntuacion']
     comentario = request.json['comentario']
 
-    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'puntuacion': puntuacion, 'comentario': comentario}})
+    Valoraciones.update_one({'_id': ObjectId(id)},{'$set':{'puntuacion': puntuacion, 'comentario': comentario}})
     resp = jsonify("Valoración actualizada")
     return resp
 
