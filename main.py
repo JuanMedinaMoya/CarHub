@@ -40,7 +40,9 @@ Valoraciones = mongo.db.Valoraciones
 #                                                    
 #------------------------------------------------------------
 
+
 #CRUD
+
 
 @app.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
@@ -124,6 +126,10 @@ def buscar_usuario_nombre_apellidos(filtro):
         resp = json_util.dumps(usuarios)
         return Response(resp, mimetype='application/json')
 
+
+#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
+
+
 @app.route('/mis_viajes/<idusuario>', methods=['GET'])
 def mis_viajes(idusuario):
     trayectos = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
@@ -146,8 +152,10 @@ def mis_trayectos_creados(idusuario):
 #    |_|  |_|  \_\/_/    \_\_|  |______\_____|  |_|  \____/|_____/ 
 #
 #------------------------------------------------------------------                                                                  
-                                                                 
+
+
 #CRUD
+
 
 @app.route('/crear_trayecto/<idconductor>', methods=['POST'])
 def crear_trayecto(idconductor):
@@ -224,7 +232,13 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-#ARREGLAR
+@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
+def finalizar_trayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
+    resp = jsonify("Trayecto finalizado")
+    return resp
+    
+
 @app.route('/buscar_trayecto_completo', methods = ['GET'])
 def buscar_trayecto_completo():
     origen = request.json['origen']
@@ -236,6 +250,7 @@ def buscar_trayecto_completo():
     trayectos = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
+
 
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
@@ -267,12 +282,7 @@ def pasajeros_trayecto(idtrayecto):
     resp = json_util.dumps(pasajerosPerfil)
     return Response(resp, mimetype='application/json')
     
-@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
-def finalizar_trayecto(idtrayecto):
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
-    resp = jsonify("Trayecto finalizado")
-    return resp
-    
+
 
 
 #------------------------------------------------------------------
@@ -285,7 +295,9 @@ def finalizar_trayecto(idtrayecto):
 #
 #------------------------------------------------------------------ 
 
+
 #CRUD
+
 
 @app.route('/crear_valoracion/<idvalorado>/<idtrayecto>/<idvalorador>', methods=['POST'])
 def crear_valoracion(idvalorado, idtrayecto, idvalorador):
@@ -320,6 +332,15 @@ def borrar_valoracion(id):
     resp = jsonify("Valoracion eliminada")
     return resp
 
+@app.route('/actualizar_valoracion/<id>' , methods = ['POST'])
+def actualizar_valoracion(id):
+
+    puntuacion = request.json['puntuacion']
+    comentario = request.json['comentario']
+
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'puntuacion': puntuacion, 'comentario': comentario}})
+    resp = jsonify("Valoración actualizada")
+    return resp
 
 
 #------------------------------------------------------------------
@@ -330,7 +351,8 @@ def borrar_valoracion(id):
 #  / ____ \| |    _| |_     | |  | |/ ____ \| |     ____) |
 # /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/ 
 #------------------------------------------------------------------                                                       
-                                                       
+
+
 @app.route('/test_API/',methods =['GET'])
 def mostrarAPI():
     api = requests.get("https://randomuser.me/api/")
