@@ -209,10 +209,7 @@ def borrar_conversacion(id):
 @app.route('/enviar_mensaje/<idc>/<idu>', methods=['PATCH'])
 def enviar_mensaje(idc, idu):
     contenido = request.json['contenido']
-    conver_incluido = Conversaciones.count_documents({'$or': {
-        {'_id': ObjectId(idc), 'user1': ObjectId(idu)},
-        {'_id': ObjectId(idc), 'user2': ObjectId(idu)}
-    }}) == 1
+    conver_incluido = Conversaciones.count_documents({'_id': ObjectId(idc),'$or': [ {'user1': ObjectId(idu)}, {'user2': ObjectId(idu)}]}) == 1
     if contenido and conver_incluido:
         Conversaciones.update_one({'_id': ObjectId(idc)}, {'$push': {
             'listMensajes': {
