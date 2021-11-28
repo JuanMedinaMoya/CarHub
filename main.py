@@ -78,13 +78,13 @@ def mostrar_usuarios():
     resp = json_util.dumps(usuarios)
     return Response(resp, mimetype='application/json')
 
-@app.route('/borrar_usuario/<id>', methods=['GET'])
+@app.route('/borrar_usuario/<id>', methods=['DELETE'])
 def borrar_usuario(id):
     usuario = Usuarios.delete_one({'_id': ObjectId(id)})
     resp = jsonify("Usuario eliminado")
     return resp
 
-@app.route('/actualizar_usuario/<id>' , methods = ['POST'])
+@app.route('/actualizar_usuario/<id>' , methods = ['PUT'])
 def actualizar_usuario(id):
     username = request.json['username']
     nombre = request.json['nombre']
@@ -158,7 +158,7 @@ def mis_trayectos_creados(idusuario):
 #                                                                         
 #-------------------------------------------------------------------------
 
-@app.route('/conversaciones/<id1>/<id2>', methods=['POST'])
+@app.route('/crear_conversacion/<id1>/<id2>', methods=['POST'])
 def crear_conversacion(id1, id2):
     listMensajes = []
     if id1 and id2:
@@ -181,19 +181,19 @@ def crear_conversacion(id1, id2):
         return not_found()
     return response
 
-@app.route('/conversaciones', methods=['GET'])
+@app.route('/mostrar_conversaciones', methods=['GET'])
 def mostrar_conversaciones():
     conversaciones = Conversaciones.find()
     response = json_util.dumps(conversaciones)
     return Response(response, mimetype="application/json")
 
-@app.route('/conversaciones/<id>', methods=['GET'])
+@app.route('/buscar_conversacion_id/<id>', methods=['GET'])
 def buscar_conversacion_id(id):
     conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
     response = json_util.dumps(conversacion)
     return response
 
-@app.route('/conversaciones/<id>', methods=['DELETE'])
+@app.route('/borrar_conversacion/<id>', methods=['DELETE'])
 def borrar_conversacion(id):
     if Conversaciones.count_documents({'_id': ObjectId(id)}) == 1:
         Conversaciones.delete_one({'_id': ObjectId(id)})
@@ -204,10 +204,14 @@ def borrar_conversacion(id):
         return not_found()
     return response
     
-@app.route('/conversaciones/<idc>/<idu>', methods=['PATCH'])
+@app.route('/enviar_mensaje/<idc>/<idu>', methods=['PATCH'])
 def enviar_mensaje(idc, idu):
     contenido = request.json['contenido']
-    if contenido:
+    conver_incluido = Conversaciones.count_documents({'$or': {
+        {'_id': ObjectId(idc), 'user1': ObjectId(idu)},
+        {'_id': ObjectId(idc), 'user2': ObjectId(idu)}
+    }}) == 1
+    if contenido and conver_incluido:
         Conversaciones.update_one({'_id': ObjectId(idc)}, {'$push': {
             'listMensajes': {
                 'idUser': ObjectId(idu),
@@ -223,7 +227,7 @@ def enviar_mensaje(idc, idu):
     
     return response
 
-@app.route('/conversaciones/user/<id>', methods=['GET'])
+@app.route('/buscar_conversaciones_usuario/user/<id>', methods=['GET'])
 def buscar_conversaciones_usuario(id):
     conversaciones = Conversaciones.find({'$or': [
         {'user1': ObjectId(id)},
@@ -273,13 +277,13 @@ def mostrar_trayectos():
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/borrar_trayecto/<id>', methods=['GET'])
+@app.route('/borrar_trayecto/<id>', methods=['DELETE'])
 def borrar_trayecto(id):
     trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
     resp = jsonify("Trayecto eliminado")
     return resp
 
-@app.route('/actualizar_trayecto/<id>' , methods = ['POST'])
+@app.route('/actualizar_trayecto/<id>' , methods = ['PUT'])
 def actualizar_trayecto(id):
     origen = request.json['origen']
     destino = request.json['destino']
@@ -320,7 +324,7 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
+@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['PUT'])
 def finalizar_trayecto(idtrayecto):
     Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
     resp = jsonify("Trayecto finalizado")
@@ -343,7 +347,7 @@ def buscar_trayecto_completo():
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
 
-@app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
+@app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['PATCH'])
 def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     numpasajeros = trayecto['numeropasajeros']
@@ -414,13 +418,13 @@ def mostrar_valoraciones():
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
-@app.route('/borrar_valoracion/<id>', methods=['GET'])
+@app.route('/borrar_valoracion/<id>', methods=['DELETE'])
 def borrar_valoracion(id):
     valoraciones = Valoraciones.delete_one({'_id': ObjectId(id)})
     resp = jsonify("Valoracion eliminada")
     return resp
 
-@app.route('/actualizar_valoracion/<id>' , methods = ['POST'])
+@app.route('/actualizar_valoracion/<id>' , methods = ['PUT'])
 def actualizar_valoracion(id):
 
     puntuacion = request.json['puntuacion']
