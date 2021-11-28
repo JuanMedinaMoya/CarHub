@@ -193,7 +193,7 @@ def mostrar_conversaciones():
 def buscar_conversacion_id(id):
     conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
     response = json_util.dumps(conversacion)
-    return response
+    return Response(response, mimetype="application/json")
 
 @app.route('/borrar_conversacion/<id>', methods=['DELETE'])
 def borrar_conversacion(id):
