@@ -59,6 +59,7 @@ def crear_usuario():
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
@@ -66,7 +67,7 @@ def crear_usuario():
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         hashed_contrasena = generate_password_hash(contrasena)
         id = Usuarios.insert(
-            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
+            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': d_fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
         )
         resp = jsonify("Usuario añadido")
         return resp
@@ -95,12 +96,13 @@ def actualizar_usuario(id):
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
     hashed_contrasena = generate_password_hash(contrasena)
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': d_fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario actualizado")
     return resp
 
