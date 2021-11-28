@@ -228,7 +228,7 @@ def enviar_mensaje(idc, idu):
     
     return response
 
-@app.route('/buscar_conversaciones_usuario/user/<id>', methods=['GET'])
+@app.route('/buscar_conversaciones_usuario/<id>', methods=['GET'])
 def buscar_conversaciones_usuario(id):
     conversaciones = Conversaciones.find({'$or': [
         {'user1': ObjectId(id)},
