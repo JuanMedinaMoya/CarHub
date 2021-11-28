@@ -59,6 +59,7 @@ def crear_usuario():
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
@@ -66,7 +67,7 @@ def crear_usuario():
     if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
         hashed_contrasena = generate_password_hash(contrasena)
         id = Usuarios.insert(
-            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
+            {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': d_fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
         )
         resp = jsonify("Usuario añadido")
         return resp
@@ -95,12 +96,13 @@ def actualizar_usuario(id):
     contrasena = request.json['contrasena']
     dni = request.json['dni']
     fechanacimiento = request.json['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
     telefono = request.json['telefono']
     paypal = request.json['paypal']
     foto = request.json['foto']
     hashed_contrasena = generate_password_hash(contrasena)
 
-    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
+    Usuarios.update_one({'_id': ObjectId(id)},{'$set':{'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': d_fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}})
     resp = jsonify("Usuario actualizado")
     return resp
 
@@ -255,7 +257,7 @@ def crear_trayecto(idconductor):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = 0
@@ -266,7 +268,6 @@ def crear_trayecto(idconductor):
             {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
-        resp.status_code = 200
         return resp
     else:
         return not_found()
@@ -289,11 +290,12 @@ def actualizar_trayecto(id):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = request.json['finalizado']
 
-    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
@@ -337,7 +339,7 @@ def buscar_trayecto_completo():
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     numeropasajeros = request.json['numeropasajeros']
 
     trayectos = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
@@ -446,12 +448,6 @@ def actualizar_valoracion(id):
 #  / ____ \| |    _| |_     | |  | |/ ____ \| |     ____) |
 # /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/ 
 #------------------------------------------------------------------                                                       
-
-
-@app.route('/test_API/',methods =['GET'])
-def mostrarAPI():
-    api = requests.get("https://randomuser.me/api/")
-    return api.text
 
 @app.route('/buscagasolineras/<locationdata>', methods= ['GET'])
 def buscagasolineras(locationdata):
