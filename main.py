@@ -260,7 +260,7 @@ def crear_trayecto(idconductor):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = 0
@@ -271,7 +271,6 @@ def crear_trayecto(idconductor):
             {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
-        resp.status_code = 200
         return resp
     else:
         return not_found()
@@ -294,11 +293,12 @@ def actualizar_trayecto(id):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = request.json['finalizado']
 
-    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado': finalizado}})
     resp = jsonify("Trayecto actualizado")
     return resp
 
@@ -342,7 +342,7 @@ def buscar_trayecto_completo():
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     numeropasajeros = request.json['numeropasajeros']
 
     trayectos = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
