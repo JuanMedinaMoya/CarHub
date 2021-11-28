@@ -11,6 +11,7 @@ from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 import requests
 import urllib
+from datetime import datetime
 
 
 from werkzeug.wrappers import response
@@ -32,6 +33,7 @@ maps = GoogleMaps(app)
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
+Valoraciones = mongo.db.Valoraciones
 
 #------------------------------------------------------------
 #  _    _  _____ _    _         _____  _____ ____   _____ 
@@ -43,7 +45,9 @@ Conversaciones = mongo.db.Conversaciones
 #                                                    
 #------------------------------------------------------------
 
+
 #CRUD
+
 
 @app.route('/crear_usuario', methods=['POST'])
 def crear_usuario():
@@ -126,6 +130,23 @@ def buscar_usuario_nombre_apellidos(filtro):
         usuarios = Usuarios.find({"$or":[{'nombre':{'$regex':filtro}}, {'apellidos':{'$regex':filtro}}]}) # Usuarios.find({'apellidos':{'$regex':filtro}})
         resp = json_util.dumps(usuarios)
         return Response(resp, mimetype='application/json')
+
+
+#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
+
+
+@app.route('/mis_viajes/<idusuario>', methods=['GET'])
+def mis_viajes(idusuario):
+    trayectos = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/mis_trayectos_creados/<idusuario>', methods = ['GET'])
+def mis_trayectos_creados(idusuario):
+    trayectos = Trayectos.find({'conductor': {'$all': [ObjectId(idusuario)]}})
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
 
 #-------------------------------------------------------------------------
 #   _____                                         _                       
@@ -210,7 +231,7 @@ def buscar_conversaciones_usuario(id):
     ]})
     response = json_util.dumps(conversaciones)
     return Response(response, mimetype="application/json")
-                                                                        
+
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
 # |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
@@ -220,8 +241,10 @@ def buscar_conversaciones_usuario(id):
 #    |_|  |_|  \_\/_/    \_\_|  |______\_____|  |_|  \____/|_____/ 
 #
 #------------------------------------------------------------------                                                                  
-                                                                 
+
+
 #CRUD
+
 
 @app.route('/crear_trayecto/<idconductor>', methods=['POST'])
 def crear_trayecto(idconductor):
@@ -229,6 +252,7 @@ def crear_trayecto(idconductor):
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
     precio = request.json['precio']
     numeropasajeros = request.json['numeropasajeros']
     finalizado = 0
@@ -236,7 +260,7 @@ def crear_trayecto(idconductor):
 
     if origen and destino and horasalida and precio and numeropasajeros :
         id = Trayectos.insert(
-            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
+            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
         resp.status_code = 200
@@ -296,6 +320,29 @@ def buscar_trayecto_origendestino(origen, destino):
     resp = json_util.dumps(trayectos)
     return Response(resp, mimetype='application/json')
 
+@app.route('/finalizar_trayecto/<idtrayecto>', methods = ['POST'])
+def finalizar_trayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'finalizado': 1}})
+    resp = jsonify("Trayecto finalizado")
+    return resp
+    
+
+@app.route('/buscar_trayecto_completo', methods = ['GET'])
+def buscar_trayecto_completo():
+    origen = request.json['origen']
+    destino = request.json['destino']
+    horasalida = request.json['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%d/%m/%y %H:%M:%S')
+    numeropasajeros = request.json['numeropasajeros']
+
+    trayectos = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+
+#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
+
+
 @app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods = ['POST'])
 def anadir_pasajero(idtrayecto, idpasajero):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
@@ -303,13 +350,86 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): #la condicion de numpasajeros > 0 puede dar infinitos pasajeros para un viaje
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(conductor): 
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
+
+@app.route('/pasajeros_trayecto/<idtrayecto>', methods = ['GET'])
+def pasajeros_trayecto(idtrayecto):
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    pasajeros = trayecto['pasajeros']
+    pasajerosPerfil = []
+    if pasajeros :
+        for id in pasajeros :
+            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+            pasajerosPerfil.append(usuario)
+    resp = json_util.dumps(pasajerosPerfil)
+    return Response(resp, mimetype='application/json')
+    
+
+
+
+#------------------------------------------------------------------
+# __      __     _      ____  _____            _____ _____ ____  _   _ ______  _____ 
+# \ \    / /\   | |    / __ \|  __ \     /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
+#  \ \  / /  \  | |   | |  | | |__) |   /  \ | |      | || |  | |  \| | |__  | (___  
+#   \ \/ / /\ \ | |   | |  | |  _  /   / /\ \| |      | || |  | | . ` |  __|  \___ \ 
+#    \  / ____ \| |___| |__| | | \ \  / ____ \ |____ _| || |__| | |\  | |____ ____) |
+#     \/_/    \_\______\____/|_|  \_\/_/    \_\_____|_____\____/|_| \_|______|_____/                                                                                                                                                                                                                                                                                                                   
+#
+#------------------------------------------------------------------ 
+
+
+#CRUD
+
+
+@app.route('/crear_valoracion/<idvalorado>/<idtrayecto>/<idvalorador>', methods=['POST'])
+def crear_valoracion(idvalorado, idtrayecto, idvalorador):
+    valorado = ObjectId(idvalorado)
+    trayecto = ObjectId(idtrayecto)
+    valorador = ObjectId(idvalorador)
+    puntuacion = request.json['puntuacion']
+    comentario = request.json['comentario']
+
+    if puntuacion and comentario:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion, 'comentario': comentario}
+        )
+    else:
+        id = Valoraciones.insert(
+            {'valorado':valorado, 'trayecto': trayecto, 'valorador': valorador, 'puntuacion': puntuacion}
+        )
+    resp = jsonify("Valoracion añadida")
+    resp.status_code = 200
+    return resp
+    
+
+@app.route('/mostrar_valoraciones', methods=['GET'])
+def mostrar_valoraciones():
+    trayectos = Trayectos.find()
+    resp = json_util.dumps(trayectos)
+    return Response(resp, mimetype='application/json')
+
+@app.route('/borrar_valoracion/<id>', methods=['GET'])
+def borrar_valoracion(id):
+    valoraciones = Valoraciones.delete_one({'_id': ObjectId(id)})
+    resp = jsonify("Valoracion eliminada")
+    return resp
+
+@app.route('/actualizar_valoracion/<id>' , methods = ['POST'])
+def actualizar_valoracion(id):
+
+    puntuacion = request.json['puntuacion']
+    comentario = request.json['comentario']
+
+    Trayectos.update_one({'_id': ObjectId(id)},{'$set':{'puntuacion': puntuacion, 'comentario': comentario}})
+    resp = jsonify("Valoración actualizada")
+    return resp
+
 
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____ 
@@ -319,7 +439,8 @@ def anadir_pasajero(idtrayecto, idpasajero):
 #  / ____ \| |    _| |_     | |  | |/ ____ \| |     ____) |
 # /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/ 
 #------------------------------------------------------------------                                                       
-                                                       
+
+
 @app.route('/test_API/',methods =['GET'])
 def mostrarAPI():
     api = requests.get("https://randomuser.me/api/")
@@ -361,7 +482,7 @@ def ruta(origen, destino):                                       # devuelve el j
     directions_api_url = "https://maps.googleapis.com/maps/api/directions/json?"
     url = directions_api_url + urllib.parse.urlencode({"origin":origen, "destination":destino, "key":API_KEY_MAPS})
     json_data = requests.get(url).json()
-    print(url)
+
     return json_data
 
 @app.route('/distancia/<origen>/<destino>', methods=['GET'])
@@ -373,26 +494,74 @@ def distancia(origen, destino):                                  # devuelve la d
 @app.route('/duracion/<origen>/<destino>', methods=['GET'])
 def duracion(origen, destino):                                   # devuelve la duracion entre origen y destino
     json_data = ruta(origen,destino)
-    distancia = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
-    return distancia
+    duracion = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
+    return duracion
 
 
 #------------------------------------------------------------------
-#           _____ _____    
-#     /\   |  __ \_   _|   
-#    /  \  | |__) || |     
-#   / /\ \ |  ___/ | |       TIEMPO
-#  / ____ \| |    _| |_     
-# /_/    \_\_|   |_____|    
+#           _____ _____   _______ _____ ______ __  __ _____   ____  
+#     /\   |  __ \_   _| |__   __|_   _|  ____|  \/  |  __ \ / __ \ 
+#    /  \  | |__) || |      | |    | | | |__  | \  / | |__) | |  | |
+#   / /\ \ |  ___/ | |      | |    | | |  __| | |\/| |  ___/| |  | |
+#  / ____ \| |    _| |_     | |   _| |_| |____| |  | | |    | |__| |
+# /_/    \_\_|   |_____|    |_|  |_____|______|_|  |_|_|     \____/ 
+#                                                                                                                                     
 #------------------------------------------------------------------   
 
-@app.route('/tiempo/<lugar>', methods=['GET'])
-def tiempo(lugar):  
+@app.route('/infotiempo/<lugar>', methods=['GET'])
+def infotiempo(lugar):  
     #LLAMADA "https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}"
     tiempo_url = "https://api.openweathermap.org/data/2.5/onecall?"
-    url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar),  "appid":API_KEY_TIEMPO})
+    url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar), "appid":API_KEY_TIEMPO})
     json_data = requests.get(url).json()
     return json_data
+
+@app.route('/lluvias/<lugar>/<fechayhora>', methods=['GET'])
+def lluvias(lugar, fechayhora):
+    json_data_lugar = infotiempo(lugar)
+    dt = str(fechayhora)
+    list = json_data_lugar['hourly']
+    lluvia = 0
+    for i in list:
+        if dt == str(i['dt']):
+            try:
+               lluvia = i['rain']['1h'] 
+            except KeyError:
+                return "0"
+
+    return str(lluvia)
+
+@app.route('/nieve/<lugar>/<fechayhora>', methods=['GET'])
+def nieve(lugar, fechayhora):
+    json_data_lugar = infotiempo(lugar)
+    fechayhora_int = int(fechayhora) - (int(fechayhora) % 3600)
+    dt = str(fechayhora_int)
+    list = json_data_lugar['hourly']
+    nieve = 0
+    for i in list:
+        if dt == str(i['dt']):
+            try:
+               nieve = i['snow']['1h'] 
+            except KeyError:
+                return "0"
+
+    return str(nieve)
+
+@app.route('/visibilidad/<lugar>/<fechayhora>', methods=['GET'])
+def visibilidad(lugar, fechayhora):
+    json_data_lugar = infotiempo(lugar)
+    fechayhora_int = int(fechayhora) - (int(fechayhora) % 3600)
+    dt = str(fechayhora_int)
+    list = json_data_lugar['hourly']
+    visibilidad = 0
+    for i in list:
+        if dt == str(i['dt']):
+            try:
+               visibilidad = i['visibility'] 
+            except KeyError:
+                return "0"
+
+    return str(visibilidad)
 
 @app.errorhandler(404)
 def not_found(error=None):
