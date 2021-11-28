@@ -165,10 +165,10 @@ def mis_trayectos_creados(idusuario):
 @app.route('/crear_conversacion/<id1>/<id2>', methods=['POST'])
 def crear_conversacion(id1, id2):
     listMensajes = []
-    if id1 and id2:
+    if id1 and id2 and id1 != id2:
         conversacion = Conversaciones.find_one({'$or': [
             {'user1': ObjectId(id1), 'user2': ObjectId(id2)},
-            {'user2': ObjectId(id2), 'user2': ObjectId(id1)}
+            {'user1': ObjectId(id2), 'user2': ObjectId(id1)}
         ]})
         if conversacion == None :
             id = Conversaciones.insert(
