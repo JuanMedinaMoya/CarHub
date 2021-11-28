@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from bson.objectid import ObjectId
 from flask import Flask, json, request, jsonify, Response 
 from flask_pymongo import PyMongo
@@ -10,6 +11,9 @@ from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 import requests
 import urllib
+
+
+from werkzeug.wrappers import response
 
 app = Flask (__name__)
 
@@ -27,6 +31,7 @@ maps = GoogleMaps(app)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
+Conversaciones = mongo.db.Conversaciones
 
 #------------------------------------------------------------
 #  _    _  _____ _    _         _____  _____ ____   _____ 
@@ -122,6 +127,90 @@ def buscar_usuario_nombre_apellidos(filtro):
         resp = json_util.dumps(usuarios)
         return Response(resp, mimetype='application/json')
 
+#-------------------------------------------------------------------------
+#   _____                                         _                       
+#  / ____|                                       (_)                      
+# | |     ___  _ ____   _____ _ __ ___  __ _  ___ _  ___  _ __   ___  ___ 
+# | |    / _ \| '_ \ \ / / _ \ '__/ __|/ _` |/ __| |/ _ \| '_ \ / _ \/ __|
+# | |___| (_) | | | \ V /  __/ |  \__ \ (_| | (__| | (_) | | | |  __/\__ \
+#  \_____\___/|_| |_|\_/ \___|_|  |___/\__,_|\___|_|\___/|_| |_|\___||___/
+#                                                                         
+#-------------------------------------------------------------------------
+
+@app.route('/conversaciones/<id1>/<id2>', methods=['POST'])
+def crear_conversacion(id1, id2):
+    listMensajes = []
+    if id1 and id2:
+        conversacion = Conversaciones.find_one({'$or': [
+            {'user1': ObjectId(id1), 'user2': ObjectId(id2)},
+            {'user2': ObjectId(id2), 'user2': ObjectId(id1)}
+        ]})
+        if conversacion == None :
+            id = Conversaciones.insert(
+                               {'user1': ObjectId(id1), 'user2': ObjectId(id2), 'listMensajes': listMensajes}
+                               )
+            response = jsonify({
+                'mensaje': 'Conversación creada satisfactoriamente'
+            })
+        else:
+            response = jsonify({
+                'mensaje': 'Ya existía una conversación creada.'
+            })
+    else:
+        return not_found()
+    return response
+
+@app.route('/conversaciones', methods=['GET'])
+def mostrar_conversaciones():
+    conversaciones = Conversaciones.find()
+    response = json_util.dumps(conversaciones)
+    return Response(response, mimetype="application/json")
+
+@app.route('/conversaciones/<id>', methods=['GET'])
+def buscar_conversacion_id(id):
+    conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
+    response = json_util.dumps(conversacion)
+    return response
+
+@app.route('/conversaciones/<id>', methods=['DELETE'])
+def borrar_conversacion(id):
+    if Conversaciones.count_documents({'_id': ObjectId(id)}) == 1:
+        Conversaciones.delete_one({'_id': ObjectId(id)})
+        response = jsonify({
+            'mensaje': 'La conversacion con id: ' + id + ' fue eliminada satisfactoriamente.'
+        })
+    else:
+        return not_found()
+    return response
+    
+@app.route('/conversaciones/<idc>/<idu>', methods=['PATCH'])
+def enviar_mensaje(idc, idu):
+    contenido = request.json['contenido']
+    if contenido:
+        Conversaciones.update_one({'_id': ObjectId(idc)}, {'$push': {
+            'listMensajes': {
+                'idUser': ObjectId(idu),
+                'contenido': contenido,
+                'fecha': datetime.utcnow()
+            }
+        }})
+        response = {
+            'mensaje': 'El mensaje ha sido enviado satisfactoriamente' 
+        }
+    else:
+        return not_found()
+    
+    return response
+
+@app.route('/conversaciones/user/<id>')
+def buscar_conversaciones_usuario(id):
+    conversaciones = Conversaciones.find({'$or': [
+        {'user1': ObjectId(id)},
+        {'user2': ObjectId(id)}
+    ]})
+    response = json_util.dumps(conversaciones)
+    return Response(response, mimetype="application/json")
+                                                                        
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
 # |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
@@ -168,7 +257,6 @@ def borrar_trayecto(id):
 
 @app.route('/actualizar_trayecto/<id>' , methods = ['POST'])
 def actualizar_trayecto(id):
-
     origen = request.json['origen']
     destino = request.json['destino']
     horasalida = request.json['horasalida']
@@ -305,6 +393,15 @@ def tiempo(lugar):
     url = tiempo_url + urllib.parse.urlencode({"lat":getLatitud(lugar),"lon":getLongitud(lugar),  "appid":API_KEY_TIEMPO})
     json_data = requests.get(url).json()
     return json_data
+
+@app.errorhandler(404)
+def not_found(error=None):
+    response = jsonify({
+        'mensaje': 'Recurso no encontrado: ' + request.url,
+        'Status': 404
+    })
+    response.status = 404
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
