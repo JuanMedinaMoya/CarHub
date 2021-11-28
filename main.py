@@ -69,8 +69,9 @@ def crear_usuario():
             {'username': username, 'nombre': nombre, 'apellidos': apellidos, 'coche': coche, 'correo': correo, 'contrasena': hashed_contrasena, 'dni': dni, 'fechanacimiento': fechanacimiento, 'telefono': telefono, 'paypal': paypal, 'foto': foto}
         )
         resp = jsonify("Usuario añadido")
-        resp.status_code = 200
         return resp
+    else:
+        return not_found()
 
 @app.route('/mostrar_usuarios', methods=['GET'])
 def mostrar_usuarios():
@@ -149,12 +150,13 @@ def mis_trayectos_creados(idusuario):
 
 
 #-------------------------------------------------------------------------
-#   _____                                         _                       
-#  / ____|                                       (_)                      
-# | |     ___  _ ____   _____ _ __ ___  __ _  ___ _  ___  _ __   ___  ___ 
-# | |    / _ \| '_ \ \ / / _ \ '__/ __|/ _` |/ __| |/ _ \| '_ \ / _ \/ __|
-# | |___| (_) | | | \ V /  __/ |  \__ \ (_| | (__| | (_) | | | |  __/\__ \
-#  \_____\___/|_| |_|\_/ \___|_|  |___/\__,_|\___|_|\___/|_| |_|\___||___/
+#
+#   _____ ____  _   ___      ________ _____   _____         _____ _____ ____  _   _ ______  _____ 
+#  / ____/ __ \| \ | \ \    / /  ____|  __ \ / ____|  /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
+# | |   | |  | |  \| |\ \  / /| |__  | |__) | (___   /  \ | |      | || |  | |  \| | |__  | (___  
+# | |   | |  | | . ` | \ \/ / |  __| |  _  / \___ \ / /\ \| |      | || |  | | . ` |  __|  \___ \ 
+# | |___| |__| | |\  |  \  /  | |____| | \ \ ____) / ____ \ |____ _| || |__| | |\  | |____ ____) |
+#  \_____\____/|_| \_|   \/   |______|_|  \_\_____/_/    \_\_____|_____\____/|_| \_|______|_____/                                                                                                                                                                                                  
 #                                                                         
 #-------------------------------------------------------------------------
 
@@ -269,6 +271,8 @@ def crear_trayecto(idconductor):
         resp = jsonify("Trayecto añadido")
         resp.status_code = 200
         return resp
+    else:
+        return not_found()
 
 
 @app.route('/mostrar_trayectos', methods=['GET'])
@@ -371,8 +375,10 @@ def pasajeros_trayecto(idtrayecto):
         for id in pasajeros :
             usuario = Usuarios.find_one({'_id': ObjectId(id)})
             pasajerosPerfil.append(usuario)
-    resp = json_util.dumps(pasajerosPerfil)
-    return Response(resp, mimetype='application/json')
+        resp = json_util.dumps(pasajerosPerfil)
+        return Response(resp, mimetype='application/json')
+    else:
+        return not_found()
     
 
 
