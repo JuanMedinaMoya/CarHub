@@ -35,6 +35,68 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 
+
+@app.route('/')
+def index():
+    return render_template('home.html')
+
+@app.route('/navbar', methods = ['POST','GET'])
+def navbar():
+    return render_template('navbar.html')
+
+@app.route('/login', methods = ['POST','GET'])
+def login():
+    return render_template('login.html')
+
+@app.route('/registro', methods = ['POST','GET'])
+def registro():
+    return render_template('registro.html')
+
+@app.route('/iniciarsesion', methods = ['POST'])
+def iniciarsesion():
+    return render_template('home.html')
+
+@app.route('/registrarse', methods = ['POST'])
+def registrarse():
+    return render_template('home.html')
+
+@app.route('/busqueda', methods = ['POST'])
+def busquedatrayecto():
+    origen = request.form['origen']
+    destino = request.form['destino']
+    #horasalida = request.form['horasalida']
+    #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
+    numeropasajeros = int(request.form['numeropasajeros'])
+
+    trayectos = []
+    tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    for doc in tray:
+        trayectos.append({
+            '_id': str(ObjectId(doc['_id'])),
+            'origen': doc['origen'],
+            'destino': doc['destino'],
+            'horasalida': doc['horasalida'],
+            'numeropasajeros': doc['numeropasajeros']
+        })
+    return render_template('busqueda.html', trayectos=trayectos)
+
+
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
+
+
+
 #------------------------------------------------------------
 #  _    _  _____ _    _         _____  _____ ____   _____ 
 # | |  | |/ ____| |  | |  /\   |  __ \|_   _/ __ \ / ____|

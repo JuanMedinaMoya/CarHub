@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busqueda</title>
+
+    
+</head>
+<body>
+    {% include '/navbar.html' %}    
+
+
+<div>
+    <form method="post" action="/busqueda" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="origen">Origen</label>
+            <input type="text" class="form-control"  name="origen" id="origen" placeholder="Origen" required>
+        </div>
+        <div class="form-group">
+          <label for="destino">Destino</label>
+          <input type="text" class="form-control"  name="destino" id="destino" placeholder="Destino" required>
+        </div>
+        <div class="form-group">
+          <label for="horasalida">Fecha</label>
+          <input type="date" class="form-control"  name="horasalida" id="horasalida" placeholder="Fecha" required>
+        </div>
+        <div class="form-group">
+            <label for="numeropasajeros">Número de pasajeros</label>
+            <input type="number " class="form-control"  name="numeropasajeros" id="numeropasajeros" placeholder="Pasajeros" required>
+          </div>
+        <button type="submit" value="Buscar"class="btn btn-primary" >Buscar</button>
+      </form>
+</div>
+</body>
+</html>
