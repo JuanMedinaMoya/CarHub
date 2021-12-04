@@ -69,13 +69,15 @@ def busquedatrayecto():
     numeropasajeros = int(request.form['numeropasajeros'])
 
     trayectos = []
-    tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    tray = Trayectos.find()[7*(int(1) - 1):7*(int(1))]
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
             'origen': doc['origen'],
             'destino': doc['destino'],
-            'horasalida': doc['horasalida'],
+            'horasalida': doc['horasalida'].strftime("A las %H:%M el %d/%m/%Y"),
+            'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros']
         })
     return render_template('busqueda.html', trayectos=trayectos)
