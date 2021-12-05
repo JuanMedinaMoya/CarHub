@@ -84,9 +84,9 @@
                      {% endif %}
                   {% endwith %}
                
-                  {% username = session['username'] %}
+                  {% set username = session['username'] %}
                 <div class="contactstyle topform">		
-                  {% username %}								
+                  {{username}}								
                   <button class="button button1">Editar</button>
                   <br><br>
                   <button class="button button1">Eliminar perfil</button>
