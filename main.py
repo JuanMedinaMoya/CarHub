@@ -54,7 +54,7 @@ def registro():
 
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/registrarse', methods = ['POST'])
 def registrarse():
@@ -389,7 +389,7 @@ def buscar_trayecto_destino(destino):
 def buscar_trayecto_origendestino(origen, destino):
     trayectos = Trayectos.find({'origen': origen, 'destino': destino})
     resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
+    return render_template('busqueda.html', trayectos=trayectos)
 
 @app.route('/finalizar_trayecto/<idtrayecto>', methods = ['PUT'])
 def finalizar_trayecto(idtrayecto):
