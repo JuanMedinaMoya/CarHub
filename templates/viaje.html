@@ -38,7 +38,13 @@
                        <a class="mobile-menu-close"><i class="fa fa-close"></i></a>
                        <div class="menu-top-menu-container">
                           <ul id="menu-top-menu" class="nav navbar-nav nav-list">
-                             <li><a style="background: rgba(235, 48, 225, 0.51);" href="/mostrarViaje?idtrayecto={{61a37836ae7092cc68a88d81}}">Viaje</a></li>
+
+                             <li>
+                                
+                              <a style="background: rgba(235, 48, 225, 0.51);" href="/mostrarViaje">Viaje</a>
+                           
+                                 </li>
+
                              <li><a href="#iniciosesion">Inicio Sesión</a></li>
                              <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
                                    href="#registro">Registro</a></li>
@@ -52,8 +58,8 @@
            </div>
         </header>
         {%
-            viaje = trayecto
-            
+            origen = viaje[origen]
+            destino = viaje[destino]
             %}
 
      

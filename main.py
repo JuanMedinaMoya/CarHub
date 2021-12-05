@@ -120,6 +120,11 @@ def busquedatrayecto():
         })
     return render_template('busqueda.html', trayectos=trayectos)
 
+
+#___---------------___________-------------------------------
+#___---------------___________-------------------------------
+#___---------------___________-------------------------------
+#___---------------___________-------------------------------
 @app.route('/mostrarViaje/<idtrayecto>', methods = ['POST'])
 def mostrarViaje(idtrayecto):
     trayecto = buscar_trayecto_id(idtrayecto)

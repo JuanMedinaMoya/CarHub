@@ -16,62 +16,114 @@
    <link rel='stylesheet' href='static/assets/css/flexslider.css' type='text/css' media='all' />
 </head>
 
+<div class="container-fluid">
 
+   <body class="frontpage">
+      <div class="page-loader">
+         <img src="static/assets/img/loader.gif" alt="loader">
+      </div>
 
-   <!-- INTRO
-================================================== -->
-   <section id="home"
-      style="padding: 160px; background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-      <div class="container">
-         <div class="textwidget">
-            <div class="contactstyle topform">
-               <div class="list-group">
-                  {% for trayecto in trayectos %}
-                  <a href="/buscar_trayecto_id/{{ trayecto['_id'] }}"
-                     class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }}</h5>
-                        <p>
-                        <h3 class="mb-1">{{ trayecto['precio'] }}€</h3>
-                        </p>
+      <!-- Header
+        ================================================== -->
+      <header id="header">
+         <div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
+            <nav class="navbar navbar-default redq">
+               <div class="container">
+                  <div>
+                     <a class="navbar-brand" href="busqueda.html">
+                        <img src="static/assets/img/logo-dark.png" alt="logo" width="65" height="65">
+                     </a>
+                  </div>
+                  <div class="collapse navbar-collapse" id="navbar">
+                     <a class="mobile-menu-close"><i class="fa fa-close"></i></a>
+                     <div class="menu-top-menu-container">
+                        <ul id="menu-top-menu" class="nav navbar-nav nav-list">
+
+                           <li>
+
+                              <a style="background: rgba(235, 48, 225, 0.51);" href="/mostrarViaje">Viaje</a>
+
+                           </li>
+
+                           <li><a href="#iniciosesion">Inicio Sesión</a></li>
+                           <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
+                                 href="#registro">Registro</a></li>
+                        </ul>
                      </div>
-                     <small>{{ trayecto['horasalida'] }}</small>
-                     <small>
-                        <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
-                     </small>
-                  </a>
-                  {% endfor %}
+                  </div>
+                  <!-- /.navbar-collapse -->
                </div>
-               <nav aria-label="Page navigation example" style="margin-left: 25%;">
-                  <ul class="pagination">
-                     <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                           <span aria-hidden="true">&laquo;</span>
-                        </a>
-                     </li>
-                     <li class="page-item"><a class="page-link" href="#">1</a></li>
-                     <li class="page-item"><a class="page-link" href="#">2</a></li>
-                     <li class="page-item"><a class="page-link" href="#">3</a></li>
-                     <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                           <span aria-hidden="true">&raquo;</span>
-                        </a>
-                     </li>
-                  </ul>
-               </nav>
+               <!-- /.container -->
+            </nav>
+         </div>
+      </header>
+      {%
+      origen = viaje[origen]
+      destino = viaje[destino]
+      %}
+
+
+      <!-- INTRO
+================================================== -->
+      <section id="home"
+         style="padding: 160px; background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+         <div class="container">
+            <div class="textwidget">
+               <div class="contactstyle topform">
+                  <div class="list-group">
+                     {% for trayecto in trayectos %}
+                     <a href="/buscar_trayecto_id/{{ trayecto['_id'] }}"
+                        class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                           <h5 class="mb-1">{{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }}</h5>
+                           <p>
+                           <h3 class="mb-1">{{ trayecto['precio'] }}€</h3>
+                           </p>
+                        </div>
+                        <small>{{ trayecto['horasalida'] }}</small>
+                        <small>
+                           <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
+                        </small>
+                     </a>
+                     {% endfor %}
+                  </div>
+                  <nav aria-label="Page navigation example" style="margin-left: 25%;">
+                     <ul class="pagination">
+                        <li class="page-item">
+                           <a class="page-link" href="#" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                           </a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                           <a class="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </nav>
+               </div>
             </div>
          </div>
-      </div>
-   </section>
+      </section>
 
 
 
-   <!-- SCRIPTS
+      <!-- SCRIPTS
 ================================================== -->
-   <script src="static/assets/js/jquery.js"></script>
-   <script src="static/assets/js/plugins.js"></script>
-   <script src="static/contact/topvalidate.js"></script>
-   <script src="static/contact/bottomvalidate.js"></script>
+      <script src="static/assets/js/jquery.js"></script>
+      <script src="static/assets/js/plugins.js"></script>
+      <script src="static/contact/topvalidate.js"></script>
+      <script src="static/contact/bottomvalidate.js"></script>
+
+
+   </body>
+
+</div>
+
+
 
 
 </html>
