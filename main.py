@@ -38,7 +38,7 @@ Valoraciones = mongo.db.Valoraciones
 
 @app.route('/')
 def index():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/navbar', methods = ['POST','GET'])
 def navbar():
