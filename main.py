@@ -55,7 +55,7 @@ def registro():
 def iniciarsesion():
     correousername = request.form['correousername']
     contrasena = request.form['contrasena']
-    busqEmail = Usuarios.find_one({"email": correousername})
+    busqEmail = Usuarios.find_one({"correo": correousername})
     busqUsername = Usuarios.find_one({"username": correousername})
     if  busqEmail == None and busqUsername == None :
         flash("Correo electrónico o Username no existe")
