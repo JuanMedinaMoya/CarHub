@@ -2,7 +2,7 @@
 <html lang="en-US" class="no-js">
 
 <head>
-   <title>Login</title>
+   <title>Perfil</title>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <link rel='stylesheet' href='static/assets/css/bootstrap.min.css' type='text/css' media='all' />
@@ -14,6 +14,12 @@
    <link rel='stylesheet' href='static/icons/elegantline/style.css' type='text/css' media='all' />
    <link rel='stylesheet' href='static/assets/css/font-awesome.min.css' type='text/css' media='all' />
    <link rel='stylesheet' href='static/assets/css/flexslider.css' type='text/css' media='all' />
+
+
+
+
+
+
 </head>
 <body class="frontpage">
    <div class="page-loader">
@@ -35,9 +41,15 @@
                   <a class="mobile-menu-close"><i class="fa fa-close"></i></a>
                   <div class="menu-top-menu-container">
                      <ul id="menu-top-menu" class="nav navbar-nav nav-list">
+                        {% if session['username'] %}
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
+                           href="/">Cerrar Sesión</a></li>
+                        {% else %}
                         <li><a href="/login">Inicio Sesión</a></li>
                         <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
                               href="/registro">Registro</a></li>
+                        {% endif %}
+                        
                      </ul>
                   </div>
                </div>
@@ -51,12 +63,17 @@
    <!-- INTRO
 ================================================== -->
     <section id="home" style="padding:160px 0;background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-        <div class="container">
+      
+      
+      
+      
+      <div class="container">
             <div class="textwidget">
-                <h1 class="toptitle" style="color:rgb(10, 124, 0);">Inicia sesión<br/><br/><i class="fa fa-star roundicon" ></i>
+                <h1 class="toptitle" style="color:rgb(10, 124, 0);">Perfil<br/><br/><i class="fa fa-star roundicon" ></i>
                 </h1>
                 
-                {% with messages = get_flashed_messages() %}
+         
+                  {% with messages = get_flashed_messages() %}
                      {% if messages %}
                         {% for message in messages %}
                         <div class="alert">
@@ -66,18 +83,13 @@
                         {% endfor %}
                      {% endif %}
                   {% endwith %}
-                
-                <div class="contactstyle topform">										
-                    <form method="post" action="/iniciarsesion">
-                        <div class="form">
-                            <input type="text" name="correousername" id="correousername" placeholder="Correo electrónico o username " required>
-                            <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña " required>
-                            <input type="submit" id="iniciasesion" class="clearfix btn" value="¡Inicia sesión!">
-                        </div>
-                        <div>
-                            <a href="/registro">¿No tienes una cuenta?  Regístrate</a>
-                        </div>
-                    </form>
+               
+                  {% set username = session['username'] %}
+                <div class="contactstyle topform">		
+                  {{username}}								
+                  <button class="button button1">Editar</button>
+                  <br><br>
+                  <button class="button button1">Eliminar perfil</button>
                 </div>								
             </div>
             </div>
