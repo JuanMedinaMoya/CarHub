@@ -59,7 +59,7 @@ def perfil():
 def iniciarsesion():
     correousername = request.form['correousername']
     contrasena = request.form['contrasena']
-    busqEmail = Usuarios.find_one({"email": correousername})
+    busqEmail = Usuarios.find_one({"correo": correousername})
     busqUsername = Usuarios.find_one({"username": correousername})
     if  busqEmail == None and busqUsername == None :
         flash("Correo electrónico o Username no existe")
@@ -67,7 +67,7 @@ def iniciarsesion():
     
     
     if busqEmail == None :
-        if check_password_hash(generate_password_hash(busqUsername['contrasena'],contrasena)) :
+        if check_password_hash(busqUsername['contrasena'],contrasena) :
             session["username"] = busqUsername['username']
             return render_template('index.html')
         else :
@@ -76,7 +76,7 @@ def iniciarsesion():
         
 
     if busqUsername == None :
-        if check_password_hash(generate_password_hash(busqEmail['contrasena'],contrasena)) :
+        if check_password_hash(busqEmail['contrasena'],contrasena) :
             session["username"] = busqEmail['username']
             return render_template('index.html')
         else :
@@ -152,14 +152,9 @@ def busquedatrayecto():
     return render_template('busqueda.html', trayectos=trayectos)
 
 
-#___---------------___________-------------------------------
-#___---------------___________-------------------------------
-#___---------------___________-------------------------------
-#___---------------___________-------------------------------
-@app.route('/mostrarViaje/<idtrayecto>', methods = ['POST'])
+@app.route('/mostrarViaje', methods = ['POST'])
 def mostrarViaje(idtrayecto):
-    trayecto = buscar_trayecto_id(idtrayecto)
-    return render_template('viaje.html', viaje = trayecto)
+    return render_template('viaje.html')
 
 
 #------------------------------------------------------------
