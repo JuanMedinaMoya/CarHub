@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from bson.objectid import ObjectId
-from flask import Flask, json, request, jsonify, Response 
+from flask import Flask, json, request, jsonify, Response, session, flash, redirect
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
@@ -25,7 +25,7 @@ API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
 API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
-
+app.secret_key = "CarHub"
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
@@ -35,10 +35,9 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 
-
 @app.route('/')
 def index():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/navbar', methods = ['POST','GET'])
 def navbar():
@@ -54,11 +53,50 @@ def registro():
 
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/registrarse', methods = ['POST'])
 def registrarse():
-    return render_template('home.html')
+
+    username = request.form['username']
+    nombre = request.form['nombre']
+    apellidos = request.form['apellidos']
+    correo = request.form['correo']
+    dni = request.form['dni']
+    fechanacimiento = request.form['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
+    telefono = request.form['telefono']
+    contrasena = request.form['contrasena']
+    contrasenarep = request.form['contrasenarep']
+    hashed_contrasena = generate_password_hash(contrasena)
+
+    if Usuarios.find_one({"email": correo}):
+        flash("Correo electrónico ya en uso")
+        return redirect('/registro')
+    if Usuarios.find_one({"username": username}):
+        flash("Username ya en uso")
+        return redirect('/registro')
+    if contrasena != contrasenarep:
+        flash("Contraseñas no iguales")
+        return redirect('/registro')
+
+    id = Usuarios.insert(
+       {'username': username, 
+        'nombre': nombre, 
+        'apellidos': apellidos, 
+        'correo': correo, 
+        'contrasena': hashed_contrasena, 
+        'dni': dni, 
+        'fechanacimiento': d_fechanacimiento, 
+        'telefono': telefono}
+    )
+    session["idusuario"] = username
+    return render_template('index.html')
+
+@app.route('/logout')
+def logout():
+    session.pop("idusuario", None)
+    return render_template('index.html')
 
 @app.route('/busqueda', methods = ['POST'])
 def busquedatrayecto():
@@ -69,13 +107,15 @@ def busquedatrayecto():
     numeropasajeros = int(request.form['numeropasajeros'])
 
     trayectos = []
-    tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    tray = Trayectos.find()[7*(int(1) - 1):7*(int(1))]
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
             'origen': doc['origen'],
             'destino': doc['destino'],
-            'horasalida': doc['horasalida'],
+            'horasalida': doc['horasalida'].strftime("A las %H:%M el %d/%m/%Y"),
+            'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros']
         })
     return render_template('busqueda.html', trayectos=trayectos)
