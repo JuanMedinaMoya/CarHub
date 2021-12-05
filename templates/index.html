@@ -30,12 +30,10 @@
 			<div class="menu-top-menu-container">
 				<ul id="menu-top-menu" class="nav navbar-nav nav-list">
 					{% if session['username'] %}
-                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
-                           href="/">Cerrar Sesión</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a href="/logout">Cerrar Sesión</a></li>
                         {% else %}
                         <li><a href="/login">Inicio Sesión</a></li>
-                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
-                              href="/registro">Registro</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a href="/registro">Registro</a></li>
                         {% endif %}
 				</ul>
 			</div>

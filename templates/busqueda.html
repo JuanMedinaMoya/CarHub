@@ -18,6 +18,32 @@
 
 <div class="container-fluid">
 
+
+   <!-- Header
+================================================== -->
+   <header id="header">
+      <div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
+         <nav class="navbar navbar-default redq">
+            <div class="container">
+               <div>
+                  <a class="navbar-brand" href="busqueda.html">
+                     <img src="static/assets/img/logo-dark.png" alt="logo" width="65" height="65">
+                  </a>
+               </div>
+               <div class="collapse navbar-collapse" id="navbar">
+                  <a class="mobile-menu-close"><i class="fa fa-close"></i></a>
+                  <div class="menu-top-menu-container">
+                     <ul id="menu-top-menu" class="nav navbar-nav nav-list">
+                        {% if session['username'] %}
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
+                           href="/">Cerrar Sesión</a></li>
+                        {% else %}
+                        <li><a href="/login">Inicio Sesión</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
+                              href="/registro">Registro</a></li>
+                        {% endif %}
+                     </ul>
+
    <body class="frontpage">
       <div class="page-loader">
          <img src="static/assets/img/loader.gif" alt="loader">
