@@ -54,12 +54,24 @@
         <div class="container">
             <div class="textwidget">
                 <h1 class="toptitle" style="color:rgb(10, 124, 0);">Inicia sesión<br/><br/><i class="fa fa-star roundicon" ></i>
-                </h1>								
+                </h1>
+                
+                {% with messages = get_flashed_messages() %}
+                     {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert">
+                           <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                           {{ message }}
+                         </div>
+                        {% endfor %}
+                     {% endif %}
+                  {% endwith %}
+                
                 <div class="contactstyle topform">										
                     <form method="post" action="/iniciarsesion">
                         <div class="form">
-                            <input type="text" name="correousername" placeholder="Correo electrónico o username " required>
-                            <input type="text" name="contrasena" placeholder="Contraseña " required>
+                            <input type="text" name="correousername" id="correousername" placeholder="Correo electrónico o username " required>
+                            <input type="text" name="contrasena" id="contrasena" placeholder="Contraseña " required>
                             <input type="submit" id="iniciasesion" class="clearfix btn" value="¡Inicia sesión!">
                         </div>
                         <div>

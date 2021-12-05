@@ -4,7 +4,7 @@ from flask import Flask, json, request, jsonify, Response, session, flash, redir
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
 from flask_googlemaps import GoogleMaps
@@ -53,7 +53,34 @@ def registro():
 
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
-    return render_template('index.html')
+    correousername = request.form['correousername']
+    contrasena = request.form['contrasena']
+    busqEmail = Usuarios.find_one({"email": correousername})
+    busqUsername = Usuarios.find_one({"username": correousername})
+    if  busqEmail == None and busqUsername == None :
+        flash("Correo electrónico o Username no existe")
+        return redirect('/login')
+    
+    
+    if busqEmail == None :
+        if check_password_hash(generate_password_hash(busqUsername['contrasena'],contrasena)) :
+            session["username"] = busqUsername['username']
+            return render_template('index.html')
+        else :
+            flash("Contraseña incorrecta")
+            return redirect('/login')
+        
+
+    if busqUsername == None :
+        if check_password_hash(generate_password_hash(busqEmail['contrasena'],contrasena)) :
+            session["username"] = busqEmail['username']
+            return render_template('index.html')
+        else :
+            flash("Contraseña incorrecta")
+            return redirect('/login')
+
+    
+    
 
 @app.route('/registrarse', methods = ['POST'])
 def registrarse():
@@ -95,7 +122,7 @@ def registrarse():
 
 @app.route('/logout')
 def logout():
-    session.pop("idusuario", None)
+    session.pop("username", None)
     return render_template('index.html')
 
 @app.route('/busqueda', methods = ['POST'])
