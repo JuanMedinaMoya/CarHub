@@ -1,30 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>Busqueda</title>
-</head>
-<body>
-<img src="logo.png">
-CarHub 
+<!doctype html>
+<html lang="en-US" class="no-js">
 
-<div>
-    <form method="post" action="/iniciarsesion" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control"  name="username" id="username" placeholder="Usuario" required>
-        </div>
-        <div class="form-group">
-            <label for="contrasena">Contraseña</label>
-            <input type="password " class="form-control"  name="contrasena" id="contrasena" placeholder="Contraseña" required>
-          </div>
-        <button type="submit" value="Iniciar sesión"class="btn btn-primary" >Buscar</button>
-    </form>
-    <div>
-        <a href="/registro">¿No tienes cuenta? Crea una aquí</a>
-    </div>
-</div>
+<head>
+   <title>Login</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel='stylesheet' href='static/assets/css/bootstrap.min.css' type='text/css' media='all' />
+   <link rel='stylesheet' href='static/assets/css/animate.min.css' type='text/css' media='all' />
+   <link rel='stylesheet' href='static/style.css' type='text/css' media='all' />
+   <link rel='stylesheet'
+      href='https://fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%2C800%7CMontserrat%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%7CDosis%3A400%2C700&#038;ver=4.5'
+      type='text/css' media='all' />
+   <link rel='stylesheet' href='static/icons/elegantline/style.css' type='text/css' media='all' />
+   <link rel='stylesheet' href='static/assets/css/font-awesome.min.css' type='text/css' media='all' />
+   <link rel='stylesheet' href='static/assets/css/flexslider.css' type='text/css' media='all' />
+</head>
+<body class="frontpage">
+   <div class="page-loader">
+      <img src="static/assets/img/loader.gif" alt="loader">
+   </div>
+
+   <!-- Header
+================================================== -->
+   <header id="header">
+      <div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
+         <nav class="navbar navbar-default redq">
+            <div class="container">
+               <div>
+                  <a class="navbar-brand" href="/">
+                     <img src="static/assets/img/logo-dark.png" alt="logo" width="65" height="65">
+                  </a>
+               </div>
+               <div class="collapse navbar-collapse" id="navbar">
+                  <a class="mobile-menu-close"><i class="fa fa-close"></i></a>
+                  <div class="menu-top-menu-container">
+                     <ul id="menu-top-menu" class="nav navbar-nav nav-list">
+                        <li><a href="/login">Inicio Sesión</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);"><a target="_blank"
+                              href="/registro">Registro</a></li>
+                     </ul>
+                  </div>
+               </div>
+               <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+         </nav>
+      </div>
+   </header>
+
+   <!-- INTRO
+================================================== -->
+    <section id="home" style="padding:160px 0;background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+        <div class="container">
+            <div class="textwidget">
+                <h1 class="toptitle" style="color:rgb(10, 124, 0);">Inicia sesión<br/><br/><i class="fa fa-star roundicon" ></i>
+                </h1>								
+                <div class="contactstyle topform">										
+                    <form method="post" action="/iniciarsesion">
+                        <div class="form">
+                            <input type="text" name="correousername" placeholder="Correo electrónico o username " required>
+                            <input type="text" name="contrasena" placeholder="Contraseña " required>
+                            <input type="submit" id="iniciasesion" class="clearfix btn" value="¡Inicia sesión!">
+                        </div>
+                        <div>
+                            <a href="/registro">¿No tienes una cuenta?  Regístrate</a>
+                        </div>
+                    </form>
+                </div>								
+            </div>
+            </div>
+    </section>
+
+   <!-- SCRIPTS
+================================================== -->
+   <script src="static/assets/js/jquery.js"></script>
+   <script src="static/assets/js/plugins.js"></script>
+   <script src="static/contact/topvalidate.js"></script>
+   <script src="static/contact/bottomvalidate.js"></script>
+
 </body>
+
 </html>
