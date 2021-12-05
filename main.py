@@ -53,7 +53,9 @@ def registro():
 
 @app.route('/perfil', methods = ['POST','GET'])
 def perfil():
-    return render_template('perfil.html')
+    username = session["username"]
+    usuario = Usuarios.find_one({"username": username})
+    return render_template('perfil.html', usuario=usuario)
 
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
