@@ -63,7 +63,7 @@ def iniciarsesion():
     
     
     if busqEmail == None :
-        if check_password_hash(generate_password_hash(busqUsername['contrasena'],contrasena)) :
+        if check_password_hash(busqUsername['contrasena'],contrasena) :
             session["username"] = busqUsername['username']
             return render_template('index.html')
         else :
@@ -72,7 +72,7 @@ def iniciarsesion():
         
 
     if busqUsername == None :
-        if check_password_hash(generate_password_hash(busqEmail['contrasena'],contrasena)) :
+        if check_password_hash(busqEmail['contrasena'],contrasena) :
             session["username"] = busqEmail['username']
             return render_template('index.html')
         else :
