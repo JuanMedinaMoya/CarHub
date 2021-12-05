@@ -90,7 +90,7 @@ def registrarse():
         'fechanacimiento': d_fechanacimiento, 
         'telefono': telefono}
     )
-    session["idusuario"] = username
+    session["username"] = username
     return render_template('index.html')
 
 @app.route('/logout')
