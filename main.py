@@ -51,6 +51,10 @@ def login():
 def registro():
     return render_template('registro.html')
 
+@app.route('/perfil', methods = ['POST','GET'])
+def perfil():
+    return render_template('perfil.html')
+
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
     correousername = request.form['correousername']

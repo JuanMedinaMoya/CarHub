@@ -32,6 +32,7 @@
 					{% if session['username'] %}
                         <li style="background: rgba(255, 255, 0, 0.51);"><a href="/logout">Cerrar Sesión</a></li>
                         {% else %}
+						<li><a href="/perfil">Perfil</a></li>
                         <li><a href="/login">Inicio Sesión</a></li>
                         <li style="background: rgba(255, 255, 0, 0.51);"><a href="/registro">Registro</a></li>
                         {% endif %}
