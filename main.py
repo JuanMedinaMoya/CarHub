@@ -1,10 +1,10 @@
 from datetime import date, datetime
 from bson.objectid import ObjectId
-from flask import Flask, json, request, jsonify, Response, session, flash, redirect
+from flask import Flask, json, request, jsonify, Response 
 from flask_pymongo import PyMongo
 from flask import render_template
 from pymongo import mongo_client
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
 from flask_googlemaps import GoogleMaps
@@ -25,7 +25,7 @@ API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
 API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
-app.secret_key = "CarHub"
+
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
@@ -34,6 +34,7 @@ Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
+
 
 @app.route('/')
 def index():
@@ -59,77 +60,11 @@ def perfil():
 
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
-    correousername = request.form['correousername']
-    contrasena = request.form['contrasena']
-    busqEmail = Usuarios.find_one({"correo": correousername})
-    busqUsername = Usuarios.find_one({"username": correousername})
-    if  busqEmail == None and busqUsername == None :
-        flash("Correo electrónico o Username no existe")
-        return redirect('/login')
-    
-    
-    if busqEmail == None :
-        if check_password_hash(busqUsername['contrasena'],contrasena) :
-            session["username"] = busqUsername['username']
-            return render_template('index.html')
-        else :
-            flash("Contraseña incorrecta")
-            return redirect('/login')
-        
-
-    if busqUsername == None :
-        if check_password_hash(busqEmail['contrasena'],contrasena) :
-            session["username"] = busqEmail['username']
-            return render_template('index.html')
-        else :
-            flash("Contraseña incorrecta")
-            return redirect('/login')
-
-    
-    
+    return render_template('index.html')
 
 @app.route('/registrarse', methods = ['POST'])
 def registrarse():
-
-    username = request.form['username']
-    nombre = request.form['nombre']
-    apellidos = request.form['apellidos']
-    correo = request.form['correo']
-    dni = request.form['dni']
-    fechanacimiento = request.form['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
-    telefono = request.form['telefono']
-    contrasena = request.form['contrasena']
-    contrasenarep = request.form['contrasenarep']
-    hashed_contrasena = generate_password_hash(contrasena)
-
-    if Usuarios.find_one({"email": correo}):
-        flash("Correo electrónico ya en uso")
-        return redirect('/registro')
-    if Usuarios.find_one({"username": username}):
-        flash("Username ya en uso")
-        return redirect('/registro')
-    if contrasena != contrasenarep:
-        flash("Contraseñas no iguales")
-        return redirect('/registro')
-
-    id = Usuarios.insert(
-       {'username': username, 
-        'nombre': nombre, 
-        'apellidos': apellidos, 
-        'correo': correo, 
-        'contrasena': hashed_contrasena, 
-        'dni': dni, 
-        'fechanacimiento': d_fechanacimiento, 
-        'telefono': telefono}
-    )
-    session["username"] = username
-    return render_template('index.html')
-
-@app.route('/logout')
-def logout():
-    session.pop("username", None)
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/busqueda', methods = ['POST'])
 def busquedatrayecto():
@@ -153,10 +88,6 @@ def busquedatrayecto():
         })
     return render_template('busqueda.html', trayectos=trayectos)
 
-
-@app.route('/mostrarViaje', methods = ['POST'])
-def mostrarViaje(idtrayecto):
-    return render_template('viaje.html')
 
 
 #------------------------------------------------------------
@@ -464,7 +395,7 @@ def buscar_trayecto_destino(destino):
 def buscar_trayecto_origendestino(origen, destino):
     trayectos = Trayectos.find({'origen': origen, 'destino': destino})
     resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
+    return render_template('busqueda.html', trayectos=trayectos)
 
 @app.route('/finalizar_trayecto/<idtrayecto>', methods = ['PUT'])
 def finalizar_trayecto(idtrayecto):
