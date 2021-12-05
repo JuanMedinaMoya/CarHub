@@ -80,6 +80,10 @@ def busquedatrayecto():
         })
     return render_template('busqueda.html', trayectos=trayectos)
 
+@app.route('/mostrarViaje/<idtrayecto>', methods = ['POST'])
+def mostrarViaje(idtrayecto):
+    trayecto = buscar_trayecto_id(idtrayecto)
+    return render_template('viaje.html', viaje = trayecto)
 
 
 #------------------------------------------------------------
