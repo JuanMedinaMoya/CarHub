@@ -149,6 +149,9 @@ def guardarPerfilEditar():
     contrasena = request.form['contrasena']
     contrasenarep = request.form['contrasenarep']
     hashed_contrasena = generate_password_hash(contrasena)
+    
+    id = Usuarios.find_one({"username": username})
+
 
     if Usuarios.find_one({"email": correo}):
         flash("Correo electrónico ya en uso")
@@ -160,7 +163,7 @@ def guardarPerfilEditar():
         flash("Contraseñas no iguales")
         return redirect('/perfilEditar')
 
-    id = Usuarios.update_one(
+    id = Usuarios.update_one({'_id': ObjectId(id)},{'$set':
        {'username': username, 
         'nombre': nombre, 
         'apellidos': apellidos, 
@@ -171,7 +174,7 @@ def guardarPerfilEditar():
         'coche': coche, 
         'paypal': paypal, 
         'foto': foto, 
-        'telefono': telefono}
+        'telefono': telefono}}
     )
     session["username"] = username
     return render_template('perfil.html')
