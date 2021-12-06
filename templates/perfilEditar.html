@@ -123,17 +123,36 @@ button:hover, a:hover {
 
 <div class="card">
   <img src={{usuario['foto']}} alt="fotoperfil" style="width:100%">
-  <h1>{{usuario['nombre']}} {{usuario['apellidos']}}</h1>
-  <p class="title">{{usuario['username']}}</p>
-  <p>
-   {{usuario['correo']}} <br>
-   {{usuario['telefono']}} <br>
-   {{usuario['coche']}}  <br>
-</p> 
-  <p><a href="/perfilEditar">
-   <button>Editar</button>
-   </a></p>
-</div>
+  <div class="contactstyle topform">										
+   <form name="perfilEditar" method="post" action="/guardarPerfilEditar">
+       <div class="form">
+           <label for="txt">Username</label>
+           <input type="text" name="username" id="username" value="{{usuario["username"]}}" required>
+           <label for="txt">Nombre</label>
+           <input type="text" name="nombre" id="nombre" value="{{usuario["nombre"]}}" required>
+           <label for="txt">Apellidos</label>
+           <input type="text" name="apellidos" id="apellidos" value="{{usuario["apellidos"]}}" required>
+           <label for="txt">Correo</label>
+           <input type="email" name="correo" id="correo" value="{{usuario["correo"]}}" required>
+           <label for="txt">DNI</label>
+           <input type="text" name="dni" id="dni" value="{{usuario["dni"]}}" required>
+           <label for="txt">Fecha de nacimiento</label>
+           <input type="date" name="fechanacimiento" id="fechanacimiento" value="{{usuario["fechanacimiento"]}}" required>
+           <label for="txt">Teléfono</label>
+           <input type="number" name="telefono" id="telefono" value="{{usuario["telefono"]}}" required>
+           <label for="txt">Foto</label>
+           <input type="text" name="foto" id="foto" value="{{usuario["foto"]}}">
+           <label for="txt">Coche</label>
+           <input type="text" name="coche" id="coche" value="{{usuario["coche"]}}">
+           <label for="txt">Paypal</label>
+           <input type="text" name="paypal" id="paypal" value="{{usuario["paypal"]}}">
+           <label for="txt">Contraseña</label>
+           <input type="password"  name="contrasena" id="contrasena" value="" minlength="6" required>
+           <label for="txt">Repita contraseña</label>
+           <input type="password"  name="contrasenarep" id="contrasenarep" value="" minlength="6" required>
+           <input type="submit" id="guardarcambios" class="clearfix btn" value="Guardar cambios">
+       </div>
+   </form>
 
     </section>
 

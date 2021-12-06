@@ -57,6 +57,12 @@ def perfil():
     usuario = Usuarios.find_one({"username": username})
     return render_template('perfil.html', usuario=usuario)
 
+@app.route('/perfilEditar', methods = ['POST','GET'])
+def perfilEditar():
+    username = session["username"]
+    usuario = Usuarios.find_one({"username": username})
+    return render_template('perfilEditar.html', usuario=usuario)
+
 @app.route('/iniciarsesion', methods = ['POST'])
 def iniciarsesion():
     correousername = request.form['correousername']
@@ -125,6 +131,50 @@ def registrarse():
     )
     session["username"] = username
     return render_template('index.html')
+
+@app.route('/guardarPerfilEditar', methods = ['POST'])
+def guardarPerfilEditar():
+
+    username = request.form['username']
+    nombre = request.form['nombre']
+    apellidos = request.form['apellidos']
+    correo = request.form['correo']
+    dni = request.form['dni']
+    fechanacimiento = request.form['fechanacimiento']
+    d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
+    telefono = request.form['telefono']
+    foto = request.form['foto']
+    coche = request.form['coche']
+    paypal = request.form['paypal']
+    contrasena = request.form['contrasena']
+    contrasenarep = request.form['contrasenarep']
+    hashed_contrasena = generate_password_hash(contrasena)
+
+    if Usuarios.find_one({"email": correo}):
+        flash("Correo electrónico ya en uso")
+        return redirect('/perfilEditar')
+    if Usuarios.find_one({"username": username}):
+        flash("Username ya en uso")
+        return redirect('/perfilEditar')
+    if contrasena != contrasenarep:
+        flash("Contraseñas no iguales")
+        return redirect('/perfilEditar')
+
+    id = Usuarios.update_one(
+       {'username': username, 
+        'nombre': nombre, 
+        'apellidos': apellidos, 
+        'correo': correo, 
+        'contrasena': hashed_contrasena, 
+        'dni': dni, 
+        'fechanacimiento': d_fechanacimiento, 
+        'coche': coche, 
+        'paypal': paypal, 
+        'foto': foto, 
+        'telefono': telefono}
+    )
+    session["username"] = username
+    return render_template('perfil.html')
 
 @app.route('/logout')
 def logout():
