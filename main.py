@@ -134,8 +134,7 @@ def registrarse():
 
 @app.route('/guardarPerfilEditar', methods = ['POST'])
 def guardarPerfilEditar():
-
-    username = request.form['username']
+    
     nombre = request.form['nombre']
     apellidos = request.form['apellidos']
     correo = request.form['correo']
@@ -150,22 +149,19 @@ def guardarPerfilEditar():
     contrasenarep = request.form['contrasenarep']
     hashed_contrasena = generate_password_hash(contrasena)
     
-    id = Usuarios.find_one({"username": username})
+    usuario = Usuarios.find_one({"username": session["username"]})
 
 
     if Usuarios.find_one({"email": correo}):
         flash("Correo electrónico ya en uso")
         return redirect('/perfilEditar')
-    if Usuarios.find_one({"username": username}):
-        flash("Username ya en uso")
-        return redirect('/perfilEditar')
+
     if contrasena != contrasenarep:
         flash("Contraseñas no iguales")
         return redirect('/perfilEditar')
 
-    id = Usuarios.update_one({'_id': ObjectId(id)},{'$set':
-       {'username': username, 
-        'nombre': nombre, 
+    id = Usuarios.update_one({'username': session["username"]},{'$set':
+       {'nombre': nombre, 
         'apellidos': apellidos, 
         'correo': correo, 
         'contrasena': hashed_contrasena, 
@@ -176,8 +172,8 @@ def guardarPerfilEditar():
         'foto': foto, 
         'telefono': telefono}}
     )
-    session["username"] = username
-    return render_template('perfil.html')
+
+    return redirect('/perfil')
 
 @app.route('/logout')
 def logout():
