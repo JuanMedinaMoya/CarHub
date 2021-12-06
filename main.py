@@ -139,8 +139,6 @@ def guardarPerfilEditar():
     apellidos = request.form['apellidos']
     correo = request.form['correo']
     dni = request.form['dni']
-    fechanacimiento = request.form['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
     telefono = request.form['telefono']
     foto = request.form['foto']
     coche = request.form['coche']
@@ -151,6 +149,14 @@ def guardarPerfilEditar():
     
     usuario = Usuarios.find_one({"username": session["username"]})
 
+
+    if Usuarios.find_one({"email": correo}):
+        flash("Correo electrónico ya en uso")
+        return redirect('/guardarPerfilEditar')
+  
+    if contrasena != contrasenarep:
+        flash("Contraseñas no iguales")
+        return redirect('/guardarPerfilEditar')
 
     if Usuarios.find_one({"email": correo}):
         flash("Correo electrónico ya en uso")
@@ -166,7 +172,6 @@ def guardarPerfilEditar():
         'correo': correo, 
         'contrasena': hashed_contrasena, 
         'dni': dni, 
-        'fechanacimiento': d_fechanacimiento, 
         'coche': coche, 
         'paypal': paypal, 
         'foto': foto, 
