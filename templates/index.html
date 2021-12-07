@@ -1,83 +1,88 @@
-{% include '/navbar.html' %}    	
+{% include '/navbar.html' %}
 
 <!-- INTRO
 ================================================== -->
-<section id="home" style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+<section id="home"
+	style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
 	<div class="container">
 		<div class="textwidget">
-			<h1 class="toptitle" style="color:rgb(10, 124, 0);">Infinidad de VIAJES al<br/> MEJOR PRECIO <br/><br/><i class="fa fa-star roundicon" ></i>
-			</h1>								
-			<div class="contactstyle topform">										
+			<h1 class="toptitle" style="color:rgb(10, 124, 0);">Infinidad de VIAJES al<br /> MEJOR PRECIO <br /><br /><i
+					class="fa fa-star roundicon"></i>
+			</h1>
+			<div class="contactstyle topform">
 				<form method="post" action="/busqueda/1" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="origen">Origen</label>
-						<input type="text" class="form-control"  name="origen" id="origen" placeholder="Origen" required>
+						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen" required>
 					</div>
 					<div class="form-group">
-					  <label for="destino">Destino</label>
-					  <input type="text" class="form-control"  name="destino" id="destino" placeholder="Destino" required>
+						<label for="destino">Destino</label>
+						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
+							required>
 					</div>
 					<div class="form-group">
-					  <label for="horasalida">Fecha</label>
-					  <input type="date" class="form-control"  name="horasalida" id="horasalida" placeholder="Fecha" required>
+						<label for="horasalida">Fecha</label>
+						<input type="date" class="form-control" name="horasalida" id="horasalida" placeholder="Fecha"
+							required>
 					</div>
 					<div class="form-group">
 						<label for="numeropasajeros">Número de pasajeros</label>
-						<input type="number " class="form-control"  name="numeropasajeros" id="numeropasajeros" placeholder="Pasajeros" required>
-					  </div>
-					<button type="submit" value="Buscar"class="btn btn-primary btn-lg btn-block" >Buscar</button>
-				  </form>
-			</div>								
+						<input type="number " class="form-control" name="numeropasajeros" id="numeropasajeros"
+							placeholder="Pasajeros" required>
+					</div>
+					<button type="submit" value="Buscar" class="btn btn-primary btn-lg btn-block">Buscar</button>
+				</form>
+			</div>
 		</div>
-		</div>
+	</div>
 </section>
-		
+
 <!-- CONTACT
 ================================================== -->
 <section id="contact" class="margintop60 nopadding" style="background:#292929;">
-		<div class="col-md-6 whitetext" style="padding: 60px;">
-			<div class="textwidget">
-				<div class="bookarea">
-					 CONTACT<br>
-					<span class="bordered">Escuela Superior de Ingeniería Informatica </span><br>
-					<span class="call">+34 685236644</span>
+	<div class="col-md-6 whitetext" style="padding: 60px;">
+		<div class="textwidget">
+			<div class="bookarea">
+				CONTACT<br>
+				<span class="bordered">Escuela Superior de Ingeniería Informatica </span><br>
+				<span class="call">+34 685236644</span>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 whitetext" style="padding: 60px; background-color: #50dcc9;">
+		<div class="textwidget">
+			<h2 class="box">Say <b>Hello</b></h2>
+			<div class="bottomform">
+				<form method="post" action="contact/bottomcontact.php" id="bottomcontactform">
+					<div class="form">
+						<div class="row">
+							<span class="col-md-6">
+								<input type="text" name="namebottom" placeholder="Name *">
+							</span>
+
+							<span class="col-md-6">
+								<input type="text" name="emailbottom" placeholder="E-mail *">
+							</span>
+
+						</div>
+						<div class="clearfix"></div>
+						<textarea name="comment" rows="7" placeholder="Message *"></textarea>
+						<input type="submit" id="submit2" class="clearfix btn" value="Send">
+					</div>
+				</form>
+				<div class="done2">
+					<div class="alert alert-success">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+						Your message has been sent. Thank you!
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6 whitetext" style="padding: 60px; background-color: #50dcc9;">
-			<div class="textwidget">
-				<h2 class="box">Say <b>Hello</b></h2>						
-				<div class="bottomform">										
-					<form method="post" action="contact/bottomcontact.php" id="bottomcontactform">
-						<div class="form">
-							<div class="row">
-								<span class="col-md-6">
-									<input type="text" name="namebottom" placeholder="Name *">
-								</span>
-								
-								<span class="col-md-6">
-									<input type="text" name="emailbottom" placeholder="E-mail *">
-								</span>
-									
-							</div>
-							<div class="clearfix"></div>
-							<textarea name="comment" rows="7" placeholder="Message *"></textarea>
-							<input type="submit" id="submit2" class="clearfix btn" value="Send">
-						</div>
-					</form>
-					<div class="done2">
-						<div class="alert alert-success">
-							<button type="button" class="close" data-dismiss="alert">×</button>
-							Your message has been sent. Thank you!
-						</div>
-					</div>
-				</div>						
-			</div>
-		</div>
-		<div class="clearfix"></div>
+	</div>
+	<div class="clearfix"></div>
 </section>
-<!-- THE END OF SECTIONS -->	
-	
+<!-- THE END OF SECTIONS -->
+
 <!-- FOOTER
 ================================================== -->
 <footer id="footer" class="footer2">
@@ -107,4 +112,5 @@
 <script src="contact/bottomvalidate.js"></script>
 
 </body>
+
 </html>
