@@ -51,6 +51,10 @@ def login():
 def registro():
     return render_template('registro.html')
 
+@app.route('/crearViaje', methods = ['POST','GET'])
+def crearViaje():
+    return render_template('crearViaje.html')
+
 @app.route('/perfil', methods = ['POST','GET'])
 def perfil():
     username = session["username"]
@@ -480,24 +484,28 @@ def buscar_conversaciones_usuario(id):
 #CRUD
 
 
-@app.route('/crear_trayecto/<idconductor>', methods=['POST'])
-def crear_trayecto(idconductor):
-    conductor = ObjectId(idconductor)
-    origen = request.json['origen']
-    destino = request.json['destino']
-    horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    precio = request.json['precio']
-    numeropasajeros = request.json['numeropasajeros']
+@app.route('/crear_trayecto/<username>', methods=['POST'])
+def crear_trayecto(username):
+
+    usuario = Usuarios.find_one({"username": username})
+
+    conductor = ObjectId(usuario['_id'])
+    origen = request.form['origen']
+    destino = request.form['destino']
+    horasalida = request.form['horasalida']
+    d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
+
+    precio = request.form['precio']
+    numeropasajeros = request.form['numeropasajeros']
     finalizado = 0
     pasajeros = []
 
     if origen and destino and horasalida and precio and numeropasajeros :
-        id = Trayectos.insert(
+        Trayectos.insert(
             {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros}
         )
         resp = jsonify("Trayecto añadido")
-        return resp
+        return render_template('index.html')
     else:
         return not_found()
 
