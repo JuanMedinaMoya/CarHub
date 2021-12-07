@@ -109,7 +109,7 @@ def registrarse():
     contrasenarep = request.form['contrasenarep']
     hashed_contrasena = generate_password_hash(contrasena)
 
-    if Usuarios.find_one({"email": correo}):
+    if Usuarios.find_one({"correo": correo}):
         flash("Correo electrónico ya en uso")
         return redirect('/registro')
     if Usuarios.find_one({"username": username}):
@@ -135,6 +135,9 @@ def registrarse():
 @app.route('/guardarPerfilEditar', methods = ['POST'])
 def guardarPerfilEditar():
     
+    usuario = Usuarios.find_one({"username": session["username"]})
+    correoAntiguo = usuario["correo"]
+    
     nombre = request.form['nombre']
     apellidos = request.form['apellidos']
     correo = request.form['correo']
@@ -146,37 +149,43 @@ def guardarPerfilEditar():
     contrasena = request.form['contrasena']
     contrasenarep = request.form['contrasenarep']
     hashed_contrasena = generate_password_hash(contrasena)
-    
-    usuario = Usuarios.find_one({"username": session["username"]})
 
 
-    if Usuarios.find_one({"email": correo}):
+    print(correoAntiguo)
+    print(correo)
+
+    if correoAntiguo != correo and Usuarios.find_one({"correo": correo}):
         flash("Correo electrónico ya en uso")
-        return redirect('/guardarPerfilEditar')
+        return redirect('/perfilEditar')
   
     if contrasena != contrasenarep:
         flash("Contraseñas no iguales")
-        return redirect('/guardarPerfilEditar')
-
-    if Usuarios.find_one({"email": correo}):
-        flash("Correo electrónico ya en uso")
         return redirect('/perfilEditar')
 
-    if contrasena != contrasenarep:
-        flash("Contraseñas no iguales")
-        return redirect('/perfilEditar')
-
-    id = Usuarios.update_one({'username': session["username"]},{'$set':
-       {'nombre': nombre, 
-        'apellidos': apellidos, 
-        'correo': correo, 
-        'contrasena': hashed_contrasena, 
-        'dni': dni, 
-        'coche': coche, 
-        'paypal': paypal, 
-        'foto': foto, 
-        'telefono': telefono}}
-    )
+    if contrasena == "":
+        id = Usuarios.update_one({'username': session["username"]},{'$set':
+        {'nombre': nombre, 
+            'apellidos': apellidos, 
+            'correo': correo, 
+            'contrasena': hashed_contrasena, 
+            'dni': dni, 
+            'coche': coche, 
+            'paypal': paypal, 
+            'foto': foto, 
+            'telefono': telefono}}
+        )
+    else:
+        id = Usuarios.update_one({'username': session["username"]},{'$set':
+        {'nombre': nombre, 
+            'apellidos': apellidos, 
+            'correo': correo, 
+            'contrasena': hashed_contrasena, 
+            'dni': dni, 
+            'coche': coche, 
+            'paypal': paypal, 
+            'foto': foto, 
+            'telefono': telefono}}
+        )
 
     return redirect('/perfil')
 
