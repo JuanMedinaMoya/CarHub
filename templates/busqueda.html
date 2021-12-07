@@ -27,15 +27,22 @@
                   <nav aria-label="Page navigation example" style="margin-left: 25%;">
                      <ul class="pagination">
                         <li class="page-item">
-                           <a class="page-link" href="#" aria-label="Previous">
+                           <form method="post" action="{{ trayectos[0]['pagina'] }}" enctype="multipart/form-data">
+                              <input type="hidden" class="form-control"  name="origen" id="origen" placeholder="Origen" value="{{ trayectos[0]['origen'] }}" required>
+                              <input type="hidden" class="form-control"  name="destino" id="destino" placeholder="Destino" value="{{ trayectos[0]['destino'] }}" required>
+                              <input type="hidden" class="form-control"  name="horasalida" id="horasalida" placeholder="Fecha" value="{{ trayectos[0]['horasalida'] }}" required>
+                              <input type="hidden" class="form-control"  name="numeropasajeros" id="numeropasajeros" placeholder="Pasajeros" value="{{ trayectos[0]['numeropasajeros'] }}" required>
+                              <button type="submit" value="Previous" class="page-link" aria-label="Previous">&laquo;</button>
+                           </form>
+                           <a class="page-link" href="{{ trayectos[0]['pagina'] - 1 }}" aria-label="Previous">
                               <span aria-hidden="true">&laquo;</span>
                            </a>
                         </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] }}">{{ trayectos[0]['pagina'] }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 1 }}">{{ trayectos[0]['pagina'] + 1 }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 2 }}">{{ trayectos[0]['pagina'] + 2 }}</a></li>
                         <li class="page-item">
-                           <a class="page-link" href="#" aria-label="Next">
+                           <a class="page-link" href="{{ trayectos[0]['pagina'] + 1 }}" aria-label="Next">
                               <span aria-hidden="true">&raquo;</span>
                            </a>
                         </li>

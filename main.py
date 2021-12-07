@@ -185,8 +185,8 @@ def logout():
     session.pop("username", None)
     return render_template('index.html')
 
-@app.route('/busqueda', methods = ['POST'])
-def busquedatrayecto():
+@app.route('/busqueda/<pagina>', methods = ['POST'])
+def busquedatrayecto(pagina):
     origen = request.form['origen']
     destino = request.form['destino']
     #horasalida = request.form['horasalida']
@@ -195,15 +195,16 @@ def busquedatrayecto():
 
     trayectos = []
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
-    tray = Trayectos.find()[7*(int(1) - 1):7*(int(1))]
+    tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
             'origen': doc['origen'],
             'destino': doc['destino'],
-            'horasalida': doc['horasalida'].strftime("A las %H:%M el %d/%m/%Y"),
+            'horasalida': doc['horasalida'].strftime('A las %H:%M el %d/%m/%Y'),
             'precio': doc['precio'],
-            'numeropasajeros': doc['numeropasajeros']
+            'numeropasajeros': doc['numeropasajeros'],
+            'pagina': int(pagina)
         })
     return render_template('busqueda.html', trayectos=trayectos)
 
