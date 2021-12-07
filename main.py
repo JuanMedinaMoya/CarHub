@@ -61,6 +61,11 @@ def perfil():
     usuario = Usuarios.find_one({"username": username})
     return render_template('perfil.html', usuario=usuario)
 
+@app.route('/perfilId/<id>', methods = ['POST','GET'])
+def perfilId(id):
+    usuario = Usuarios.find_one({'_id': ObjectId(id)})
+    return render_template('perfil.html', usuario=usuario)
+
 @app.route('/perfilEditar', methods = ['POST','GET'])
 def perfilEditar():
     username = session["username"]
@@ -222,9 +227,19 @@ def busquedatrayecto(pagina):
     return render_template('busqueda.html', trayectos=trayectos)
 
 
-@app.route('/mostrarViaje', methods = ['POST'])
-def mostrarViaje(idtrayecto):
-    return render_template('viaje.html')
+@app.route('/mostrar_trayecto_id/<id>', methods = ['GET'])
+def mostrarViaje(id):
+    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+    conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
+    pasajeros = trayecto['pasajeros']
+    pasajerosPerfil = []
+    if pasajeros :
+        for id in pasajeros :
+            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+            pasajerosPerfil.append(usuario)
+        
+   
+    return render_template('viaje.html', trayecto=trayecto, conductor=conductor, pasajeros=pasajerosPerfil)
 
 
 #------------------------------------------------------------
