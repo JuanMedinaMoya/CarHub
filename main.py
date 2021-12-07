@@ -200,28 +200,39 @@ def logout():
     return render_template('index.html')
 
 @app.route('/busqueda/<pagina>', methods = ['POST'])
-def busquedatrayecto(pagina):
+def busquedatrayecto_form(pagina):
     origen = request.form['origen']
     destino = request.form['destino']
+    horasalida = request.form['horasalida']
+    #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
+    numeropasajeros = request.form['numeropasajeros']
+    return redirect('/busqueda/' + origen + '/' + destino + '/' + horasalida + '/' + numeropasajeros + '/1')
+
+@app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
+def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    numeropasajeros = int(request.form['numeropasajeros'])
 
     trayectos = []
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': numeropasajeros}).sort('horasalida', 1)
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
+    #tray = []
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
             'origen': doc['origen'],
             'destino': doc['destino'],
-            'horasalida': doc['horasalida'].strftime('A las %H:%M el %d/%m/%Y'),
+            'horasalida': doc['horasalida'],
             'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros'],
             'pagina': int(pagina)
         })
-    return render_template('busqueda.html', trayectos=trayectos)
+    if trayectos:
+        return render_template('busqueda.html', trayectos=trayectos)
+    else:
+        return jsonify("No se han encontrado trayectos")
 
+    
 
 @app.route('/mostrar_trayecto_id/<id>', methods = ['GET'])
 def mostrarViaje(id):

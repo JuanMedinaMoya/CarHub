@@ -17,7 +17,7 @@
                            <h3 class="mb-1">{{ trayecto['precio'] }}€</h3>
                            </p>
                         </div>
-                        <small>{{ trayecto['horasalida'] }}</small>
+                        <small>{{ trayecto['horasalida'].strftime('A las %H:%M el %d/%m/%Y') }}</small>
                         <small>
                            <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
                         </small>
@@ -27,18 +27,11 @@
                   <nav aria-label="Page navigation example" style="margin-left: 25%;">
                      <ul class="pagination">
                         <li class="page-item">
-                           <form method="post" action="{{ trayectos[0]['pagina'] }}" enctype="multipart/form-data">
-                              <input type="hidden" class="form-control"  name="origen" id="origen" placeholder="Origen" value="{{ trayectos[0]['origen'] }}" required>
-                              <input type="hidden" class="form-control"  name="destino" id="destino" placeholder="Destino" value="{{ trayectos[0]['destino'] }}" required>
-                              <input type="hidden" class="form-control"  name="horasalida" id="horasalida" placeholder="Fecha" value="{{ trayectos[0]['horasalida'] }}" required>
-                              <input type="hidden" class="form-control"  name="numeropasajeros" id="numeropasajeros" placeholder="Pasajeros" value="{{ trayectos[0]['numeropasajeros'] }}" required>
-                              <button type="submit" value="Previous" class="page-link" aria-label="Previous">&laquo;</button>
-                           </form>
                            <a class="page-link" href="{{ trayectos[0]['pagina'] - 1 }}" aria-label="Previous">
                               <span aria-hidden="true">&laquo;</span>
                            </a>
                         </li>
-                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] }}">{{ trayectos[0]['pagina'] }}</a></li>
+                        <li class="page-item"><a class="page-link" href="/busqueda/{{ trayectos[0]['origen'] }}/{{ trayectos[0]['destino'] }}/{{ trayectos[0]['horasalida'] }}/{{ trayectos[0]['numeropasajeros'] }}/{{ trayectos[0]['pagina'] }}">{{ trayectos[0]['pagina'] }}</a></li>
                         <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 1 }}">{{ trayectos[0]['pagina'] + 1 }}</a></li>
                         <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 2 }}">{{ trayectos[0]['pagina'] + 2 }}</a></li>
                         <li class="page-item">
