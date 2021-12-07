@@ -29,6 +29,7 @@
 			<div class="menu-top-menu-container">
 				<ul id="menu-top-menu" class="nav navbar-nav nav-list">
 					{% if session['username'] %}
+						<li><a href="/crearViaje">Crear Viaje</a></li>
 						<li><a href="/perfil">Perfil</a></li>
                         <li style="background: rgba(255, 255, 0, 0.51);"><a
                            href="/logout">Cerrar Sesión</a></li>
@@ -37,6 +38,7 @@
                         <li style="background: rgba(255, 255, 0, 0.51);"><a
                               href="/registro">Registro</a></li>
                         {% endif %}
+
 				</ul>
 			</div>
 		</div>
