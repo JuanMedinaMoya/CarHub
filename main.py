@@ -238,7 +238,7 @@ def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
 
     
 
-@app.route('/mostrar_trayecto_id/<id>', methods = ['GET'])
+@app.route('/trayecto/<id>', methods = ['GET'])
 def mostrarViaje(id):
     trayecto = Trayectos.find_one({'_id': ObjectId(id)})
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})

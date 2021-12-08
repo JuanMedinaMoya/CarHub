@@ -9,7 +9,7 @@
                <div class="contactstyle topform">
                   <div class="list-group">
                      {% for trayecto in trayectos %}
-                     <a href="/mostrar_trayecto_id/{{ trayecto['_id'] }}"
+                     <a href="/trayecto/{{ trayecto['_id'] }}"
                         class="list-group-item list-group-item-action flex-column align-items-start">
                         <div class="d-flex w-100 justify-content-between">
                            <h5 class="mb-1">{{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }}</h5>

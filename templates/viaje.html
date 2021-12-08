@@ -1,70 +1,112 @@
 {% include '/navbar.html' %}
+<!doctype html>
+<html>
 <!-- INTRO
          ================================================== -->
 <!-- trayecto = json con toda la informacion de un trayecto-->
+<head>
+   <title>Viaje</title>
+   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&v=weekly" defer></script>
+   <style type="text/css">
+      #map {
+         height: 50%;
+         width: 50%;
+         margin: 0 auto;
+      }
+      html, body {
+         height: 100%;
+         margin: 0;
+         padding: 0;
+      }
+   </style>
+   <script>
+      function initMap() { 
+         const directionsService = new google.maps.DirectionsService();
+         const directionsRenderer = new google.maps.DirectionsRenderer();
+         const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 7,
+            center: { lat: 41.85, lng: -87.65 },
+         });
 
-<section id="home"
-   style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-   <div class="container">
-      <div class="textwidget">
-         <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'] }}<br />{{ trayecto['origen'] }} ➜ {{
-            trayecto['destino'] }} <br /><br /></h1>
-         <div class="contactstyle topform">
-            <div class="col">
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">SALIDA:  </h3> {{ trayecto['origen'] }}
-               </div>
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3> {{ trayecto['destino'] }}
-               </div>
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3> 
-               </div>
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Precio: </h3><h3>{{ trayecto['precio'] }} €</h3>
-               </div>
+         directionsRenderer.setMap(map);
 
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Conductor: </h3> 
-               </div>
-               <a href="/perfilId/{{ conductor['_id'] }}"  class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="card card-body">
-                     <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
-                     <small>Coche: {{ conductor['coche'] }} </small>
-                   </div>
-               </a>
+         directionsService
+            .route({
+               origin: "{{ trayecto['origen'] }}",
+               destination: "{{ trayecto['destino'] }}",
+               travelMode: google.maps.TravelMode.DRIVING,
+            })
+            .then((response) => {
+               directionsRenderer.setDirections(response);
+            })
+            .catch((e) => window.alert("Directions request failed due to " + status)); 
+      }
 
-               {% if pasajeros %}
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
-               </div>
-               {% for pasajero in pasajeros %}
-               <div class="list-group-item list-group-item-action flex-column align-items-start">
+   </script>
+</head>
+<body>
+   <section id="home"
+      style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+      <div class="container">
+         <div class="textwidget">
+            <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'] }}<br />{{ trayecto['origen'] }} ➜ {{
+               trayecto['destino'] }} <br /><br /></h1>
+            
+               
+            
+               <div class="contactstyle topform">
+               <div class="col">
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">SALIDA:  </h3> {{ trayecto['origen'] }}
+                  </div>
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3> {{ trayecto['destino'] }}
+                  </div>
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3> 
+                  </div>
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Precio: </h3><h3>{{ trayecto['precio'] }} €</h3>
+                  </div>
+
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Conductor: </h3> 
+                  </div>
+                  <a href="/perfilId/{{ conductor['_id'] }}"  class="list-group-item list-group-item-action flex-column align-items-start">
                      <div class="card card-body">
-                       <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
+                        <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
+                        <small>Coche: {{ conductor['coche'] }} </small>
                      </div>
+                  </a>
+
+                  {% if pasajeros %}
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
+                  </div>
+                  {% for pasajero in pasajeros %}
+                  <div class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="card card-body">
+                        <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
+                        </div>
+                  </div>
+                  {% endfor %}
+                  {% endif %}
+
+                  
                </div>
-               {% endfor %}
-               {% endif %}
+
 
 
 
             </div>
-
-
-
-
          </div>
       </div>
-   </div>
-</section>
+      
+   </section>
+   <div id="map"></div>
 
-<!-- SCRIPTS
-      ================================================== -->
-<script src="static/assets/js/jquery.js"></script>
-<script src="static/assets/js/plugins.js"></script>
-<script src="static/contact/topvalidate.js"></script>
-<script src="static/contact/bottomvalidate.js"></script>
+
 
 </body>
 
