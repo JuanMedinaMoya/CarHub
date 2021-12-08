@@ -203,8 +203,8 @@ def logout():
     session.pop("username", None)
     return render_template('index.html')
 
-@app.route('/busqueda/<pagina>', methods = ['POST'])
-def busquedatrayecto_form(pagina):
+@app.route('/busqueda', methods = ['POST'])
+def busquedatrayecto_form():
     origen = request.form['origen']
     destino = request.form['destino']
     horasalida = request.form['horasalida']
@@ -217,6 +217,13 @@ def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
 
+    datos = {
+        'origen' : origen,
+        'destino' : destino,
+        'horasalida' : horasalida,
+        'numpasajeros' : numpasajeros,
+        'pagina' : int(pagina)
+    }
     trayectos = []
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
@@ -228,11 +235,10 @@ def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
             'destino': doc['destino'],
             'horasalida': doc['horasalida'],
             'precio': doc['precio'],
-            'numeropasajeros': doc['numeropasajeros'],
-            'pagina': int(pagina)
+            'numeropasajeros': doc['numeropasajeros']
         })
     if trayectos:
-        return render_template('busqueda.html', trayectos=trayectos)
+        return render_template('busqueda.html', datos=datos, trayectos=trayectos)
     else:
         return jsonify("No se han encontrado trayectos")
 
