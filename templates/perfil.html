@@ -76,6 +76,8 @@ button {
   font-size: 18px;
 }
 
+.button3 {background-color: #f44336;} /* Red */ 
+
 a {
   text-decoration: none;
   font-size: 22px;
@@ -107,8 +109,18 @@ xd {
    <xd> Paypal:</xd> {{usuario['paypal']}}<br>
 </p> 
   <p><a href="/editarperfil">
-   <button>Editar</button>
-   </a></p>
+   <button>Editar</button></a>
+   <a href="/eliminarUsuario">
+      <button onclick="myFunction()" class="button button3">Eliminar usuario</button>
+   </a>
+
+   <script>
+      function myFunction() {
+        confirm("¿Estás seguro de que desea eliminar tu usuario?");
+      }
+      </script>
+
+   </p>
 </div>
 
     </section>

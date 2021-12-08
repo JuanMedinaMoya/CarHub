@@ -156,10 +156,6 @@ def perfilEditar():
         contrasenarep = request.form['contrasenarep']
         hashed_contrasena = generate_password_hash(contrasena)
 
-
-        print(correoAntiguo)
-        print(correo)
-
         if correoAntiguo != correo and Usuarios.find_one({"correo": correo}):
             flash("Correo electrónico ya en uso")
             return redirect('/editarperfil')
@@ -195,7 +191,10 @@ def perfilEditar():
 
         return redirect('/perfil')
 
-    
+@app.route('/eliminarUsuario')
+def eliminarUsuario():
+    Usuarios.delete_one({'username': session["username"]})
+    return redirect('/logout')
 
 
 @app.route('/logout')
