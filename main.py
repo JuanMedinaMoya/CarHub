@@ -119,6 +119,7 @@ def registro():
             'apellidos': apellidos, 
             'correo': correo, 
             'contrasena': hashed_contrasena, 
+            'foto': "https://www.traigoyllevo.com/categorias/imagen-icono/1",
             'dni': dni, 
             'fechanacimiento': d_fechanacimiento, 
             'telefono': telefono}
@@ -176,7 +177,7 @@ def perfilEditar():
 
         if contrasena == "":
 
-            if request.files :
+            if request.files["foto"] :
                 
                 foto = request.files["foto"]
                 foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
@@ -219,7 +220,7 @@ def perfilEditar():
                 )
 
         else:
-            if request.files :
+            if request.files["foto"] :
                 
                 foto = request.files["foto"]
                 foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
