@@ -27,15 +27,17 @@
                   <nav aria-label="Page navigation example" style="margin-left: 25%;">
                      <ul class="pagination">
                         <li class="page-item">
-                           <a class="page-link" href="{{ trayectos[0]['pagina'] - 1 }}" aria-label="Previous">
+                           {% if datos['pagina'] > 1 %}
+                           <a class="page-link" href="{{ datos['pagina'] - 1 }}" aria-label="Previous">
                               <span aria-hidden="true">&laquo;</span>
                            </a>
+                           {% endif %}
                         </li>
-                        <li class="page-item"><a class="page-link" href="/busqueda/{{ trayectos[0]['origen'] }}/{{ trayectos[0]['destino'] }}/{{ trayectos[0]['horasalida'] }}/{{ trayectos[0]['numeropasajeros'] }}/{{ trayectos[0]['pagina'] }}">{{ trayectos[0]['pagina'] }}</a></li>
-                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 1 }}">{{ trayectos[0]['pagina'] + 1 }}</a></li>
-                        <li class="page-item"><a class="page-link" href="{{ trayectos[0]['pagina'] + 2 }}">{{ trayectos[0]['pagina'] + 2 }}</a></li>
+                        <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina'] }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1 }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 2 }}">{{ datos['pagina'] + 2 }}</a></li>
                         <li class="page-item">
-                           <a class="page-link" href="{{ trayectos[0]['pagina'] + 1 }}" aria-label="Next">
+                           <a class="page-link" href="{{ datos['pagina'] + 1 }}" aria-label="Next">
                               <span aria-hidden="true">&raquo;</span>
                            </a>
                         </li>
