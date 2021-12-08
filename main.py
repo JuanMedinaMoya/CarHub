@@ -36,15 +36,12 @@ maps = GoogleMaps(app)
 client_id = "0395845c9df00b0"
 client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
 
-client = ImgurClient(client_id, client_secret)
-credentials = client.authorize('1cd858896c', 'pin')
-client.set_user_auth(credentials['access_token'], credentials['refresh_token'])
+client = ImgurClient(client_id, client_secret, "c5e92d109a41dab9c3164d398610679467e98e8e", "a7342185f0d801329512ec468c6332c1d4488898")
 
-
-items = client.get_account_images('CarHub', page=0)
-#items = client.get_account_images(username="CarHubUMA", page=0)
+#client.upload_from_path("https://www.trecebits.com/wp-content/uploads/2020/02/meme-kid-800x445.jpg", config=None, anon=False)
+items = client.get_account_images("CarHubUMA", page=0)
 for item in items:
-    print(item.title)
+    print(item.link)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
@@ -185,7 +182,6 @@ def perfilEditar():
             {'nombre': nombre, 
                 'apellidos': apellidos, 
                 'correo': correo, 
-                'contrasena': hashed_contrasena, 
                 'dni': dni, 
                 'coche': coche, 
                 'paypal': paypal, 
