@@ -119,6 +119,7 @@ def registro():
             'apellidos': apellidos, 
             'correo': correo, 
             'contrasena': hashed_contrasena, 
+            'foto': "https://www.traigoyllevo.com/categorias/imagen-icono/1",
             'dni': dni, 
             'fechanacimiento': d_fechanacimiento, 
             'telefono': telefono}
