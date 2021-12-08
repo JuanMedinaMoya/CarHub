@@ -45,15 +45,81 @@ def navbar():
 
 @app.route('/login', methods = ['POST','GET'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET' :
+        return render_template('login.html')
+    else :
+        correousername = request.form['correousername']
+        contrasena = request.form['contrasena']
+        busqEmail = Usuarios.find_one({"correo": correousername})
+        busqUsername = Usuarios.find_one({"username": correousername})
+        if  busqEmail == None and busqUsername == None :
+            flash("Correo electrónico o Username no existe")
+            return render_template('login.html')
+        
+        
+        if busqEmail == None :
+            if check_password_hash(busqUsername['contrasena'],contrasena) :
+                session["username"] = busqUsername['username']
+                return render_template('index.html')
+            else :
+                flash("Contraseña incorrecta")
+                return render_template('login.html')
+            
+
+        if busqUsername == None :
+            if check_password_hash(busqEmail['contrasena'],contrasena) :
+                session["username"] = busqEmail['username']
+                return render_template('index.html')
+            else :
+                flash("Contraseña incorrecta")
+                return render_template('login.html')
+
 
 @app.route('/registro', methods = ['POST','GET'])
 def registro():
-    return render_template('registro.html')
+    if request.method == 'GET' :
+        return render_template('registro.html')
+    else :
+        username = request.form['username']
+        nombre = request.form['nombre']
+        apellidos = request.form['apellidos']
+        correo = request.form['correo']
+        dni = request.form['dni']
+        fechanacimiento = request.form['fechanacimiento']
+        d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
+        telefono = request.form['telefono']
+        contrasena = request.form['contrasena']
+        contrasenarep = request.form['contrasenarep']
+        hashed_contrasena = generate_password_hash(contrasena)
 
-@app.route('/crearViaje', methods = ['POST','GET'])
+        if Usuarios.find_one({"correo": correo}):
+            flash("Correo electrónico ya en uso")
+            return render_template('registro.html')
+        if Usuarios.find_one({"username": username}):
+            flash("Username ya en uso")
+            return render_template('registro.html')
+        if contrasena != contrasenarep:
+            flash("Contraseñas no iguales")
+            return render_template('registro.html')
+
+        id = Usuarios.insert(
+        {'username': username, 
+            'nombre': nombre, 
+            'apellidos': apellidos, 
+            'correo': correo, 
+            'contrasena': hashed_contrasena, 
+            'dni': dni, 
+            'fechanacimiento': d_fechanacimiento, 
+            'telefono': telefono}
+        )
+        session["username"] = username
+        return render_template('index.html')
+
+
+@app.route('/crearviaje', methods = ['POST','GET'])
 def crearViaje():
     return render_template('crearViaje.html')
+
 
 @app.route('/perfil', methods = ['POST','GET'])
 def perfil():
@@ -61,147 +127,83 @@ def perfil():
     usuario = Usuarios.find_one({"username": username})
     return render_template('perfil.html', usuario=usuario)
 
+
 @app.route('/perfilId/<id>', methods = ['POST','GET'])
 def perfilId(id):
     usuario = Usuarios.find_one({'_id': ObjectId(id)})
     return render_template('perfil.html', usuario=usuario)
 
-@app.route('/perfilEditar', methods = ['POST','GET'])
+
+@app.route('/editarperfil', methods = ['POST','GET'])
 def perfilEditar():
-    username = session["username"]
-    usuario = Usuarios.find_one({"username": username})
-    return render_template('perfilEditar.html', usuario=usuario)
-
-@app.route('/iniciarsesion', methods = ['POST'])
-def iniciarsesion():
-    correousername = request.form['correousername']
-    contrasena = request.form['contrasena']
-    busqEmail = Usuarios.find_one({"correo": correousername})
-    busqUsername = Usuarios.find_one({"username": correousername})
-    if  busqEmail == None and busqUsername == None :
-        flash("Correo electrónico o Username no existe")
-        return redirect('/login')
-    
-    
-    if busqEmail == None :
-        if check_password_hash(busqUsername['contrasena'],contrasena) :
-            session["username"] = busqUsername['username']
-            return render_template('index.html')
-        else :
-            flash("Contraseña incorrecta")
-            return redirect('/login')
+    if request.method == 'GET' :
+        username = session["username"]
+        usuario = Usuarios.find_one({"username": username})
+        return render_template('perfilEditar.html', usuario=usuario)
+    else :
+        usuario = Usuarios.find_one({"username": session["username"]})
+        correoAntiguo = usuario["correo"]
         
+        nombre = request.form['nombre']
+        apellidos = request.form['apellidos']
+        correo = request.form['correo']
+        dni = request.form['dni']
+        telefono = request.form['telefono']
+        foto = request.form['foto']
+        coche = request.form['coche']
+        paypal = request.form['paypal']
+        contrasena = request.form['contrasena']
+        contrasenarep = request.form['contrasenarep']
+        hashed_contrasena = generate_password_hash(contrasena)
 
-    if busqUsername == None :
-        if check_password_hash(busqEmail['contrasena'],contrasena) :
-            session["username"] = busqEmail['username']
-            return render_template('index.html')
-        else :
-            flash("Contraseña incorrecta")
-            return redirect('/login')
+
+        print(correoAntiguo)
+        print(correo)
+
+        if correoAntiguo != correo and Usuarios.find_one({"correo": correo}):
+            flash("Correo electrónico ya en uso")
+            return redirect('/editarperfil')
+    
+        if contrasena != contrasenarep:
+            flash("Contraseñas no iguales")
+            return redirect('/editarperfil')
+
+        if contrasena == "":
+            id = Usuarios.update_one({'username': session["username"]},{'$set':
+            {'nombre': nombre, 
+                'apellidos': apellidos, 
+                'correo': correo, 
+                'contrasena': hashed_contrasena, 
+                'dni': dni, 
+                'coche': coche, 
+                'paypal': paypal, 
+                'foto': foto, 
+                'telefono': telefono}}
+            )
+        else:
+            id = Usuarios.update_one({'username': session["username"]},{'$set':
+            {'nombre': nombre, 
+                'apellidos': apellidos, 
+                'correo': correo, 
+                'contrasena': hashed_contrasena, 
+                'dni': dni, 
+                'coche': coche, 
+                'paypal': paypal, 
+                'foto': foto, 
+                'telefono': telefono}}
+            )
+
+        return redirect('/perfil')
 
     
-    
 
-@app.route('/registrarse', methods = ['POST'])
-def registrarse():
-
-    username = request.form['username']
-    nombre = request.form['nombre']
-    apellidos = request.form['apellidos']
-    correo = request.form['correo']
-    dni = request.form['dni']
-    fechanacimiento = request.form['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%Y-%m-%d')
-    telefono = request.form['telefono']
-    contrasena = request.form['contrasena']
-    contrasenarep = request.form['contrasenarep']
-    hashed_contrasena = generate_password_hash(contrasena)
-
-    if Usuarios.find_one({"correo": correo}):
-        flash("Correo electrónico ya en uso")
-        return redirect('/registro')
-    if Usuarios.find_one({"username": username}):
-        flash("Username ya en uso")
-        return redirect('/registro')
-    if contrasena != contrasenarep:
-        flash("Contraseñas no iguales")
-        return redirect('/registro')
-
-    id = Usuarios.insert(
-       {'username': username, 
-        'nombre': nombre, 
-        'apellidos': apellidos, 
-        'correo': correo, 
-        'contrasena': hashed_contrasena, 
-        'dni': dni, 
-        'fechanacimiento': d_fechanacimiento, 
-        'telefono': telefono}
-    )
-    session["username"] = username
-    return render_template('index.html')
-
-@app.route('/guardarPerfilEditar', methods = ['POST'])
-def guardarPerfilEditar():
-    
-    usuario = Usuarios.find_one({"username": session["username"]})
-    correoAntiguo = usuario["correo"]
-    
-    nombre = request.form['nombre']
-    apellidos = request.form['apellidos']
-    correo = request.form['correo']
-    dni = request.form['dni']
-    telefono = request.form['telefono']
-    foto = request.form['foto']
-    coche = request.form['coche']
-    paypal = request.form['paypal']
-    contrasena = request.form['contrasena']
-    contrasenarep = request.form['contrasenarep']
-    hashed_contrasena = generate_password_hash(contrasena)
-
-
-    print(correoAntiguo)
-    print(correo)
-
-    if correoAntiguo != correo and Usuarios.find_one({"correo": correo}):
-        flash("Correo electrónico ya en uso")
-        return redirect('/perfilEditar')
-  
-    if contrasena != contrasenarep:
-        flash("Contraseñas no iguales")
-        return redirect('/perfilEditar')
-
-    if contrasena == "":
-        id = Usuarios.update_one({'username': session["username"]},{'$set':
-        {'nombre': nombre, 
-            'apellidos': apellidos, 
-            'correo': correo, 
-            'contrasena': hashed_contrasena, 
-            'dni': dni, 
-            'coche': coche, 
-            'paypal': paypal, 
-            'foto': foto, 
-            'telefono': telefono}}
-        )
-    else:
-        id = Usuarios.update_one({'username': session["username"]},{'$set':
-        {'nombre': nombre, 
-            'apellidos': apellidos, 
-            'correo': correo, 
-            'contrasena': hashed_contrasena, 
-            'dni': dni, 
-            'coche': coche, 
-            'paypal': paypal, 
-            'foto': foto, 
-            'telefono': telefono}}
-        )
-
-    return redirect('/perfil')
 
 @app.route('/logout')
 def logout():
     session.pop("username", None)
     return render_template('index.html')
+
+
 
 @app.route('/busqueda', methods = ['POST'])
 def busquedatrayecto_form():
@@ -211,6 +213,8 @@ def busquedatrayecto_form():
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     numeropasajeros = request.form['numeropasajeros']
     return redirect('/busqueda/' + origen + '/' + destino + '/' + horasalida + '/' + numeropasajeros + '/1')
+
+
 
 @app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
 def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
@@ -242,7 +246,8 @@ def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
     else:
         return jsonify("No se han encontrado trayectos")
 
-    
+
+
 
 @app.route('/trayecto/<id>', methods = ['GET'])
 def mostrarViaje(id):
