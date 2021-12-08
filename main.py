@@ -176,7 +176,7 @@ def perfilEditar():
 
         if contrasena == "":
 
-            if request.files :
+            if request.files["foto"] :
                 
                 foto = request.files["foto"]
                 foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
@@ -219,7 +219,7 @@ def perfilEditar():
                 )
 
         else:
-            if request.files :
+            if request.files["foto"] :
                 
                 foto = request.files["foto"]
                 foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
