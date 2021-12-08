@@ -15,7 +15,7 @@ import requests
 import urllib
 from datetime import datetime
 from imgurpython import ImgurClient
-
+import os
 
 from werkzeug.wrappers import response
 
@@ -23,6 +23,7 @@ app = Flask (__name__)
 
 
 app.config["MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
+app.config["FOTO_UPLOADS"] = os.getcwd()
 
 API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
 API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
@@ -38,10 +39,7 @@ client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
 
 client = ImgurClient(client_id, client_secret, "c5e92d109a41dab9c3164d398610679467e98e8e", "a7342185f0d801329512ec468c6332c1d4488898")
 
-#client.upload_from_path("https://www.trecebits.com/wp-content/uploads/2020/02/meme-kid-800x445.jpg", config=None, anon=False)
-items = client.get_account_images("CarHubUMA", page=0)
-for item in items:
-    print(item.link)
+
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
@@ -162,7 +160,6 @@ def perfilEditar():
         correo = request.form['correo']
         dni = request.form['dni']
         telefono = request.form['telefono']
-        foto = request.form['foto']
         coche = request.form['coche']
         paypal = request.form['paypal']
         contrasena = request.form['contrasena']
@@ -178,28 +175,95 @@ def perfilEditar():
             return redirect('/editarperfil')
 
         if contrasena == "":
-            id = Usuarios.update_one({'username': session["username"]},{'$set':
-            {'nombre': nombre, 
-                'apellidos': apellidos, 
-                'correo': correo, 
-                'dni': dni, 
-                'coche': coche, 
-                'paypal': paypal, 
-                'foto': foto, 
-                'telefono': telefono}}
-            )
+
+            if request.files :
+                
+                foto = request.files["foto"]
+                foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
+                config = {
+                    'title': str(ObjectId(usuario['_id']))
+                }
+
+                items = client.get_account_images("CarHubUMA", page=0)
+                for item in items:
+                    if item.title == str(ObjectId(usuario['_id'])) :
+                        client.delete_image(item.id)
+
+                client.upload_from_path(app.config["FOTO_UPLOADS"]+"/"+foto.filename, config=config, anon=False)
+                os.remove(foto.filename)
+                items = client.get_account_images("CarHubUMA", page=0)
+                url = None
+                for item in items:
+                    if item.title == str(ObjectId(usuario['_id'])) :
+                        url = item.link
+                
+                id = Usuarios.update_one({'username': session["username"]},{'$set':
+                {'nombre': nombre, 
+                    'apellidos': apellidos, 
+                    'correo': correo, 
+                    'dni': dni, 
+                    'coche': coche, 
+                    'paypal': paypal, 
+                    'foto': url, 
+                    'telefono': telefono}}
+                )
+            else :
+                id = Usuarios.update_one({'username': session["username"]},{'$set':
+                {'nombre': nombre, 
+                    'apellidos': apellidos, 
+                    'correo': correo, 
+                    'dni': dni, 
+                    'coche': coche, 
+                    'paypal': paypal, 
+                    'telefono': telefono}}
+                )
+
         else:
-            id = Usuarios.update_one({'username': session["username"]},{'$set':
-            {'nombre': nombre, 
-                'apellidos': apellidos, 
-                'correo': correo, 
-                'contrasena': hashed_contrasena, 
-                'dni': dni, 
-                'coche': coche, 
-                'paypal': paypal, 
-                'foto': foto, 
-                'telefono': telefono}}
-            )
+            if request.files :
+                
+                foto = request.files["foto"]
+                foto.save(os.path.join(app.config["FOTO_UPLOADS"], foto.filename))
+                config = {
+                    'title': str(ObjectId(usuario['_id']))
+                }
+
+                items = client.get_account_images("CarHubUMA", page=0)
+                for item in items:
+                    if item.title == str(ObjectId(usuario['_id'])) :
+                        client.delete_image(item.id)
+
+                client.upload_from_path(app.config["FOTO_UPLOADS"]+"/"+foto.filename, config=config, anon=False)
+                os.remove(foto.filename)
+                items = client.get_account_images("CarHubUMA", page=0)
+                url = None
+                for item in items:
+                    if item.title == str(ObjectId(usuario['_id'])) :
+                        url = item.link
+                
+                id = Usuarios.update_one({'username': session["username"]},{'$set':
+                {'nombre': nombre, 
+                    'apellidos': apellidos, 
+                    'correo': correo, 
+                    'contrasena': hashed_contrasena, 
+                    'dni': dni, 
+                    'coche': coche, 
+                    'paypal': paypal, 
+                    'foto': foto, 
+                    'telefono': telefono}}
+                )
+            else :
+                id = Usuarios.update_one({'username': session["username"]},{'$set':
+                {'nombre': nombre, 
+                    'apellidos': apellidos, 
+                    'correo': correo, 
+                    'contrasena': hashed_contrasena, 
+                    'dni': dni, 
+                    'coche': coche, 
+                    'paypal': paypal,  
+                    'telefono': telefono}}
+                )
+
+            
 
         return redirect('/perfil')
 

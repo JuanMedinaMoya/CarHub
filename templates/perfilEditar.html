@@ -94,7 +94,7 @@ button:hover, a:hover {
 <div class="card">
   <img src={{usuario['foto']}} alt="fotoperfil" style="width:100%">
   <div class="contactstyle topform">										
-   <form name="perfilEditar" method="post" action="/editarperfil">
+   <form name="perfilEditar" method="post" action="/editarperfil" enctype="multipart/form-data">
        <div class="form">
            <label for="txt">Nombre</label>
            <input type="text" name="nombre" id="nombre" value="{{usuario["nombre"]}}" required>
@@ -107,7 +107,7 @@ button:hover, a:hover {
            <label for="txt">Teléfono</label>
            <input type="number" name="telefono" id="telefono" value="{{usuario["telefono"]}}" required>
            <label for="txt">Foto</label>
-           <input type="text" name="foto" id="foto" value="{{usuario["foto"]}}">
+           <input type="file" name="foto" id="foto" >
            <label for="txt">Coche</label>
            <input type="text" name="coche" id="coche" value="{{usuario["coche"]}}">
            <label for="txt">Paypal</label>
