@@ -281,7 +281,7 @@ def logout():
 
 
 @app.route('/busqueda', methods = ['POST'])
-def busquedatrayecto_form():
+def busquedatrayecto_post():
     origen = request.form['origen']
     destino = request.form['destino']
     horasalida = request.form['horasalida']
@@ -292,7 +292,7 @@ def busquedatrayecto_form():
 
 
 @app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
-def busquedatrayecto(origen, destino, horasalida, numpasajeros, pagina):
+def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
 
@@ -458,17 +458,53 @@ def buscar_usuario_nombre_apellidos(filtro):
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
 
-@app.route('/mis_viajes/<idusuario>', methods=['GET'])
-def mis_viajes(idusuario):
-    trayectos = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
+@app.route('/mis_viajes/<usuario>/<pagina>', methods=['GET'])
+def mis_viajes(usuario, pagina):
+    datos = {
+        'pagina' : int(pagina)
+    }
+    trayectos = []
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    idusuario = Usuarios.find_one({'username': usuario})['_id']
+    tray = Trayectos.find({'pasajeros': {'$all': [ObjectId(idusuario)]}})
+    #tray = []
+    for doc in tray:
+        trayectos.append({
+            '_id': str(ObjectId(doc['_id'])),
+            'origen': doc['origen'],
+            'destino': doc['destino'],
+            'horasalida': doc['horasalida'],
+            'precio': doc['precio'],
+            'numeropasajeros': doc['numeropasajeros']
+        })
+    if trayectos:
+        return render_template('misViajes.html', datos=datos, trayectos=trayectos)
+    else:
+        return jsonify("No se han encontrado trayectos")
 
-@app.route('/mis_trayectos_creados/<idusuario>', methods = ['GET'])
-def mis_trayectos_creados(idusuario):
-    trayectos = Trayectos.find({'conductor': {'$all': [ObjectId(idusuario)]}})
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
+@app.route('/mis_viajes_creados/<usuario>/<pagina>', methods = ['GET'])
+def mis_viajes_creados(usuario, pagina):
+    datos = {
+        'pagina' : int(pagina)
+    }
+    trayectos = []
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    idusuario = Usuarios.find_one({'username': usuario})['_id']
+    tray = Trayectos.find({'conductor': {'$all': [ObjectId(idusuario)]}})
+    #tray = []
+    for doc in tray:
+        trayectos.append({
+            '_id': str(ObjectId(doc['_id'])),
+            'origen': doc['origen'],
+            'destino': doc['destino'],
+            'horasalida': doc['horasalida'],
+            'precio': doc['precio'],
+            'numeropasajeros': doc['numeropasajeros']
+        })
+    if trayectos:
+        return render_template('misViajesCreados.html', datos=datos, trayectos=trayectos)
+    else:
+        return jsonify("No se han encontrado trayectos")
 
 
 #-------------------------------------------------------------------------------------------------
