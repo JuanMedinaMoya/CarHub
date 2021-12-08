@@ -1,4 +1,6 @@
 from datetime import date, datetime
+
+from werkzeug.datastructures import Authorization
 from bson.objectid import ObjectId
 from flask import Flask, json, request, jsonify, Response, session, flash, redirect
 from flask_pymongo import PyMongo
@@ -12,6 +14,7 @@ from flask_googlemaps import Map
 import requests
 import urllib
 from datetime import datetime
+from imgurpython import ImgurClient
 
 
 from werkzeug.wrappers import response
@@ -29,6 +32,19 @@ app.secret_key = "CarHub"
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
+
+client_id = "0395845c9df00b0"
+client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
+
+client = ImgurClient(client_id, client_secret)
+credentials = client.authorize('1cd858896c', 'pin')
+client.set_user_auth(credentials['access_token'], credentials['refresh_token'])
+
+
+items = client.get_account_images('CarHub', page=0)
+#items = client.get_account_images(username="CarHubUMA", page=0)
+for item in items:
+    print(item.title)
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
