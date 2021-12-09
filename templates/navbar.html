@@ -10,6 +10,7 @@
 <link rel='stylesheet' href='/static/icons/elegantline/style.css' type='text/css' media='all'/>
 <link rel='stylesheet' href='/static/assets/css/font-awesome.min.css' type='text/css' media='all' />
 <link rel='stylesheet' href='/static/assets/css/flexslider.css' type='text/css' media='all'/>
+<link rel="shortcut icon" type="image/jpg" href="/static/assets/img/logo-dark.png"/>
 </head>
 <body class="frontpage">
 
@@ -29,16 +30,20 @@
 			<div class="menu-top-menu-container">
 				<ul id="menu-top-menu" class="nav navbar-nav nav-list">
 					{% if session['username'] %}
-						<li><a href="/mis_viajes/{{ session['username'] }}/1">Mis viajes</a></li>
+						<li><a href="/">Inicio</a></li>
+						<li><a href="/mis_viajes/{{ session['username'] }}">Mis viajes</a></li>
 						<li><a href="/mis_viajes_creados/{{ session['username'] }}/1">Mis conducciones</a></li>
+						<li><a href="/buscar_conversaciones_usuario/{{ session['username'] }}">Mis Conversaciones</a></li>
 						<li><a href="/crearviaje">Crear Viaje</a></li>
 						<li><a href="/perfil">Perfil </a></li>
-                        <li style="background: rgba(255, 255, 0, 0.51);"><a
-                           href="/logout">Cerrar Sesión</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);">
+							<a href="/logout">Cerrar Sesión</a>
+						</li>
                         {% else %}
                         <li><a href="/login">Inicio Sesión</a></li>
-                        <li style="background: rgba(255, 255, 0, 0.51);"><a
-                              href="/registro">Registro</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);">
+							<a href="/registro">Registro</a>
+						</li>
                         {% endif %}
 
 				</ul>

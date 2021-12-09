@@ -47,6 +47,7 @@ Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 
 @app.route('/')
+@app.route('/home')
 def index():
     return render_template('index.html')
 
@@ -458,11 +459,14 @@ def buscar_usuario_nombre_apellidos(filtro):
 
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
-
+@app.route('/mis_viajes/<usuario>')
+def mis_viajes_1(usuario):
+    return redirect('/mis_viajes/' + usuario + '/' + str(1))
+    
 @app.route('/mis_viajes/<usuario>/<pagina>', methods=['GET'])
 def mis_viajes(usuario, pagina):
     datos = {
-        'pagina' : int(pagina)
+        'pagina' : 1 if pagina == None else int(pagina)
     }
     trayectos = []
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
@@ -519,9 +523,11 @@ def mis_viajes_creados(usuario, pagina):
 #                                                                         
 #-------------------------------------------------------------------------------------------------
 
-@app.route('/crear_conversacion/<id1>/<id2>', methods=['POST'])
-def crear_conversacion(id1, id2):
+@app.route('/crear_conversacion/<usuario1>/<usuario2>', methods=['POST'])
+def crear_conversacion(usuario1, usuario2):
     listMensajes = []
+    id1 = Usuarios.find_one({'username': usuario1})['_id']
+    id2 = Usuarios.find_one({'username': usuario2})['_id']
     if id1 and id2 and id1 != id2:
         conversacion = Conversaciones.find_one({'$or': [
             {'user1': ObjectId(id1), 'user2': ObjectId(id2)},
@@ -534,6 +540,7 @@ def crear_conversacion(id1, id2):
             response = jsonify({
                 'mensaje': 'Conversación creada satisfactoriamente'
             })
+            return redirect('/mis_viajes/' + usuario2) #Redirecciona a la pagina de mis viajes del pasajero que se acaba de añadir
         else:
             response = jsonify({
                 'mensaje': 'Ya existía una conversación creada.'
@@ -585,14 +592,15 @@ def enviar_mensaje(idc, idu):
     
     return response
 
-@app.route('/buscar_conversaciones_usuario/<id>', methods=['GET'])
-def buscar_conversaciones_usuario(id):
+@app.route('/buscar_conversaciones_usuario/<usuario>', methods=['GET'])
+def buscar_conversaciones_usuario(usuario):
+    id = Usuarios.find_one({'username': usuario})['_id']
     conversaciones = Conversaciones.find({'$or': [
         {'user1': ObjectId(id)},
         {'user2': ObjectId(id)}
     ]})
     response = json_util.dumps(conversaciones)
-    return Response(response, mimetype="application/json")
+    return render_template('misConversaciones.html', conversaciones = conversaciones)
 
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____ 
@@ -718,10 +726,11 @@ def anadir_pasajero(idtrayecto, idpasajero):
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
     finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and conductor != ObjectId(idpasajero): 
+    if numpasajeros > 0 and ObjectId(idpasajero) not in pasajeros and finalizado == 0 and ObjectId(conductor) != ObjectId(idpasajero): 
         pasajeros.append(ObjectId(idpasajero))
         Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros, 'numeropasajeros' : numpasajeros-1}})
         resp = jsonify("Pasajero añadido")
+        return redirect('/crear_conversacion/' + ObjectId(conductor) + '/' + ObjectId(idpasajero)) # Crea la conversacion cuando se añade a la reserva
     else:
         resp = jsonify("No se puede añadir pasajero")
     return resp
