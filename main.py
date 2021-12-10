@@ -250,7 +250,7 @@ def perfilEditar():
                     'dni': dni, 
                     'coche': coche, 
                     'paypal': paypal, 
-                    'foto': foto, 
+                    'foto': url, 
                     'telefono': telefono}}
                 )
             else :
