@@ -51,10 +51,6 @@ Valoraciones = mongo.db.Valoraciones
 def index():
     return render_template('index.html')
 
-@app.route('/navbar', methods = ['POST','GET'])
-def navbar():
-    return render_template('navbar.html')
-
 @app.route('/login', methods = ['POST','GET'])
 def login():
     if request.method == 'GET' :
