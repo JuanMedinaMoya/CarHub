@@ -1,5 +1,12 @@
-{% include '/navbar.html' %} 
-
+{% extends '/navbar.html' %} 
+{% block head %}
+{{ super() }}
+<title>Mis Viajes</title>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
       <!-- INTRO
 ================================================== -->
       <section id="home"
@@ -60,13 +67,4 @@
       <script src="static/assets/js/plugins.js"></script>
       <script src="static/contact/topvalidate.js"></script>
       <script src="static/contact/bottomvalidate.js"></script>
-
-
-   </body>
-
-</div>
-
-
-
-
-</html>
+      {% endblock %}
