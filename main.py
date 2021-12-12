@@ -46,6 +46,8 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 
+#CLIENTE
+
 @app.route('/')
 @app.route('/home')
 def index():
@@ -265,9 +267,9 @@ def perfilEditar():
 
         return redirect('/perfil')
 
-@app.route('/eliminarUsuario')
-def eliminarUsuario():
-    Usuarios.delete_one({'username': session["username"]})
+@app.route('/eliminarusuario')
+def eliminar_usuario():
+    usuario = Usuarios.delete_one({'username': session["username"]})
     return redirect('/logout')
 
 
@@ -455,7 +457,7 @@ def buscar_usuario_nombre_apellidos(filtro):
 
 #OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
-@app.route('/mis_viajes/<usuario>')
+@app.route('/mis_viajes/<usuario>', methods=['GET'])
 def mis_viajes_1(usuario):
     return redirect('/mis_viajes/' + usuario + '/' + str(1))
     
@@ -537,7 +539,7 @@ def crear_conversacion(usuario1, usuario2):
             response = jsonify({
                 'mensaje': 'Conversación creada satisfactoriamente'
             })
-            return redirect('/mis_viajes/' + usuario2) #Redirecciona a la pagina de mis viajes del pasajero que se acaba de añadir
+            return redirect('/mis_viajes/' + usuario2) # Redirecciona a la pagina de mis viajes del pasajero que se acaba de añadir
         else:
             response = jsonify({
                 'mensaje': 'Ya existía una conversación creada.'

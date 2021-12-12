@@ -1,135 +1,110 @@
-<!doctype html>
-<html lang="en-US" class="no-js">
+{% extends 'navbar.html' %}
 
-<head>
-   <title>Perfil</title>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel='stylesheet' href='static/assets/css/bootstrap.min.css' type='text/css' media='all' />
-   <link rel='stylesheet' href='static/assets/css/animate.min.css' type='text/css' media='all' />
-   <link rel='stylesheet' href='static/style.css' type='text/css' media='all' />
-   <link rel='stylesheet'
-      href='https://fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%2C800%7CMontserrat%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%7CDosis%3A400%2C700&#038;ver=4.5'
-      type='text/css' media='all' />
-   <link rel='stylesheet' href='static/icons/elegantline/style.css' type='text/css' media='all' />
-   <link rel='stylesheet' href='static/assets/css/font-awesome.min.css' type='text/css' media='all' />
-   <link rel='stylesheet' href='static/assets/css/flexslider.css' type='text/css' media='all' />
-
-
-
-
-
-
-</head>
-<body class="frontpage">
-   <div class="page-loader">
-      <img src="static/assets/img/loader.gif" alt="loader">
-   </div>
-
-   <!-- Header
-================================================== -->
-{% include '/navbar.html' %}    
-
-   <!-- INTRO
-================================================== -->
-    <section id="home" style="padding:160px 0;background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-
-                
-         
-                  {% with messages = get_flashed_messages() %}
-                     {% if messages %}
-                        {% for message in messages %}
-                        <div class="alert">
-                           <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                           {{ message }}
-                         </div>
-                        {% endfor %}
-                     {% endif %}
-                  {% endwith %}
-               
+{% block head %}
+{{ super() }}
+<title>Perfil</title>
 <style>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 450px;
-  margin: auto;
-  text-align: center;
-  font-family: arial;
-  opacity: 100;
-  background-color: #FFFFFF;
-}
+   .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 450px;
+      margin: auto;
+      text-align: center;
+      font-family: arial;
+      opacity: 100;
+      background-color: #FFFFFF;
+   }
 
-.title {
-  color: grey;
-  font-size: 18px;
-}
+   .title {
+      color: grey;
+      font-size: 18px;
+   }
 
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #1bb9a0;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-}
+   button {
+      border: none;
+      outline: 0;
+      display: inline-block;
+      padding: 8px;
+      color: white;
+      background-color: #1bb9a0;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+   }
 
-a {
-  text-decoration: none;
-  font-size: 22px;
-  color: black;
-}
+   a {
+      text-decoration: none;
+      font-size: 22px;
+      color: black;
+   }
 
-button:hover, a:hover {
-  opacity: 0.7;
-}
+   button:hover,
+   a:hover {
+      opacity: 0.7;
+   }
 </style>
-</head>
-<body>
-
-<h2 style="text-align:center"></h2>
-
-<div class="card">
-   <img src={{usuario['foto']}} width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
-  <div class="contactstyle topform">										
-   <form name="perfilEditar" method="post" action="/editarperfil" enctype="multipart/form-data">
-       <div class="form">
-           <label for="txt">Nombre</label>
-           <input type="text" name="nombre" id="nombre" value="{{usuario["nombre"]}}" required>
-           <label for="txt">Apellidos</label>
-           <input type="text" name="apellidos" id="apellidos" value="{{usuario["apellidos"]}}" required>
-           <label for="txt">Correo</label>
-           <input type="email" name="correo" id="correo" value="{{usuario["correo"]}}" required>
-           <label for="txt">DNI</label>
-           <input type="text" name="dni" id="dni" value="{{usuario["dni"]}}" required>
-           <label for="txt">Teléfono</label>
-           <input type="number" name="telefono" id="telefono" value="{{usuario["telefono"]}}" required>
-           <label for="txt">Foto</label>
-           <input type="file" name="foto" id="foto" >
-           <label for="txt">Coche</label>
-           <input type="text" name="coche" id="coche" value="{{usuario["coche"]}}">
-           <label for="txt">Paypal</label>
-           <input type="text" name="paypal" id="paypal" value="{{usuario["paypal"]}}">
-           <label for="txt">Contraseña</label>
-           <input type="password"  name="contrasena" id="contrasena" value="" minlength="6">
-           <label for="txt">Repita contraseña</label>
-           <input type="password"  name="contrasenarep" id="contrasenarep" value="" minlength="6">
-           
-           <input type="submit" id="guardarcambios" class="clearfix btn" value="Guardar cambios">
-       </div>
-   </form>
-
-    </section>
-
-   <!-- SCRIPTS
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+<div class="page-loader">
+   <img src="static/assets/img/loader.gif" alt="loader">
+</div>
+<!-- INTRO
 ================================================== -->
-   <script src="static/assets/js/jquery.js"></script>
-   <script src="static/assets/js/plugins.js"></script>
-   <script src="static/contact/topvalidate.js"></script>
-   <script src="static/contact/bottomvalidate.js"></script>
+<section id="home"
+   style="padding:160px 0;background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
 
-</body>
+   {% with messages = get_flashed_messages() %}
+   {% if messages %}
+   {% for message in messages %}
+   <div class="alert">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      {{ message }}
+   </div>
+   {% endfor %}
+   {% endif %}
+   {% endwith %}
 
-</html>
+   <h2 style="text-align:center"></h2>
+
+   <div class="card">
+      <img src={{usuario['foto']}} width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+      <div class="contactstyle topform">
+         <form name="perfilEditar" method="post" action="/editarperfil" enctype="multipart/form-data">
+            <div class="form">
+               <label for="txt">Nombre</label>
+               <input type="text" name="nombre" id="nombre" value="{{usuario[" nombre"]}}" required>
+               <label for="txt">Apellidos</label>
+               <input type="text" name="apellidos" id="apellidos" value="{{usuario[" apellidos"]}}" required>
+               <label for="txt">Correo</label>
+               <input type="email" name="correo" id="correo" value="{{usuario[" correo"]}}" required>
+               <label for="txt">DNI</label>
+               <input type="text" name="dni" id="dni" value="{{usuario[" dni"]}}" required>
+               <label for="txt">Teléfono</label>
+               <input type="number" name="telefono" id="telefono" value="{{usuario[" telefono"]}}" required>
+               <label for="txt">Foto</label>
+               <input type="file" name="foto" id="foto">
+               <label for="txt">Coche</label>
+               <input type="text" name="coche" id="coche" value="{{usuario[" coche"]}}">
+               <label for="txt">Paypal</label>
+               <input type="text" name="paypal" id="paypal" value="{{usuario[" paypal"]}}">
+               <label for="txt">Contraseña</label>
+               <input type="password" name="contrasena" id="contrasena" value="" minlength="6">
+               <label for="txt">Repita contraseña</label>
+               <input type="password" name="contrasenarep" id="contrasenarep" value="" minlength="6">
+
+               <input type="submit" id="guardarcambios" class="clearfix btn" value="Guardar cambios">
+            </div>
+         </form>
+
+</section>
+
+<!-- SCRIPTS
+================================================== -->
+<script src="static/assets/js/jquery.js"></script>
+<script src="static/assets/js/plugins.js"></script>
+<script src="static/contact/topvalidate.js"></script>
+<script src="static/contact/bottomvalidate.js"></script>
+{% endblock %}
