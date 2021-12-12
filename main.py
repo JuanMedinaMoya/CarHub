@@ -46,6 +46,8 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 
+#CLIENTE
+
 @app.route('/')
 @app.route('/home')
 def index():
@@ -265,9 +267,9 @@ def perfilEditar():
 
         return redirect('/perfil')
 
-@app.route('/eliminarUsuario')
-def eliminarUsuario():
-    Usuarios.delete_one({'username': session["username"]})
+@app.route('/eliminarusuario')
+def eliminar_usuario():
+    usuario = Usuarios.delete_one({'username': session["username"]})
     return redirect('/logout')
 
 
