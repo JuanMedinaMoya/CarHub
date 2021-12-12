@@ -1,7 +1,15 @@
-{% include '/navbar.html' %}
+{% extends 'navbar.html' %}
 
+{% block head %}
+{{ super() }}
+<title>Inicio</title>
+{% endblock %}
 <!-- INTRO
 ================================================== -->
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
 <section id="home"
 	style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
 	<div class="container">
@@ -111,6 +119,4 @@
 <script src="contact/topvalidate.js"></script>
 <script src="contact/bottomvalidate.js"></script>
 
-</body>
-
-</html>
+{% endblock %}
