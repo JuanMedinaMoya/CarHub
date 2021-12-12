@@ -1,137 +1,131 @@
-{% include '/navbar.html' %}
-<!doctype html>
-<html>
+{% extends 'navbar.html' %}
+
+{% block head %}
+{{ super() }}
+<title>Viaje</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script
+   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&v=weekly"
+   defer></script>
+<style type="text/css">
+   #map {
+      height: 50%;
+      width: 50%;
+      margin: 0 auto;
+   }
+
+   html,
+   body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+   }
+</style>
+<script>
+   function initMap() {
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+      const map = new google.maps.Map(document.getElementById("map"), {
+         zoom: 7,
+         center: { lat: 41.85, lng: -87.65 },
+      });
+
+      directionsRenderer.setMap(map);
+
+      directionsService
+         .route({
+            origin: "{{ trayecto['origen'] }}",
+            destination: "{{ trayecto['destino'] }}",
+            travelMode: google.maps.TravelMode.DRIVING,
+         })
+         .then((response) => {
+            directionsRenderer.setDirections(response);
+         })
+         .catch((e) => window.alert("Directions request failed due to " + status));
+   }
+
+</script>
+{% endblock %}
 <!-- INTRO
          ================================================== -->
 <!-- trayecto = json con toda la informacion de un trayecto-->
+{% block body %}
+<section id="home"
+   style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+   <div class="container">
+      <div class="textwidget">
+         <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'].strftime('El %d/%m/%Y a las
+            %H:%M') }}<br />
+            {{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }} <br /><br /></h1>
 
-<head>
-   <title>Viaje</title>
-   <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-   <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&v=weekly"
-      defer></script>
-   <style type="text/css">
-      #map {
-         height: 50%;
-         width: 50%;
-         margin: 0 auto;
-      }
+         <div class="contactstyle topform">
+            <style>
+               #activo {
+                  background-color: rgb(10, 124, 0);
+                  border-color: rgb(10, 80, 3);
+                  text-align: center;
+               }
+            </style>
+            <ul class="list-group">
+               <li class="list-group-item">
+                  <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
+                  <p class="fs-1">
+                     {{ trayecto['origen'] }}
+                  </p>
 
-      html,
-      body {
-         height: 100%;
-         margin: 0;
-         padding: 0;
-      }
-   </style>
-   <script>
-      function initMap() {
-         const directionsService = new google.maps.DirectionsService();
-         const directionsRenderer = new google.maps.DirectionsRenderer();
-         const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 7,
-            center: { lat: 41.85, lng: -87.65 },
-         });
-
-         directionsRenderer.setMap(map);
-
-         directionsService
-            .route({
-               origin: "{{ trayecto['origen'] }}",
-               destination: "{{ trayecto['destino'] }}",
-               travelMode: google.maps.TravelMode.DRIVING,
-            })
-            .then((response) => {
-               directionsRenderer.setDirections(response);
-            })
-            .catch((e) => window.alert("Directions request failed due to " + status));
-      }
-
-   </script>
-</head>
-
-<body>
-   <section id="home"
-      style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-      <div class="container">
-         <div class="textwidget">
-            <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'].strftime('El %d/%m/%Y a las %H:%M') }}<br />
-               {{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }} <br /><br /></h1>
-
-            <div class="contactstyle topform">
-               <style>
-                  #activo{
-                     background-color: rgb(10, 124, 0);
-                     border-color:rgb(10, 80, 3);
-                     text-align: center;                 
-                  }
-               </style>
-               <ul class="list-group">
-                  <li class="list-group-item" ><h3 style="color:rgb(10, 124, 0);">SALIDA: </h3> 
-                     <p class="fs-1">
-                        {{ trayecto['origen'] }}
-                     </p>
-                     
-                  </li>
-                  <li class="list-group-item"><h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3> 
-                     {{ trayecto['destino'] }}
-                  </li>
-                  <li class="list-group-item"><h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3> 
-                     {{ duracion }} 
-                  </li>
-                  <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
-                     <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo" aria-current="true">
-                        <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
-                     </a>
-                   </span>
-                  
-                </ul>
-
-               </br>
-
-               <div class="col">
-                  <div class="row">
-                     <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
-                  </div>
-                  <a href="/perfilId/{{ conductor['_id'] }}"
-                     class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="card card-body">
-                        <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
-                        <small>Coche: {{ conductor['coche'] }} </small>
-                     </div>
+               </li>
+               <li class="list-group-item">
+                  <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
+                  {{ trayecto['destino'] }}
+               </li>
+               <li class="list-group-item">
+                  <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
+                  {{ duracion }}
+               </li>
+               <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
+                  <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
+                     aria-current="true">
+                     <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
                   </a>
-               </br>
-                  {% if pasajeros %}
-                  <div class="row">
-                     <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
-                  </div>
-                  {% for pasajero in pasajeros %}
-                  <div class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="card card-body">
-                        <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
-                     </div>
-                  </div>
-                  {% endfor %}
-                  {% endif %}
+               </span>
 
-                  
+            </ul>
 
+            </br>
 
-
+            <div class="col">
+               <div class="row">
+                  <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
                </div>
+               <a href="/perfilId/{{ conductor['_id'] }}"
+                  class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="card card-body">
+                     <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
+                     <small>Coche: {{ conductor['coche'] }} </small>
+                  </div>
+               </a>
+               </br>
+               {% if pasajeros %}
+               <div class="row">
+                  <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
+               </div>
+               {% for pasajero in pasajeros %}
+               <div class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="card card-body">
+                     <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
+                  </div>
+               </div>
+               {% endfor %}
+               {% endif %}
+
+
+
+
 
             </div>
          </div>
       </div>
-
-      
-
-   </section>
-   <div id="map"></div>
-
-  
-
-</body>
-
-</html>
+   </div>
+</section>
+<div id="map"></div>
+{% endblock %}
