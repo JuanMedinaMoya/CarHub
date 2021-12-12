@@ -24,6 +24,7 @@
                      </a>
                      {% endfor %}
                   </div>
+                  {% if datos['encontrado'] %}
                   <nav aria-label="Page navigation example" style="margin-left: 25%;">
                      <ul class="pagination">
                         <li class="page-item">
@@ -43,6 +44,9 @@
                         </li>
                      </ul>
                   </nav>
+                  {% else %}
+                  <h2>No se han encontrado resultados</h2>
+                  {% endif %}
                </div>
             </div>
          </div>
