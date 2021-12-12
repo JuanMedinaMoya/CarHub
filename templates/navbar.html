@@ -22,37 +22,36 @@
 
 	<!-- Header
 ================================================== -->
-	{% block navbar %}
-	<header id="header">
-		<div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
-			<nav class="navbar navbar-default redq">
-				<div class="container">
-					<div>
-						<a class="navbar-brand" href="/">
-							<img src="/static/assets/img/logo-dark.png" alt="logo" width="65" height="65">
-						</a>
-					</div>
-					<div class="collapse navbar-collapse" id="navbar">
-						<a class="mobile-menu-close"><i class="fa fa-close"></i></a>
-						<div class="menu-top-menu-container">
-							<ul id="menu-top-menu" class="nav navbar-nav nav-list">
-								{% if session['username'] %}
-								<li><a href="/">Inicio</a></li>
-								<li><a href="/mis_viajes/{{ session['username'] }}">Mis viajes</a></li>
-								<li><a href="/mis_viajes_creados/{{ session['username'] }}/1">Mis conducciones</a></li>
-								<li><a href="/buscar_conversaciones_usuario/{{ session['username'] }}">Mis
-										Conversaciones</a></li>
-								<li><a href="/crearviaje">Crear Viaje</a></li>
-								<li><a href="/perfil">Perfil </a></li>
-								<li style="background: rgba(255, 255, 0, 0.51);">
-									<a href="/logout">Cerrar Sesión</a>
-								</li>
-								{% else %}
-								<li><a href="/login">Inicio Sesión</a></li>
-								<li style="background: rgba(255, 255, 0, 0.51);">
-									<a href="/registro">Registro</a>
-								</li>
-								{% endif %}
+{% block navbar %}
+<header id="header">
+<div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
+	<nav class="navbar navbar-default redq">
+	<div class="container">
+		<div>
+			<a class="navbar-brand" href="/">
+			<img src="/static/assets/img/logo-dark.png" alt="logo" width="65" height="65" >
+			</a>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar">
+			<a class="mobile-menu-close"><i class="fa fa-close"></i></a>
+			<div class="menu-top-menu-container">
+				<ul id="menu-top-menu" class="nav navbar-nav nav-list">
+					{% if session['username'] %}
+						<li><a href="/">Inicio</a></li>
+						<li><a href="/mis_viajes/{{ session['username'] }}/1">Mis viajes</a></li>
+						<li><a href="/mis_viajes_creados/{{ session['username'] }}/1">Mis conducciones</a></li>
+						<li><a href="/buscar_conversaciones_usuario/{{ session['username'] }}">Mis Conversaciones</a></li>
+						<li><a href="/crearviaje">Crear Viaje</a></li>
+						<li><a href="/perfil">Perfil </a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);">
+							<a href="/logout">Cerrar Sesión</a>
+						</li>
+                        {% else %}
+                        <li><a href="/login">Inicio Sesión</a></li>
+                        <li style="background: rgba(255, 255, 0, 0.51);">
+							<a href="/registro">Registro</a>
+						</li>
+                        {% endif %}
 
 							</ul>
 						</div>

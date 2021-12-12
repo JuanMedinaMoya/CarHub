@@ -1,4 +1,4 @@
-{% extends '/navbar.html' %}
+{% extends '/navbar.html' %} 
 {% block head %}
 {{ super() }}
 <title>Mis Viajes Creados</title>
@@ -7,63 +7,64 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
-<!-- INTRO
+      <!-- INTRO
 ================================================== -->
-<section id="home"
-   style="padding: 160px; background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-   <div class="container">
-      <div class="textwidget">
-         <div class="contactstyle topform">
-            <div class="list-group">
-               {% for trayecto in trayectos %}
-               <a href="/trayecto/{{ trayecto['_id'] }}"
-                  class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-between">
-                     <h5 class="mb-1">{{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }}</h5>
-                     <p>
-                     <h3 class="mb-1">{{ trayecto['precio'] }}€</h3>
-                     </p>
+      <section id="home"
+         style="padding: 160px; background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+         <div class="container">
+            <div class="textwidget">
+               <div class="contactstyle topform">
+                  <div class="list-group">
+                     {% for trayecto in trayectos %}
+                     <a href="/trayecto/{{ trayecto['_id'] }}"
+                        class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                           <h5 class="mb-1">{{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }}</h5>
+                           <p>
+                           <h3 class="mb-1">{{ trayecto['precio'] }}€</h3>
+                           </p>
+                        </div>
+                        <small>{{ trayecto['horasalida'].strftime('A las %H:%M el %d/%m/%Y') }}</small>
+                        <small>
+                           <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
+                        </small>
+                     </a>
+                     {% endfor %}
                   </div>
-                  <small>{{ trayecto['horasalida'].strftime('A las %H:%M el %d/%m/%Y') }}</small>
-                  <small>
-                     <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
-                  </small>
-               </a>
-               {% endfor %}
+                  {% if datos['encontrado'] %}
+                  <nav aria-label="Page navigation example" style="margin-left: 25%;">
+                     <ul class="pagination">
+                        <li class="page-item">
+                           {% if datos['pagina'] > 1 %}
+                           <a class="page-link" href="{{ datos['pagina'] - 1 }}" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                           </a>
+                           {% endif %}
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina'] }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1 }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 2 }}">{{ datos['pagina'] + 2 }}</a></li>
+                        <li class="page-item">
+                           <a class="page-link" href="{{ datos['pagina'] + 1 }}" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </nav>
+                  {% else %}
+                  <h2>De momento no tienes conducciones</h2>
+                  {% endif %}
+               </div>
             </div>
-            <nav aria-label="Page navigation example" style="margin-left: 25%;">
-               <ul class="pagination">
-                  <li class="page-item">
-                     {% if datos['pagina'] > 1 %}
-                     <a class="page-link" href="{{ datos['pagina'] - 1 }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                     </a>
-                     {% endif %}
-                  </li>
-                  <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina']
-                        }}</a></li>
-                  <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1
-                        }}</a></li>
-                  <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 2 }}">{{ datos['pagina'] + 2
-                        }}</a></li>
-                  <li class="page-item">
-                     <a class="page-link" href="{{ datos['pagina'] + 1 }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                     </a>
-                  </li>
-               </ul>
-            </nav>
          </div>
-      </div>
-   </div>
-</section>
+      </section>
 
 
 
-<!-- SCRIPTS
+      <!-- SCRIPTS
 ================================================== -->
-<script src="static/assets/js/jquery.js"></script>
-<script src="static/assets/js/plugins.js"></script>
-<script src="static/contact/topvalidate.js"></script>
-<script src="static/contact/bottomvalidate.js"></script>
-{% endblock %}
+      <script src="static/assets/js/jquery.js"></script>
+      <script src="static/assets/js/plugins.js"></script>
+      <script src="static/contact/topvalidate.js"></script>
+      <script src="static/contact/bottomvalidate.js"></script>
+      {% endblock %}
