@@ -1,57 +1,71 @@
 <!DOCTYPE html>
-<html lang="en-US" class="no-js">
+<html lang="es">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel='stylesheet' href='/static/assets/css/bootstrap.min.css' type='text/css' media='all'/>
-<link rel='stylesheet' href='/static/assets/css/animate.min.css' type='text/css' media='all'/>
-<link rel='stylesheet' href='/static/style.css' type='text/css' media='all'/>
-<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%2C800%7CMontserrat%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%7CDosis%3A400%2C700&#038;ver=4.5' type='text/css' media='all'/>
-<link rel='stylesheet' href='/static/icons/elegantline/style.css' type='text/css' media='all'/>
-<link rel='stylesheet' href='/static/assets/css/font-awesome.min.css' type='text/css' media='all' />
-<link rel='stylesheet' href='/static/assets/css/flexslider.css' type='text/css' media='all'/>
-<link rel="shortcut icon" type="image/jpg" href="/static/assets/img/logo-dark.png"/>
+	{% block head %}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel='stylesheet' href='/static/assets/css/bootstrap.min.css' type='text/css' media='all' />
+	<link rel='stylesheet' href='/static/assets/css/animate.min.css' type='text/css' media='all' />
+	<link rel='stylesheet' href='/static/style.css' type='text/css' media='all' />
+	<link rel='stylesheet'
+		href='https://fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%2C800%7CMontserrat%3A300italic%2C400italic%2C700italic%2C300%2C400%2C700%7CDosis%3A400%2C700&#038;ver=4.5'
+		type='text/css' media='all' />
+	<link rel='stylesheet' href='/static/icons/elegantline/style.css' type='text/css' media='all' />
+	<link rel='stylesheet' href='/static/assets/css/font-awesome.min.css' type='text/css' media='all' />
+	<link rel='stylesheet' href='/static/assets/css/flexslider.css' type='text/css' media='all' />
+	<link rel="shortcut icon" type="image/jpg" href="/static/assets/img/logo-dark.png" />
+	{% endblock %}
 </head>
+
 <body class="frontpage">
 
-<!-- Header
+	<!-- Header
 ================================================== -->
-<header id="header">
-<div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
-	<nav class="navbar navbar-default redq">
-	<div class="container">
-		<div>
-			<a class="navbar-brand" href="/">
-			<img src="/static/assets/img/logo-dark.png" alt="logo" width="65" height="65" >
-			</a>
-		</div>
-		<div class="collapse navbar-collapse" id="navbar">
-			<a class="mobile-menu-close"><i class="fa fa-close"></i></a>
-			<div class="menu-top-menu-container">
-				<ul id="menu-top-menu" class="nav navbar-nav nav-list">
-					{% if session['username'] %}
-						<li><a href="/">Inicio</a></li>
-						<li><a href="/mis_viajes/{{ session['username'] }}">Mis viajes</a></li>
-						<li><a href="/mis_viajes_creados/{{ session['username'] }}/1">Mis conducciones</a></li>
-						<li><a href="/buscar_conversaciones_usuario/{{ session['username'] }}">Mis Conversaciones</a></li>
-						<li><a href="/crearviaje">Crear Viaje</a></li>
-						<li><a href="/perfil">Perfil </a></li>
-                        <li style="background: rgba(255, 255, 0, 0.51);">
-							<a href="/logout">Cerrar Sesión</a>
-						</li>
-                        {% else %}
-                        <li><a href="/login">Inicio Sesión</a></li>
-                        <li style="background: rgba(255, 255, 0, 0.51);">
-							<a href="/registro">Registro</a>
-						</li>
-                        {% endif %}
+	{% block navbar %}
+	<header id="header">
+		<div id="mega-menu" class="header header2 header-sticky primary-menu icons-no default-skin zoomIn align-right">
+			<nav class="navbar navbar-default redq">
+				<div class="container">
+					<div>
+						<a class="navbar-brand" href="/">
+							<img src="/static/assets/img/logo-dark.png" alt="logo" width="65" height="65">
+						</a>
+					</div>
+					<div class="collapse navbar-collapse" id="navbar">
+						<a class="mobile-menu-close"><i class="fa fa-close"></i></a>
+						<div class="menu-top-menu-container">
+							<ul id="menu-top-menu" class="nav navbar-nav nav-list">
+								{% if session['username'] %}
+								<li><a href="/">Inicio</a></li>
+								<li><a href="/mis_viajes/{{ session['username'] }}">Mis viajes</a></li>
+								<li><a href="/mis_viajes_creados/{{ session['username'] }}/1">Mis conducciones</a></li>
+								<li><a href="/buscar_conversaciones_usuario/{{ session['username'] }}">Mis
+										Conversaciones</a></li>
+								<li><a href="/crearviaje">Crear Viaje</a></li>
+								<li><a href="/perfil">Perfil </a></li>
+								<li style="background: rgba(255, 255, 0, 0.51);">
+									<a href="/logout">Cerrar Sesión</a>
+								</li>
+								{% else %}
+								<li><a href="/login">Inicio Sesión</a></li>
+								<li style="background: rgba(255, 255, 0, 0.51);">
+									<a href="/registro">Registro</a>
+								</li>
+								{% endif %}
 
-				</ul>
-			</div>
+							</ul>
+						</div>
+					</div>
+					<!-- /.navbar-collapse -->
+				</div>
+				<!-- /.container -->
+			</nav>
 		</div>
-		<!-- /.navbar-collapse -->
-	</div>
-	<!-- /.container -->
-	</nav>
-</div>
-</header>
+	</header>
+	{% endblock %}
+	{% block body %}
+	{% endblock %}
+</body>
+
+</html>
