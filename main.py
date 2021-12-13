@@ -169,7 +169,17 @@ def perfilId(id):
     media = media_valoraciones(id)
     numvaloraciones = num_valoraciones(id)
     valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
-    return render_template('perfilId.html', usuario=usuario, media=media, valoraciones=valoraciones, numvaloraciones=numvaloraciones)
+    
+    valoracion = []
+    for val in valoraciones:
+        user =  Usuarios.find_one({'_id': ObjectId(val['valorador'])})
+        valoracion.append({
+            'nombre': user['username'],
+            'comentario': val['comentario'],
+            'puntuacion': val['puntuacion']
+        })
+   
+    return render_template('perfilId.html', usuario=usuario, media=media, valoraciones=valoracion, numvaloraciones=numvaloraciones)
 
 
 @app.route('/editarperfil', methods = ['POST','GET'])
