@@ -93,16 +93,9 @@
          </p>
          <p><a href="/editarperfil">
                <button>Editar</button></a>
-            <a href="/eliminarUsuario">
-               <button onclick="myFunction()" class="button button3">Eliminar usuario</button>
+            <a href="/eliminarusuario">
+               <button onclick="return confirm('¿Estás seguro de que desea eliminar tu usuario?')" class="button button3">Eliminar usuario</button>
             </a>
-
-            <script>
-               function myFunction() {
-                  confirm("¿Estás seguro de que desea eliminar tu usuario?");
-               }
-            </script>
-
          </p>
       </div>
 
