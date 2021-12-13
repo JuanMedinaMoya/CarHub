@@ -41,13 +41,19 @@
                            </a>
                            {% endif %}
                         </li>
+                        {% if datos['pagina'] > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] - 1 }}">{{ datos['pagina'] - 1 }}</a></li>
+                        {% endif %}
                         <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina'] }}</a></li>
+                        {% if datos['ultimaPag'] + 1 > datos['pagina'] %}
                         <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1 }}</a></li>
-                        <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 2 }}">{{ datos['pagina'] + 2 }}</a></li>
+                        {% endif %}
                         <li class="page-item">
+                           {% if datos['ultimaPag'] + 1 > datos['pagina'] %}
                            <a class="page-link" href="{{ datos['pagina'] + 1 }}" aria-label="Next">
                               <span aria-hidden="true">&raquo;</span>
                            </a>
+                           {% endif %}
                         </li>
                      </ul>
                   </nav>

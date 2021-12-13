@@ -315,19 +315,20 @@ def busquedatrayecto_post():
 def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-
+    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = Trayectos.count()
+    #tray = []
     datos = {
         'origen' : origen,
         'destino' : destino,
         'horasalida' : horasalida,
         'numpasajeros' : numpasajeros,
         'pagina' : int(pagina),
+        'ultimaPag' : int((num_tray - 1) // 7),
         'encontrado' : True
     }
     trayectos = []
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
-    #tray = []
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
@@ -484,16 +485,19 @@ def mis_viajes_1(usuario):
     
 @app.route('/mis_viajes/<usuario>/<pagina>', methods=['GET'])
 def mis_viajes(usuario, pagina):
-    datos = {
-        'pagina' : int(pagina),
-        'encontrado' : True
-    }
-    trayectos = []
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
     tray = Trayectos.find({'pasajeros': id_usuario}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = Trayectos.count({'pasajeros': id_usuario})
     #tray = Trayectos.find().sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
+    datos = {
+        'pagina' : int(pagina),
+        'ultimaPag' : int((num_tray - 1) // 7),
+        'encontrado' : True
+    }
+    trayectos = []
+    
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
@@ -509,15 +513,17 @@ def mis_viajes(usuario, pagina):
 
 @app.route('/mis_viajes_creados/<usuario>/<pagina>', methods = ['GET'])
 def mis_viajes_creados(usuario, pagina):
-    datos = {
-        'pagina' : int(pagina),
-        'encontrado' : True
-    }
-    trayectos = []
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
     tray = Trayectos.find({'conductor': id_usuario}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = Trayectos.count({'conductor': id_usuario})
     #tray = []
+    datos = {
+        'pagina' : int(pagina),
+        'ultimaPag' : int((num_tray - 1) // 7),
+        'encontrado' : True
+    }
+    trayectos = []
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
