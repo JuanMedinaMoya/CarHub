@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from werkzeug.datastructures import Authorization
 from bson.objectid import ObjectId
@@ -37,7 +37,7 @@ maps = GoogleMaps(app)
 client_id = "0395845c9df00b0"
 client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
 
-client = ImgurClient(client_id, client_secret, "c5e92d109a41dab9c3164d398610679467e98e8e", "a7342185f0d801329512ec468c6332c1d4488898")
+client = ImgurClient(client_id, client_secret, "43d6958c71e03f7d0f6e5cfdb62122557c31edc6", "e2b6db72adc1a6bbf8c63246d6a5d45c4c8ffc86")
 
 
 
@@ -111,15 +111,7 @@ def registro():
         if contrasena != contrasenarep:
             error = "Error: contraseñas no iguales"
             return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
-        today = date.today()
-        fechaahora = datetime(
-            year=today.year, 
-            month=today.month,
-            day=today.day,
-        )
-        if fechaahora < d_fechanacimiento:
-            error = "Error: fecha de nacimiento errónea"
-            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
+        
 
         id = Usuarios.insert(
         {'username': username, 
@@ -141,12 +133,7 @@ def registro():
 @app.route('/crearviaje', methods = ['POST','GET'])
 def crearViaje():
     if request.method == 'GET' :
-        usuario = Usuarios.find_one({"username": session["username"]})
-        if usuario['coche'] == "" or usuario['paypal'] == "" :
-            error = "Coche y Paypal deben ser añadidos"
-            return render_template('perfilEditar.html',error=error,usuario=usuario)
-        else :
-            return render_template('crearViaje.html')
+        return render_template('crearViaje.html')
     else :
         usuario = Usuarios.find_one({"username": session["username"]})
 
@@ -159,23 +146,13 @@ def crearViaje():
         numeropasajeros = request.form['numeropasajeros']
         finalizado = 0
         pasajeros = []
-        today = date.today()
-        fechaahora = datetime(
-            year=today.year, 
-            month=today.month,
-            day=today.day,
-        )
         if origen == destino :
             error = "Error: origen y destino iguales"
             return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
         else :
-            if fechaahora > d_horasalida:
-                error = "Error: Fecha incorrecta"
-                return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
-            else:
-                Trayectos.insert(
-                    {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
-                return render_template('index.html')
+            Trayectos.insert(
+                {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
+            return render_template('index.html')
      
 
 
@@ -344,10 +321,13 @@ def busquedatrayecto_post():
 @app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
 def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
-    #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
-    num_tray = Trayectos.count()
+    d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
+    d_horasalida_sup = d_horasalida + timedelta(days= 1)
+    #str_horasalida = d_horasalida.strftime('%Y-%m-%d')
+    #d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%d')#T%H:%M
+    tray = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = Trayectos.count({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }})
+    #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
     datos = {
         'origen' : origen,
@@ -406,7 +386,7 @@ def anadirPasajero(idtrayecto):
     nuevopasajero.append(nump)
     pasajeros.append(nuevopasajero)
     Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros.append(nuevopasajero), 'numeropasajeros' : numpasajeros-nump}})
-    return render_template('index.html')
+    return redirect('/crear_conversacion/' + ObjectId(conductor) + '/' + ObjectId(usuario['_id'])) # Crea la conversacion cuando se añade a la reserva
 
 #------------------------------------------------------------
 
