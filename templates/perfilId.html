@@ -102,6 +102,9 @@
                      {% for i in range(media|int) %}
                      <i class="fa fa-star checked" style="font-size:30px"></i>
                      {% endfor %}
+                     {% for i in range(5-(media|int))%}
+                     <i class="fa fa-star" style="font-size:30px"></i>
+                     {% endfor %}
                   </div>
                   <div class="rating-text"> <span>{{numvaloraciones}} valoraciones.</span> </div>
                   <br>

@@ -847,8 +847,13 @@ def media_valoraciones(id):
         suma += val['puntuacion']
         total += 1
 
-    media = suma/total
-    return media
+    if total == 0 :
+        return 0
+    else :
+        media = suma/total
+        return media
+    
+    
 
 def num_valoraciones(id):
     valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
