@@ -47,7 +47,7 @@
 
 <!-- CONTACT
 ================================================== -->
-<section id="contact" class="margintop60 nopadding" style="background:#292929;">
+<section id="contact" class="nopadding" style="background:#292929;">
 	<div class="col-md-6 whitetext" style="padding: 60px;">
 		<div class="textwidget">
 			<div class="bookarea">
@@ -61,6 +61,12 @@
 </section>
 <!-- THE END OF SECTIONS -->
 
+
+
+
+
+{% endblock %}
+{% block footer %}
 <!-- FOOTER
 ================================================== -->
 <footer id="footer" class="footer2">
@@ -80,12 +86,11 @@
 		</div>
 	</div>
 </footer>
-
+{{ super() }}
 <!-- SCRIPTS
 ================================================== -->
 <script src="assets/js/jquery.js"></script>
 <script src="assets/js/plugins.js"></script>
 <script src="contact/topvalidate.js"></script>
 <script src="contact/bottomvalidate.js"></script>
-
 {% endblock %}
