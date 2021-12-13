@@ -141,12 +141,7 @@ def registro():
 @app.route('/crearviaje', methods = ['POST','GET'])
 def crearViaje():
     if request.method == 'GET' :
-        usuario = Usuarios.find_one({"username": session["username"]})
-        if usuario['coche'] == "" or usuario['paypal'] == "" :
-            error = "Coche y Paypal deben ser añadidos"
-            return render_template('perfilEditar.html',error=error,usuario=usuario)
-        else :
-            return render_template('crearViaje.html')
+        return render_template('crearViaje.html')
     else :
         usuario = Usuarios.find_one({"username": session["username"]})
 
@@ -403,7 +398,7 @@ def anadirPasajero(idtrayecto):
     nuevopasajero.append(nump)
     pasajeros.append(nuevopasajero)
     Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros.append(nuevopasajero), 'numeropasajeros' : numpasajeros-nump}})
-    return render_template('index.html')
+    return redirect('/crear_conversacion/' + ObjectId(conductor) + '/' + ObjectId(usuario['_id'])) # Crea la conversacion cuando se añade a la reserva
 
 #------------------------------------------------------------
 
