@@ -4,12 +4,12 @@
 <title>Inicio</title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
-<script type="text/javascript" src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
+<script type="text/javascript"
+	src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
-      async
-></script>
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
+	async></script>
 {% endblock %}
 {% block navbar %}
 {{ super() }}
@@ -29,10 +29,47 @@
 						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen" required>
 					</div>
 					<div class="form-group">
+						<label for="radioorigen">Radio origen</label>
+						<input type="range" id="radioorigen" name="radioorigen" value="5000" min="0" max="10000" step="100" list="steplist" oninput="this.nextElementSibling.value = this.value">
+						<output>5000</output> metros
+						<datalist id="steplist">
+							<option value="0">0 km</option>
+							<option value="1000"></option>
+							<option value="2000">2 km</option>
+							<option value="3000"></option>
+							<option value="4000"></option>
+							<option value="5000">5 km</option>
+							<option value="6000"></option>
+							<option value="7000"></option>
+							<option value="8000"></option>
+							<option value="9000"></option>
+							<option value="10000">10 km</option>
+						</datalist>
+					</div>
+					<div class="form-group">
 						<label for="destino">Destino</label>
 						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
 							required>
 					</div>
+					<div class="form-group">
+						<label for="radiodestino">Radio destino</label>
+						<input type="range" id="radiodestino" name="radiodestino" min="0" max="10000" step="100" list="steplist" oninput="this.nextElementSibling.value = this.value">
+						<output>5000</output> metros
+						<datalist id="markers">
+							<option value="0">0 km</option>
+							<option value="1000"></option>
+							<option value="2000">2 km</option>
+							<option value="3000"></option>
+							<option value="4000"></option>
+							<option value="5000">5 km</option>
+							<option value="6000"></option>
+							<option value="7000"></option>
+							<option value="8000"></option>
+							<option value="9000"></option>
+							<option value="10000">10 km</option>
+						</datalist>
+					</div>
+
 					<div id="map" style="width: 400px; height: 400px;"></div>
 					<div class="form-group">
 						<label for="horasalida">Fecha</label>
@@ -92,6 +129,7 @@
 <!-- SCRIPTS
 ================================================== -->
 <script>
+	
 	function initMap() {
 		const map = new google.maps.Map(document.getElementById("map"), {
 			mapTypeControl: false,

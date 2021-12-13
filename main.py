@@ -316,16 +316,18 @@ def logout():
 @app.route('/busqueda', methods = ['POST'])
 def busquedatrayecto_post():
     origen = request.form['origen']
+    radio_origen = request.form['radioorigen']
     destino = request.form['destino']
+    radio_destino = request.form['radiodestino']
     horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     numeropasajeros = request.form['numeropasajeros']
-    return redirect('/busqueda/' + origen + '/' + destino + '/' + horasalida + '/' + numeropasajeros + '/1')
+    return redirect('/busqueda/' + origen + '/' + radio_origen + '/' + destino + '/' + radio_destino + '/' + horasalida + '/' + numeropasajeros + '/1')
 
 
 
-@app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
-def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
+@app.route('/busqueda/<origen>/<radioorigen>/<destino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
+def busquedatrayecto_get(origen, radioorigen, destino, radiodestino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
     d_horasalida_sup = d_horasalida + timedelta(days= 1)
@@ -341,7 +343,7 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
         'origen': { '$near':
           {
             '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
-            '$maxDistance': 5000
+            '$maxDistance': int(radioorigen)
           }
        }, 
         'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
@@ -350,12 +352,12 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
         'destino': { '$near':
           {
             '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
-            '$maxDistance': 5000
+            '$maxDistance': int(radiodestino)
           }
        }, 
         'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
         'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
-    trayectos_intersection = chain(trayectos_proximos_origen, trayectos_proximos_destino)
+    #trayectos_intersection = chain(trayectos_proximos_origen, trayectos_proximos_destino)
     #num_tray = TrayectosPrueba.count({
     #    'origen': { '$near':
     #      {
@@ -373,8 +375,21 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #    'numeropasajeros': { '$gte': int(numpasajeros) }})
     #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
-    num_tray = len(list(trayectos_intersection))
-    tray = trayectos_intersection[7*(int(pagina) - 1):7*(int(pagina))]
+    #tray = trayectos_intersection[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = 0
+    trayectos = []
+    for doc in trayectos_proximos_origen:
+        if (doc in trayectos_proximos_destino):
+            trayectos.append({
+                '_id': str(ObjectId(doc['_id'])),
+                'origen': doc['origenstr'],
+                'destino': doc['destinostr'],
+                'horasalida': doc['horasalida'],
+                'precio': doc['precio'],
+                'numeropasajeros': doc['numeropasajeros']
+            })
+            num_tray += 1
+    trayectos = trayectos[7*(int(pagina) - 1):7*(int(pagina))]
     datos = {
         'origen' : origen,
         'destino' : destino,
@@ -384,16 +399,6 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
         'ultimaPag' : int((num_tray - 1) // 7),
         'encontrado' : True
     }
-    trayectos = []
-    for doc in tray:
-        trayectos.append({
-            '_id': str(ObjectId(doc['_id'])),
-            'origen': doc['origenstr'],
-            'destino': doc['destinostr'],
-            'horasalida': doc['horasalida'],
-            'precio': doc['precio'],
-            'numeropasajeros': doc['numeropasajeros']
-        })
     if not trayectos:
         datos['encontrado'] = False
     return render_template('busqueda.html', datos=datos, trayectos=trayectos)
