@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from werkzeug.datastructures import Authorization
 from bson.objectid import ObjectId
@@ -319,11 +319,12 @@ def busquedatrayecto_post():
 def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
     d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
-    str_horasalida = d_horasalida.strftime('%Y-%m-%dT%H:%M:00')
-    d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%dT%H:%M:00')
-    tray = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': ISODate(d_horasalida+"Z"), 'numeropasajeros': int(numpasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    d_horasalida_sup = d_horasalida + timedelta(days= 1)
+    #str_horasalida = d_horasalida.strftime('%Y-%m-%d')
+    #d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%d')#T%H:%M
+    tray = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    num_tray = Trayectos.count({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }})
     #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
-    num_tray = Trayectos.count()
     #tray = []
     datos = {
         'origen' : origen,
