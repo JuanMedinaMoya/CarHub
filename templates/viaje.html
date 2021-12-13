@@ -79,14 +79,25 @@
                   <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
                   {{ duracion }}
                </li>
-               <div id="map" style="width: 400px; height: 400px;"></div>
+
+               {{if session['username'] == conductor['username']}}
+               <p><a href="/editarperfil">
+                  <button>Editar</button></a>
+               <a href="/eliminarusuario">
+                  <button onclick="return confirm('¿Estás seguro de que desea eliminar tu trayecto?')" class="button button3">Eliminar usuario</button>
+               </a>
+               </p>
+               
+               {% else %}
+               
                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
                   <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
                      aria-current="true">
                      <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
                   </a>
                </span>
-
+               {% endif %}
+               <div id="map" style="width: 400px; height: 400px;"></div>
             </ul>
 
             </br>
