@@ -16,6 +16,7 @@ import urllib
 from datetime import datetime
 from imgurpython import ImgurClient
 import os
+from itertools import chain
 
 from werkzeug.wrappers import response
 
@@ -45,6 +46,7 @@ Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
+TrayectosPrueba = mongo.db.TrayectosPrueba
 
 #CLIENTE
 
@@ -322,10 +324,50 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     d_horasalida_sup = d_horasalida + timedelta(days= 1)
     #str_horasalida = d_horasalida.strftime('%Y-%m-%d')
     #d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%d')#T%H:%M
-    tray = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    num_tray = Trayectos.count({'origen': origen, 'destino': destino, 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 'numeropasajeros': { '$gte': int(numpasajeros) }})
+    #loc = {
+    #            'type': "Point",
+    #            'coordinates': [1.0,2.0]
+    #        }
+    #Trayectos.create_index({'origen': '2d'})
+    #Trayectos.create_index([(destino, '2d')])
+    trayectos_proximos_origen = TrayectosPrueba.find({
+        'origen': { '$near':
+          {
+            '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+            '$maxDistance': 5000
+          }
+       }, 
+        'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+        'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+    trayectos_proximos_destino = TrayectosPrueba.find({
+        'destino': { '$near':
+          {
+            '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+            '$maxDistance': 5000
+          }
+       }, 
+        'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+        'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+    trayectos_intersection = chain(trayectos_proximos_origen, trayectos_proximos_destino)
+    #num_tray = TrayectosPrueba.count({
+    #    'origen': { '$near':
+    #      {
+    #        '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+    #        '$maxDistance': 5000
+    #      }
+    #   },
+    #    'destino': { '$near':
+    #      {
+    #        '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+    #        '$maxDistance': 5000
+    #      }
+    #   }, 
+    #    'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+    #    'numeropasajeros': { '$gte': int(numpasajeros) }})
     #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
+    num_tray = len(list(trayectos_intersection))
+    tray = trayectos_intersection[7*(int(pagina) - 1):7*(int(pagina))]
     datos = {
         'origen' : origen,
         'destino' : destino,
@@ -339,8 +381,8 @@ def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
-            'origen': doc['origen'],
-            'destino': doc['destino'],
+            'origen': doc['origenstr'],
+            'destino': doc['destinostr'],
             'horasalida': doc['horasalida'],
             'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros']
