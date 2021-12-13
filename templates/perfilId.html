@@ -1,0 +1,126 @@
+{% extends 'navbar.html' %}
+
+{% block head %}
+{{ super() }}
+<title>Perfil</title>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+
+<!-- INTRO
+================================================== -->
+<section id="home"
+   style="padding:160px 0;background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+   {% with messages = get_flashed_messages() %}
+   {% if messages %}
+   {% for message in messages %}
+   <div class="alert">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      {{ message }}
+   </div>
+   {% endfor %}
+   {% endif %}
+   {% endwith %}
+
+   <style>
+      .card {
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+         max-width: 450px;
+         margin: auto;
+         text-align: center;
+         font-family: arial;
+         opacity: 100;
+         background-color: #FFFFFF;
+      }
+
+      .title {
+         color: grey;
+         font-size: 18px;
+      }
+
+      button {
+         border: none;
+         outline: 0;
+         display: inline-block;
+         padding: 8px;
+         color: white;
+         background-color: #1bb9a0;
+         text-align: center;
+         cursor: pointer;
+         width: 100%;
+         font-size: 18px;
+      }
+
+      .button3 {
+         background-color: #f44336;
+      }
+
+      /* Red */
+
+      a {
+         text-decoration: none;
+         font-size: 22px;
+         color: black;
+      }
+
+      button:hover,
+      a:hover {
+         opacity: 0.7;
+      }
+
+      .checked {
+         color:rgb(10, 124, 0);
+      }
+
+      xd {
+         opacity: 0.5;
+      }
+   </style>
+   </head>
+
+   <body>
+
+      <h2 style="text-align:center"></h2>
+      <div class="card">
+         <img src={{usuario['foto']}} width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+         <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
+         <p class="title">@{{ usuario['username'] }}</p>
+         <p>
+            <xd> Correo:</xd> {{ usuario['correo'] }}<br>
+            <xd> Teléfono:</xd> {{ usuario['telefono'] }}<br>
+            <xd> DNI:</xd> {{ usuario['dni'] }}<br>
+            <xd> Coche:</xd> {{ usuario['coche'] }}<br>
+            <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
+            <br>
+            <p style="font-size: 25px;"><xd> Valoracion:</xd> {{ media }}/5</p>
+         <div class="d-flex justify-content-center">
+            <div class="content text-center">
+               <div class="ratings">
+                  <div class="stars">
+                     {% for i in range(media|int) %}
+                     <i class="fa fa-star checked" style="font-size:30px"></i>
+                     {% endfor %}
+                  </div>
+                  <div class="rating-text"> <span>{{numvaloraciones}} valoraciones.</span> </div>
+                  <br>
+               </div>
+            </div>
+         </div>
+         </p>
+
+      </div>
+
+</section>
+
+<!-- SCRIPTS
+================================================== -->
+<script src="static/assets/js/jquery.js"></script>
+<script src="static/assets/js/plugins.js"></script>
+<script src="static/contact/topvalidate.js"></script>
+<script src="static/contact/bottomvalidate.js"></script>
+{% endblock %}
+{% block footer %}
+{{ super() }}
+{% endblock %}

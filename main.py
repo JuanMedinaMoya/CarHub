@@ -189,7 +189,10 @@ def perfil():
 @app.route('/perfilId/<id>', methods = ['POST','GET'])
 def perfilId(id):
     usuario = Usuarios.find_one({'_id': ObjectId(id)})
-    return render_template('perfil.html', usuario=usuario)
+    media = media_valoraciones(id)
+    numvaloraciones = num_valoraciones(id)
+    valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
+    return render_template('perfilId.html', usuario=usuario, media=media, valoraciones=valoraciones, numvaloraciones=numvaloraciones)
 
 
 @app.route('/editarperfil', methods = ['POST','GET'])
@@ -854,6 +857,27 @@ def actualizar_valoracion(id):
     Valoraciones.update_one({'_id': ObjectId(id)},{'$set':{'puntuacion': puntuacion, 'comentario': comentario}})
     resp = jsonify("Valoración actualizada")
     return resp
+
+def media_valoraciones(id):
+    valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
+    total = 0
+    suma = 0
+
+    for val in valoraciones:
+        suma += val['puntuacion']
+        total += 1
+
+    media = suma/total
+    return media
+
+def num_valoraciones(id):
+    valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
+    total = 0
+    for val in valoraciones:
+        total += 1
+
+    return total
+
 
 
 #------------------------------------------------------------------
