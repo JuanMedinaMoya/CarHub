@@ -93,4 +93,27 @@
 <script src="assets/js/plugins.js"></script>
 <script src="contact/topvalidate.js"></script>
 <script src="contact/bottomvalidate.js"></script>
+<script>
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+	var yyyy = today.getFullYear();
+	if (dd < 10) {
+		dd = '0' + dd
+	}
+	if (mm < 10) {
+		mm = '0' + mm
+	}
+	var hh = today.getHours();
+	var nn = today.getMinutes();
+
+	if (hh < 10) {
+		hh = '0' + hh
+	}
+	if (nn < 10) {
+		nn = '0' + nn
+	}
+	t = yyyy + '-' + mm + '-' + dd;
+	document.getElementById("horasalida").min = t;
+</script>
 {% endblock %}
