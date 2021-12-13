@@ -318,9 +318,11 @@ def busquedatrayecto_post():
 @app.route('/busqueda/<origen>/<destino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
 def busquedatrayecto_get(origen, destino, horasalida, numpasajeros, pagina):
     #horasalida = request.form['horasalida']
-    #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
+    d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
+    str_horasalida = d_horasalida.strftime('%Y-%m-%dT%H:%M:00')
+    d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%dT%H:%M:00')
+    tray = Trayectos.find({'origen': origen, 'destino': destino, 'horasalida': ISODate(d_horasalida+"Z"), 'numeropasajeros': int(numpasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
     num_tray = Trayectos.count()
     #tray = []
     datos = {
