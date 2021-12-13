@@ -37,7 +37,7 @@ maps = GoogleMaps(app)
 client_id = "0395845c9df00b0"
 client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
 
-client = ImgurClient(client_id, client_secret, "c5e92d109a41dab9c3164d398610679467e98e8e", "a7342185f0d801329512ec468c6332c1d4488898")
+client = ImgurClient(client_id, client_secret, "43d6958c71e03f7d0f6e5cfdb62122557c31edc6", "e2b6db72adc1a6bbf8c63246d6a5d45c4c8ffc86")
 
 
 
