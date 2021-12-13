@@ -10,32 +10,7 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
       async
 ></script>
-<script>
-	
-		var today = new Date();
-		var dd = today.getDate();
-		var mm = today.getMonth()+1; //January is 0 so need to add 1 to make it 1!
-		var yyyy = today.getFullYear();
-		if(dd<10){
-		dd='0'+dd
-		} 
-		if(mm<10){
-		mm='0'+mm
-		} 
-		var hh = today.getHours();
-		var nn = today.getMinutes();
-		
-		if(hh<10){
-			hh='0'+hh
-			} 
-		if(nn<10){
-			nn='0'+nn
-		}
-		t = yyyy+'-'+mm+'-'+dd+'T'+hh+':'+nn; 
-		document.getElementById('horasalida').setAttribute("min", t);
-	
-	
-</script>
+
 {% endblock %}
 {% block navbar %}
 {{ super() }}
@@ -62,7 +37,7 @@
 					</div>
 					<div id="map" style="width: 400px; height: 400px;"></div>
 					<div class="form-group">
-					  <label for="horasalidaa">Fecha y hora</label>
+					  <label for="horasalida">Fecha y hora</label>
 					  <input type="datetime-local" class="form-control" name="horasalida" id="horasalida" value="{{horasalida}}" required>
 					</div>
 					<div class="form-group">
@@ -179,6 +154,32 @@
 		  );
 		}
 	  }
+</script>
+<script>
+	
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0 so need to add 1 to make it 1!
+	var yyyy = today.getFullYear();
+	if(dd<10){
+	dd='0'+dd
+	} 
+	if(mm<10){
+	mm='0'+mm
+	} 
+	var hh = today.getHours();
+	var nn = today.getMinutes();
+	
+	if(hh<10){
+		hh='0'+hh
+		} 
+	if(nn<10){
+		nn='0'+nn
+	}
+	t = yyyy+'-'+mm+'-'+dd+'T'+hh+':'+nn; 
+	document.getElementById('horasalida').setAttribute("min", t);
+
+
 </script>
 {% endblock %}
 {% block footer %}

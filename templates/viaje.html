@@ -69,10 +69,7 @@
             <ul class="list-group">
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
-                  <p class="fs-1">
-                     {{ trayecto['origen'] }}
-                  </p>
-
+                  {{ trayecto['origen'] }}
                </li>
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
@@ -105,22 +102,20 @@
                   </div>
                </a>
                </br>
+
                {% if pasajeros %}
                <div class="row">
                   <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
                </div>
                {% for pasajero in pasajeros %}
-               <div class="list-group-item list-group-item-action flex-column align-items-start">
+               <a href="/perfilId/{{ pasajero['_id'] }}"
+                  class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="card card-body">
                      <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
                   </div>
-               </div>
+               </a>
                {% endfor %}
                {% endif %}
-
-
-
-
 
             </div>
          </div>

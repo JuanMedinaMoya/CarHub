@@ -3,7 +3,6 @@
 {% block head %}
 {{ super() }}
 <title>Perfil</title>
-<meta name="referrer" content="no-referrer">
 {% endblock %}
 {% block navbar %}
 {{ super() }}
@@ -62,13 +61,17 @@
 
       a {
          text-decoration: none;
-         
+         font-size: 22px;
          color: black;
       }
 
       button:hover,
       a:hover {
          opacity: 0.7;
+      }
+
+      .checked {
+         color:rgb(10, 124, 0);
       }
 
       xd {
@@ -90,20 +93,26 @@
             <xd> DNI:</xd> {{ usuario['dni'] }}<br>
             <xd> Coche:</xd> {{ usuario['coche'] }}<br>
             <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
+            <br>
+            <p style="font-size: 25px;"><xd> Valoracion:</xd> {{ media }}/5</p>
+         <div class="d-flex justify-content-center">
+            <div class="content text-center">
+               <div class="ratings">
+                  <div class="stars">
+                     {% for i in range(media|int) %}
+                     <i class="fa fa-star checked" style="font-size:30px"></i>
+                     {% endfor %}
+                     {% for i in range(5-(media|int))%}
+                     <i class="fa fa-star" style="font-size:30px"></i>
+                     {% endfor %}
+                  </div>
+                  <div class="rating-text"> <span>{{numvaloraciones}} valoraciones.</span> </div>
+                  <br>
+               </div>
+            </div>
+         </div>
          </p>
-         <p><a href="/editarperfil">
-               <button>Editar</button></a>
-            <a href="/eliminarusuario">
-               <button onclick="myFunction()" class="button button3">Eliminar usuario</button>
-            </a>
 
-            <script> <!-- NO FUNCIONA SE ELIMINA IGUALMENTE -->
-               function myFunction() {
-                  confirm("¿Estás seguro de que desea eliminar tu usuario?");
-               }
-            </script>
-
-         </p>
       </div>
 
 </section>
