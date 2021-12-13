@@ -63,8 +63,8 @@ def login():
         busqEmail = Usuarios.find_one({"correo": correousername})
         busqUsername = Usuarios.find_one({"username": correousername})
         if  busqEmail == None and busqUsername == None :
-            flash("Correo electrónico o Username no existe")
-            return render_template('login.html')
+            error = "Error: correo electrónico o Username no existente"
+            return render_template('login.html', correousername=correousername,contrasena=contrasena, error=error)
         
         
         if busqEmail == None :
@@ -72,8 +72,8 @@ def login():
                 session["username"] = busqUsername['username']
                 return render_template('index.html')
             else :
-                flash("Contraseña incorrecta")
-                return render_template('login.html')
+                error = "Error: contraseña incorrecta"
+                return render_template('login.html', correousername=correousername,contrasena=contrasena,error=error)
             
 
         if busqUsername == None :
@@ -81,8 +81,8 @@ def login():
                 session["username"] = busqEmail['username']
                 return render_template('index.html')
             else :
-                flash("Contraseña incorrecta")
-                return render_template('login.html')
+                error = "Error: contraseña incorrecta"
+                return render_template('login.html', correousername=correousername,contrasena=contrasena,error=error)
 
 
 @app.route('/registro', methods = ['POST','GET'])
@@ -103,14 +103,23 @@ def registro():
         hashed_contrasena = generate_password_hash(contrasena)
 
         if Usuarios.find_one({"correo": correo}):
-            flash("Correo electrónico ya en uso")
-            return render_template('registro.html')
+            error = "Correo electrónico ya en uso"
+            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
         if Usuarios.find_one({"username": username}):
-            flash("Username ya en uso")
-            return render_template('registro.html')
+            error = "Error: username ya en uso"
+            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
         if contrasena != contrasenarep:
-            flash("Contraseñas no iguales")
-            return render_template('registro.html')
+            error = "Error: contraseñas no iguales"
+            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
+        today = date.today()
+        fechaahora = datetime(
+            year=today.year, 
+            month=today.month,
+            day=today.day,
+        )
+        if fechaahora < d_fechanacimiento:
+            error = "Error: fecha de nacimiento errónea"
+            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
 
         id = Usuarios.insert(
         {'username': username, 
@@ -121,7 +130,9 @@ def registro():
             'foto': "https://www.traigoyllevo.com/categorias/imagen-icono/1",
             'dni': dni, 
             'fechanacimiento': d_fechanacimiento, 
-            'telefono': telefono}
+            'telefono': telefono,
+            'coche' : "",
+            'paypal' : ""}
         )
         session["username"] = username
         return render_template('index.html')
@@ -130,7 +141,12 @@ def registro():
 @app.route('/crearviaje', methods = ['POST','GET'])
 def crearViaje():
     if request.method == 'GET' :
-        return render_template('crearViaje.html')
+        usuario = Usuarios.find_one({"username": session["username"]})
+        if usuario['coche'] == "" or usuario['paypal'] == "" :
+            error = "Coche y Paypal deben ser añadidos"
+            return render_template('perfilEditar.html',error=error,usuario=usuario)
+        else :
+            return render_template('crearViaje.html')
     else :
         usuario = Usuarios.find_one({"username": session["username"]})
 
@@ -139,16 +155,27 @@ def crearViaje():
         destino = request.form['destino']
         horasalida = request.form['horasalida']
         d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
-
         precio = request.form['precio']
         numeropasajeros = request.form['numeropasajeros']
         finalizado = 0
         pasajeros = []
-
-        
-        Trayectos.insert(
-            {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
-        return render_template('index.html')
+        today = date.today()
+        fechaahora = datetime(
+            year=today.year, 
+            month=today.month,
+            day=today.day,
+        )
+        if origen == destino :
+            error = "Error: origen y destino iguales"
+            return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
+        else :
+            if fechaahora > d_horasalida:
+                error = "Error: Fecha incorrecta"
+                return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
+            else:
+                Trayectos.insert(
+                    {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
+                return render_template('index.html')
      
 
 
@@ -187,12 +214,12 @@ def perfilEditar():
         hashed_contrasena = generate_password_hash(contrasena)
 
         if correoAntiguo != correo and Usuarios.find_one({"correo": correo}):
-            flash("Correo electrónico ya en uso")
-            return redirect('/editarperfil')
+            error="Correo electrónico ya en uso"
+            return redirect('/editarperfil',error=error)
     
         if contrasena != contrasenarep:
-            flash("Contraseñas no iguales")
-            return redirect('/editarperfil')
+            error="Contraseñas no iguales"
+            return redirect('/editarperfil',error=error)
 
         if contrasena == "":
 

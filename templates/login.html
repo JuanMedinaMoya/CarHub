@@ -8,9 +8,7 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
-<div class="page-loader">
-   <img src="static/assets/img/loader.gif" alt="loader">
-</div>
+
 
 
 <!-- INTRO
@@ -23,24 +21,15 @@
                class="fa fa-star roundicon"></i>
          </h1>
 
-         {% with messages = get_flashed_messages() %}
-         {% if messages %}
-         {% for message in messages %}
-         <div class="alert">
-            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-            {{ message }}
-         </div>
-         {% endfor %}
-         {% endif %}
-         {% endwith %}
 
          <div class="contactstyle topform">
             <form method="post" action="/login">
                <div class="form">
                   <input type="text" name="correousername" id="correousername"
-                     placeholder="Correo electrónico o username " required>
-                  <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña " required>
+                     placeholder="Correo electrónico o username " value="{{correousername}}" required>
+                  <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña " value="{{contrasena}}" required>
                   <input type="submit" id="iniciasesion" class="clearfix btn" value="¡Inicia sesión!">
+                  <p style="color:#FF0000";>{{error}}</p>
                </div>
                <div>
                   <a href="/registro">¿No tienes una cuenta? Regístrate</a>
@@ -58,4 +47,7 @@
 <script src="static/contact/topvalidate.js"></script>
 <script src="static/contact/bottomvalidate.js"></script>
 
+{% endblock %}
+{% block footer %}
+{{ super() }}
 {% endblock %}

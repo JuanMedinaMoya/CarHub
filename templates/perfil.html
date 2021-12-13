@@ -8,9 +8,7 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
-<div class="page-loader">
-   <img src="static/assets/img/loader.gif" alt="loader">
-</div>
+
 <!-- INTRO
 ================================================== -->
 <section id="home"
@@ -115,4 +113,7 @@
 <script src="static/assets/js/plugins.js"></script>
 <script src="static/contact/topvalidate.js"></script>
 <script src="static/contact/bottomvalidate.js"></script>
+{% endblock %}
+{% block footer %}
+{{ super() }}
 {% endblock %}
