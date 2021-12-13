@@ -3,6 +3,7 @@
 {% block head %}
 {{ super() }}
 <title>Perfil</title>
+<meta name="referrer" content="no-referrer">
 {% endblock %}
 {% block navbar %}
 {{ super() }}
@@ -71,7 +72,7 @@
       }
 
       .checked {
-         color:rgb(10, 124, 0);
+         color: rgb(10, 124, 0);
       }
 
       xd {
@@ -94,10 +95,12 @@
             <xd> Coche:</xd> {{ usuario['coche'] }}<br>
             <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
             <br>
-            <p style="font-size: 25px;"><xd> Valoracion:</xd> {{ media }}/5</p>
+         <p style="font-size: 25px;">
+            <xd> Valoracion:</xd> {{ media }}/5
+         </p>
          <div class="d-flex justify-content-center">
             <div class="content text-center">
-               <div class="ratings">
+               <div class="valoracion">
                   <div class="stars">
                      {% for i in range(media|int) %}
                      <i class="fa fa-star checked" style="font-size:30px"></i>
@@ -111,7 +114,20 @@
                </div>
             </div>
          </div>
-         </p>
+         <ul class="list-group">
+            {% for val in valoraciones %}
+            <li class="list-group-item ">
+               <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1"> {{ val['nombre'] }} </h5>
+                  <small> {{ val['puntuacion'] }} <i class="fa fa-star" style="color:rgb(10, 124, 0);"></i></small>
+               </div>
+               <p>{{ val['comentario'] }}</p>
+            </li>
+            {% endfor %}
+         </ul>
+
+      </div>
+      </p>
 
       </div>
 

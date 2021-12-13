@@ -60,29 +60,24 @@ def login():
     else :
         correousername = request.form['correousername']
         contrasena = request.form['contrasena']
-        busqEmail = Usuarios.find_one({"correo": correousername})
-        busqUsername = Usuarios.find_one({"username": correousername})
-        if  busqEmail == None and busqUsername == None :
+        busq = Usuarios.find_one({'$or': [
+            {'correo': correousername},
+            {'username': correousername}
+        ]})
+        if  busq == None:
             error = "Error: correo electrónico o Username no existente"
             return render_template('login.html', correousername=correousername,contrasena=contrasena, error=error)
         
-        
-        if busqEmail == None :
-            if check_password_hash(busqUsername['contrasena'],contrasena) :
-                session["username"] = busqUsername['username']
-                return render_template('index.html')
-            else :
-                error = "Error: contraseña incorrecta"
-                return render_template('login.html', correousername=correousername,contrasena=contrasena,error=error)
+       
+        if check_password_hash(busq['contrasena'],contrasena) :
+            puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
+            session["username"] = busq['username']
+            session["creador"] = puedeCrear
+            return render_template('index.html')
+        else :
+            error = "Error: contraseña incorrecta"
+            return render_template('login.html', correousername=correousername,contrasena=contrasena,error=error)
             
-
-        if busqUsername == None :
-            if check_password_hash(busqEmail['contrasena'],contrasena) :
-                session["username"] = busqEmail['username']
-                return render_template('index.html')
-            else :
-                error = "Error: contraseña incorrecta"
-                return render_template('login.html', correousername=correousername,contrasena=contrasena,error=error)
 
 
 @app.route('/registro', methods = ['POST','GET'])
@@ -127,6 +122,7 @@ def registro():
             'paypal' : ""}
         )
         session["username"] = username
+        session["creador"] = False
         return render_template('index.html')
 
 
@@ -169,7 +165,17 @@ def perfilId(id):
     media = media_valoraciones(id)
     numvaloraciones = num_valoraciones(id)
     valoraciones = Valoraciones.find({"valorado": ObjectId(id)})
-    return render_template('perfilId.html', usuario=usuario, media=media, valoraciones=valoraciones, numvaloraciones=numvaloraciones)
+    
+    valoracion = []
+    for val in valoraciones:
+        user =  Usuarios.find_one({'_id': ObjectId(val['valorador'])})
+        valoracion.append({
+            'nombre': user['username'],
+            'comentario': val['comentario'],
+            'puntuacion': val['puntuacion']
+        })
+   
+    return render_template('perfilId.html', usuario=usuario, media=media, valoraciones=valoracion, numvaloraciones=numvaloraciones)
 
 
 @app.route('/editarperfil', methods = ['POST','GET'])
@@ -289,9 +295,7 @@ def perfilEditar():
                     'paypal': paypal,  
                     'telefono': telefono}}
                 )
-
-            
-
+        session["creador"] = paypal != "" and coche != ""
         return redirect('/perfil')
 
 @app.route('/eliminarusuario')
@@ -302,7 +306,7 @@ def eliminar_usuario():
 
 @app.route('/logout')
 def logout():
-    session.pop("username", None)
+    session.clear()
     return render_template('index.html')
 
 
