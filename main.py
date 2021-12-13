@@ -388,6 +388,22 @@ def mostrarViaje(id):
     return render_template('viaje.html', trayecto=trayecto, conductor=conductor, pasajeros=pasajerosPerfil, duracion=duracionViaje)
 
 
+@app.route('/anadirpasajero/<idtrayecto>/', methods = ['GET','POST'])
+def anadirPasajero(idtrayecto):
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    numpasajeros = trayecto['numeropasajeros']
+    conductor = trayecto['conductor']
+    pasajeros = trayecto['pasajeros']
+    finalizado = trayecto['finalizado']
+    usuario = Usuarios.find_one({"username": session["username"]})
+    nump = request.form['numeropasajeros']
+
+    nuevopasajero = []
+    nuevopasajero.append(usuario)
+    nuevopasajero.append(nump)
+    pasajeros.append(nuevopasajero)
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros.append(nuevopasajero), 'numeropasajeros' : numpasajeros-nump}})
+    return render_template('index.html')
 
 #------------------------------------------------------------
 
