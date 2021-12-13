@@ -111,6 +111,15 @@ def registro():
         if contrasena != contrasenarep:
             error = "Error: contraseñas no iguales"
             return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
+        today = date.today()
+        fechaahora = datetime(
+            year=today.year, 
+            month=today.month,
+            day=today.day,
+        )
+        if fechaahora < d_fechanacimiento:
+            error = "Error: fecha de nacimiento errónea"
+            return render_template('registro.html',username=username,nombre=nombre,apellidos=apellidos,correo=correo,dni=dni,fechanacimiento=fechanacimiento,telefono=telefono,contrasena=contrasena,contrasenarep=contrasenarep,error=error)
 
         id = Usuarios.insert(
         {'username': username, 
@@ -150,14 +159,23 @@ def crearViaje():
         numeropasajeros = request.form['numeropasajeros']
         finalizado = 0
         pasajeros = []
-
+        today = date.today()
+        fechaahora = datetime(
+            year=today.year, 
+            month=today.month,
+            day=today.day,
+        )
         if origen == destino :
             error = "Error: origen y destino iguales"
             return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
         else :
-            Trayectos.insert(
-                {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
-            return render_template('index.html')
+            if fechaahora > d_horasalida:
+                error = "Error: Fecha incorrecta"
+                return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
+            else:
+                Trayectos.insert(
+                    {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
+                return render_template('index.html')
      
 
 
