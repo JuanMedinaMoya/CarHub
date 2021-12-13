@@ -368,7 +368,7 @@ def mostrarViaje(id):
     return render_template('viaje.html', trayecto=trayecto, conductor=conductor, pasajeros=pasajerosPerfil, duracion=duracionViaje)
 
 
-@app.route('/anadirpasajero/<idtrayecto>/', methods = ['GET','POST'])
+@app.route('/anadirpasajero/<idtrayecto>', methods = ['GET','POST'])
 def anadirPasajero(idtrayecto):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     numpasajeros = trayecto['numeropasajeros']
