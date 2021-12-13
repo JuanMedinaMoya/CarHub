@@ -69,10 +69,7 @@
             <ul class="list-group">
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
-                  <p class="fs-1">
-                     {{ trayecto['origen'] }}
-                  </p>
-
+                  {{ trayecto['origen'] }}
                </li>
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
@@ -82,13 +79,25 @@
                   <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
                   {{ duracion }}
                </li>
+
+               {{if session['username'] == conductor['username']}}
+               <p><a href="/editarperfil">
+                  <button>Editar</button></a>
+               <a href="/eliminarusuario">
+                  <button onclick="return confirm('¿Estás seguro de que desea eliminar tu trayecto?')" class="button button3">Eliminar usuario</button>
+               </a>
+               </p>
+               
+               {% else %}
+               
                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
                   <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
                      aria-current="true">
                      <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
                   </a>
                </span>
-
+               {% endif %}
+               <div id="map" style="width: 400px; height: 400px;"></div>
             </ul>
 
             </br>
@@ -105,22 +114,20 @@
                   </div>
                </a>
                </br>
+
                {% if pasajeros %}
                <div class="row">
                   <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
                </div>
                {% for pasajero in pasajeros %}
-               <div class="list-group-item list-group-item-action flex-column align-items-start">
+               <a href="/perfilId/{{ pasajero['_id'] }}"
+                  class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="card card-body">
                      <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
                   </div>
-               </div>
+               </a>
                {% endfor %}
                {% endif %}
-
-
-
-
 
             </div>
          </div>

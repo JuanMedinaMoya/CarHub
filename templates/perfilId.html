@@ -62,13 +62,17 @@
 
       a {
          text-decoration: none;
-         
+         font-size: 22px;
          color: black;
       }
 
       button:hover,
       a:hover {
          opacity: 0.7;
+      }
+
+      .checked {
+         color: rgb(10, 124, 0);
       }
 
       xd {
@@ -90,20 +94,41 @@
             <xd> DNI:</xd> {{ usuario['dni'] }}<br>
             <xd> Coche:</xd> {{ usuario['coche'] }}<br>
             <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
+            <br>
+         <p style="font-size: 25px;">
+            <xd> Valoracion:</xd> {{ media }}/5
          </p>
-         <p><a href="/editarperfil">
-               <button>Editar</button></a>
-            <a href="/eliminarusuario">
-               <button onclick="return confirm('¿Estás seguro de que desea eliminar tu usuario?')" class="button button3">Eliminar usuario</button>
-            </a>
+         <div class="d-flex justify-content-center">
+            <div class="content text-center">
+               <div class="valoracion">
+                  <div class="stars">
+                     {% for i in range(media|int) %}
+                     <i class="fa fa-star checked" style="font-size:30px"></i>
+                     {% endfor %}
+                     {% for i in range(5-(media|int))%}
+                     <i class="fa fa-star" style="font-size:30px"></i>
+                     {% endfor %}
+                  </div>
+                  <div class="rating-text"> <span>{{numvaloraciones}} valoraciones.</span> </div>
+                  <br>
+               </div>
+            </div>
+         </div>
+         <ul class="list-group">
+            {% for val in valoraciones %}
+            <li class="list-group-item ">
+               <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1"> {{ val['nombre'] }} </h5>
+                  <small> {{ val['puntuacion'] }} <i class="fa fa-star" style="color:rgb(10, 124, 0);"></i></small>
+               </div>
+               <p>{{ val['comentario'] }}</p>
+            </li>
+            {% endfor %}
+         </ul>
 
-            <script> 
-               function myFunction() {
-                  confirm("¿Estás seguro de que desea eliminar tu usuario?");
-               }
-            </script>
+      </div>
+      </p>
 
-         </p>
       </div>
 
 </section>
