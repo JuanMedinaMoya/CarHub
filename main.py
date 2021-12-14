@@ -72,9 +72,9 @@ def login():
         
        
         if check_password_hash(busq['contrasena'],contrasena) :
-            puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
+            #puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
             session["username"] = busq['username']
-            session["creador"] = puedeCrear
+            #session["creador"] = puedeCrear
             return render_template('index.html')
         else :
             error = "Error: contraseña incorrecta"
@@ -328,54 +328,53 @@ def busquedatrayecto_post():
 
 @app.route('/busqueda/<origen>/<radioorigen>/<destino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
 def busquedatrayecto_get(origen, radioorigen, destino, radiodestino, horasalida, numpasajeros, pagina):
-    #horasalida = request.form['horasalida']
     d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
     d_horasalida_sup = d_horasalida + timedelta(days= 1)
-    #str_horasalida = d_horasalida.strftime('%Y-%m-%d')
-    #d_horasalida = datetime.strptime(str_horasalida, '%Y-%m-%d')#T%H:%M
-    #loc = {
-    #            'type': "Point",
-    #            'coordinates': [1.0,2.0]
-    #        }
-    #Trayectos.create_index({'origen': '2d'})
-    #Trayectos.create_index([(destino, '2d')])
-    trayectos_proximos_origen = TrayectosPrueba.find({
-        'origen': { '$near':
-          {
-            '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
-            '$maxDistance': int(radioorigen)
-          }
-       }, 
-        'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-        'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
-    trayectos_proximos_destino = TrayectosPrueba.find({
-        'destino': { '$near':
-          {
-            '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
-            '$maxDistance': int(radiodestino)
-          }
-       }, 
-        'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-        'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
-    #trayectos_intersection = chain(trayectos_proximos_origen, trayectos_proximos_destino)
-    #num_tray = TrayectosPrueba.count({
-    #    'origen': { '$near':
-    #      {
-    #        '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
-    #        '$maxDistance': 5000
-    #      }
-    #   },
-    #    'destino': { '$near':
-    #      {
-    #        '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
-    #        '$maxDistance': 5000
-    #      }
-    #   }, 
-    #    'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-    #    'numeropasajeros': { '$gte': int(numpasajeros) }})
-    #tray = Trayectos.find()[7*(int(pagina) - 1):7*(int(pagina))]
-    #tray = []
-    #tray = trayectos_intersection[7*(int(pagina) - 1):7*(int(pagina))]
+    if not 'username' in session:
+        trayectos_proximos_origen = TrayectosPrueba.find({
+            'origen': { '$near':
+            {
+                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+                '$maxDistance': int(radioorigen)
+            }
+        }, 
+            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+            'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+        trayectos_proximos_destino = TrayectosPrueba.find({
+            'destino': { '$near':
+            {
+                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+                '$maxDistance': int(radiodestino)
+            }
+        }, 
+            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+            'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+    else:
+        user = Usuarios.find_one({'username': session['username']})
+        trayectos_proximos_origen = TrayectosPrueba.find({
+            'origen': { '$near':
+            {
+                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+                '$maxDistance': int(radioorigen)
+            }
+        }, 
+            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+            'numeropasajeros': { '$gte': int(numpasajeros) }, 
+            'conductor': {'$ne': user['_id']},
+            'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+        trayectos_proximos_destino = TrayectosPrueba.find({
+            'destino': { '$near':
+            {
+                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+                '$maxDistance': int(radiodestino)
+            }
+        }, 
+            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+            'numeropasajeros': { '$gte': int(numpasajeros) }, 
+            'conductor': {'$ne': user['_id']},
+            'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+
+
     num_tray = 0
     trayectos = []
     for doc in trayectos_proximos_origen:
