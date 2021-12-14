@@ -79,8 +79,9 @@
                   <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
                   {{ duracion }}
                </li>
+               <div id="map" style="width: 400px; height: 400px;"></div>
 
-               {{if session['username'] == conductor['username']}}
+               {% if session['username'] == conductor['username'] %}
                <p><a href="/editarperfil">
                   <button>Editar</button></a>
                <a href="/eliminarusuario">
@@ -97,7 +98,7 @@
                   </a>
                </span>
                {% endif %}
-               <div id="map" style="width: 400px; height: 400px;"></div>
+               
             </ul>
 
             </br>
@@ -134,7 +135,7 @@
       </div>
    </div>
 </section>
-<div id="map"></div>
+
 {% endblock %}
 {% block footer %}
 {{ super() }}

@@ -72,8 +72,15 @@
       }
 
       xd {
+         color: rgb(10, 124, 0);
          opacity: 0.5;
       }
+
+      .center {
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+       }
    </style>
    </head>
 
@@ -81,7 +88,9 @@
 
       <h2 style="text-align:center"></h2>
       <div class="card">
-         <img src={{usuario['foto']}} width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+         <br>
+         <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+         <br>
          <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
          <p class="title">@{{ usuario['username'] }}</p>
          <p>
@@ -94,7 +103,7 @@
          <p><a href="/editarperfil">
                <button>Editar</button></a>
             <a href="/eliminarusuario">
-               <button onclick="return confirm('¿Estás seguro de que desea eliminar tu usuario?')" class="button button3">Eliminar usuario</button>
+               <button onclick="return confirm('¿Estás seguro de que desea eliminar tu usuario?')" style="background-color: #f44336;">Eliminar usuario</button>
             </a>
 
             <script> 
