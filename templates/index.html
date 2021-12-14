@@ -120,7 +120,9 @@
 		</div>
 	</div>
 </section>
-
+<!-- THE END OF SECTIONS -->
+{% endblock %}
+{% block footer %}
 <!-- CONTACT
 ================================================== -->
 <section id="contact" class="nopadding" style="background:#292929;">
@@ -135,11 +137,6 @@
 	</div>
 	<div class="clearfix"></div>
 </section>
-<!-- THE END OF SECTIONS -->
-
-
-
-
 <!-- FOOTER
 ================================================== -->
 <footer id="footer" class="footer2">
@@ -305,7 +302,5 @@
 	t = yyyy + '-' + mm + '-' + dd;
 	document.getElementById("horasalida").min = t;
 </script>
-{% endblock %}
-{% block footer %}
 {{ super() }}
 {% endblock %}
