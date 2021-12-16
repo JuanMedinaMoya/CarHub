@@ -79,6 +79,12 @@
          color: rgb(10, 124, 0);
          opacity: 0.5;
       }
+      
+      .center {
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+       }
    </style>
    </head>
 
@@ -86,7 +92,9 @@
 
       <h2 style="text-align:center"></h2>
       <div class="card">
-         <img src={{usuario['foto']}} width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+         <br>
+         <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+         <br>
          <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
          <p class="title">@{{ usuario['username'] }}</p>
          <p>
