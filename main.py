@@ -151,7 +151,7 @@ def crearViaje():
             return render_template('crearViaje.html',error=error,origen=origenstr,destino=destinostr,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
         else :
             Trayectos.insert(
-                {'conductor':conductor, 'origenstr': origenstr, 'origen': origen, 'destinostr': destinostr, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
+                {'conductor':conductor, 'origenstr': origenstr, 'origen': origen, 'destinostr': destinostr, 'destino': destino, 'horasalida': d_horasalida, 'precio': int(precio), 'numeropasajeros': int(numeropasajeros), 'finalizado':finalizado, 'pasajeros' : pasajeros})
             return render_template('index.html')
      
 
@@ -497,9 +497,11 @@ def anadirPasajero(idtrayecto):
 
     nuevopasajero = []
     nuevopasajero.append(usuario)
-    nuevopasajero.append(nump)
+    pa = {
+        'pasajeros' : int(nump)}
+    nuevopasajero.append(pa)
     pasajeros.append(nuevopasajero)
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros.append(nuevopasajero), 'numeropasajeros' : numpasajeros-nump}})
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},{'$set':{'pasajeros' : pasajeros.append(nuevopasajero), 'numeropasajeros' : numpasajeros-int(nump)}})
     return redirect('/crear_conversacion/' + ObjectId(conductor) + '/' + ObjectId(usuario['_id'])) # Crea la conversacion cuando se añade a la reserva
 
 #------------------------------------------------------------
