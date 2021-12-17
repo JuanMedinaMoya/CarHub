@@ -66,6 +66,22 @@
                   text-align: center;
                }
             </style>
+
+            <!-- Solo para el admin para editar, borrar o finalizar  -->
+            {% if session['username'] == conductor['username'] %}
+            <p>
+               <a href="/#">
+                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
+               </a>
+               <a href="/#">
+                  <button type="button" class="btn btn-danger">Borrar</button>
+               </a>
+               <a href="/#">
+                  <button type="button" class="btn btn-dark">Finalizar</button>
+               </a>
+            </p>
+            {% endif %}
+
             <ul class="list-group">
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
@@ -81,11 +97,8 @@
                </li>
                <div id="map" style="width: 400px; height: 400px;"></div>
 
-               {% if session['username'] == conductor['username'] %}
-               cositas que puede cambiar el admin del viaje B-)
-               
-               {% else %}
-               
+               <!-- Solo para el admin para editar, borrar o finalizar  -->
+               {% if session['username'] != conductor['username'] %}
                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
                   <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
                      aria-current="true">
@@ -93,7 +106,7 @@
                   </a>
                </span>
                {% endif %}
-               
+
             </ul>
 
             </br>
