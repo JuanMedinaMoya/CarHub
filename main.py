@@ -136,20 +136,22 @@ def crearViaje():
         usuario = Usuarios.find_one({"username": session["username"]})
 
         conductor = ObjectId(usuario['_id'])
-        origen = request.form['origen']
-        destino = request.form['destino']
+        origenstr = request.form['origen']
+        destinostr = request.form['destino']
         horasalida = request.form['horasalida']
         d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
         precio = request.form['precio']
         numeropasajeros = request.form['numeropasajeros']
         finalizado = 0
         pasajeros = []
-        if origen == destino :
+        origen = { 'type': "Point", 'coordinates': [getLatitud(origenstr),getLongitud(origenstr)] }
+        destino = { 'type': "Point", 'coordinates': [getLatitud(destinostr),getLongitud(destinostr)] }
+        if origenstr == destinostr :
             error = "Error: origen y destino iguales"
-            return render_template('crearViaje.html',error=error,origen=origen,destino=destino,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
+            return render_template('crearViaje.html',error=error,origen=origenstr,destino=destinostr,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
         else :
             Trayectos.insert(
-                {'conductor':conductor, 'origen': origen, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
+                {'conductor':conductor, 'origenstr': origenstr, 'origen': origen, 'destinostr': destinostr, 'destino': destino, 'horasalida': d_horasalida, 'precio': precio, 'numeropasajeros': numeropasajeros, 'finalizado':finalizado, 'pasajeros' : pasajeros})
             return render_template('index.html')
      
 
@@ -341,7 +343,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
     if not 'username' in session:
         if loc_origen:
             trayectos_proximos_origen = []
-            tray1 = TrayectosPrueba.find({
+            tray1 = Trayectos.find({
                 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
                 'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
             loc = localidad(getLatitud(origen), getLongitud(origen))
@@ -350,7 +352,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
                 if mismaLocalidad(loc, l):
                     trayectos_proximos_origen.append(doc)
         else:
-            trayectos_proximos_origen = TrayectosPrueba.find({
+            trayectos_proximos_origen = Trayectos.find({
                 'origen': { '$near':
                 {
                     '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
@@ -364,7 +366,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
 
         if loc_destino:
             trayectos_proximos_destino = []
-            tray2 = TrayectosPrueba.find({
+            tray2 = Trayectos.find({
                 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
                 'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
             loc = localidad(getLatitud(destino), getLongitud(destino))
@@ -373,7 +375,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
                 if mismaLocalidad(loc, l):
                     trayectos_proximos_destino.append(doc)
         else:
-            trayectos_proximos_destino = TrayectosPrueba.find({
+            trayectos_proximos_destino = Trayectos.find({
                 'destino': { '$near':
                 {
                     '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
@@ -387,7 +389,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
         user = Usuarios.find_one({'username': session['username']})
         if loc_origen:
             trayectos_proximos_origen = []
-            tray1 = TrayectosPrueba.find({
+            tray1 = Trayectos.find({
                 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
                 'numeropasajeros': { '$gte': int(numpasajeros) }, 
                 'conductor': {'$ne': user['_id']},
@@ -398,7 +400,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
                 if mismaLocalidad(loc, l):
                     trayectos_proximos_origen.append(doc)
         else:
-            trayectos_proximos_origen = TrayectosPrueba.find({
+            trayectos_proximos_origen = Trayectos.find({
                 'origen': { '$near':
                 {
                     '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
@@ -414,7 +416,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
 
         if loc_destino:
             trayectos_proximos_destino = []
-            tray2 = TrayectosPrueba.find({
+            tray2 = Trayectos.find({
                 'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
                 'numeropasajeros': { '$gte': int(numpasajeros) }, 
                 'conductor': {'$ne': user['_id']},
@@ -425,7 +427,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
                 if mismaLocalidad(loc, l):
                     trayectos_proximos_destino.append(doc)
         else:
-            trayectos_proximos_destino = TrayectosPrueba.find({
+            trayectos_proximos_destino = Trayectos.find({
                 'destino': { '$near':
                 {
                     '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
@@ -639,8 +641,8 @@ def mis_viajes(usuario, pagina):
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
-            'origen': doc['origen'],
-            'destino': doc['destino'],
+            'origenstr': doc['origenstr'],
+            'destinostr': doc['destinostr'],
             'horasalida': doc['horasalida'],
             'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros']
@@ -665,8 +667,8 @@ def mis_viajes_creados(usuario, pagina):
     for doc in tray:
         trayectos.append({
             '_id': str(ObjectId(doc['_id'])),
-            'origen': doc['origen'],
-            'destino': doc['destino'],
+            'origenstr': doc['origenstr'],
+            'destinostr': doc['destinostr'],
             'horasalida': doc['horasalida'],
             'precio': doc['precio'],
             'numeropasajeros': doc['numeropasajeros']
