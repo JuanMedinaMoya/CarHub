@@ -316,78 +316,140 @@ def logout():
 @app.route('/busqueda', methods = ['POST'])
 def busquedatrayecto_post():
     origen = request.form['origen']
+    localidad_origen = 'False'
+    if 'mostrarlocalidadorigen' in request.form:
+        localidad_origen = request.form['mostrarlocalidadorigen']
     radio_origen = request.form['radioorigen']
     destino = request.form['destino']
+    localidad_destino = 'False'
+    if 'mostrarlocalidaddestino' in request.form:
+        localidad_destino = request.form['mostrarlocalidaddestino']
     radio_destino = request.form['radiodestino']
     horasalida = request.form['horasalida']
     #d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
     numeropasajeros = request.form['numeropasajeros']
-    return redirect('/busqueda/' + origen + '/' + radio_origen + '/' + destino + '/' + radio_destino + '/' + horasalida + '/' + numeropasajeros + '/1')
+    return redirect('/busqueda/' + origen + '/' + localidad_origen + '/' + radio_origen + '/' + destino + '/' + localidad_destino + '/' + radio_destino + '/' + horasalida + '/' + numeropasajeros + '/1')
 
 
 
-@app.route('/busqueda/<origen>/<radioorigen>/<destino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
-def busquedatrayecto_get(origen, radioorigen, destino, radiodestino, horasalida, numpasajeros, pagina):
+@app.route('/busqueda/<origen>/<mostrarlocalidadorigen>/<radioorigen>/<destino>/<mostrarlocalidaddestino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>', methods = ['GET'])
+def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, mostrarlocalidaddestino, radiodestino, horasalida, numpasajeros, pagina):
+    loc_origen = bool(mostrarlocalidadorigen)
+    loc_destino = bool(mostrarlocalidaddestino)
     d_horasalida = datetime.strptime(horasalida, '%Y-%m-%d')
     d_horasalida_sup = d_horasalida + timedelta(days= 1)
     if not 'username' in session:
-        trayectos_proximos_origen = TrayectosPrueba.find({
-            'origen': { '$near':
-            {
-                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
-                '$maxDistance': int(radioorigen)
-            }
-        }, 
-            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-            'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
-        trayectos_proximos_destino = TrayectosPrueba.find({
-            'destino': { '$near':
-            {
-                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
-                '$maxDistance': int(radiodestino)
-            }
-        }, 
-            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-            'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+        if loc_origen:
+            trayectos_proximos_origen = []
+            tray1 = TrayectosPrueba.find({
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+            loc = localidad(getLatitud(origen), getLongitud(origen))
+            for doc in tray1:
+                l = localidad(doc['origen']['coordinates'][0], doc['origen']['coordinates'][1])
+                if mismaLocalidad(loc, l):
+                    trayectos_proximos_origen.append(doc)
+        else:
+            trayectos_proximos_origen = TrayectosPrueba.find({
+                'origen': { '$near':
+                {
+                    '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+                    '$maxDistance': int(radioorigen)
+                }
+            }, 
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+        
+
+
+        if loc_destino:
+            trayectos_proximos_destino = []
+            tray2 = TrayectosPrueba.find({
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+            loc = localidad(getLatitud(destino), getLongitud(destino))
+            for doc in tray2:
+                l = localidad(doc['destino']['coordinates'][0], doc['destino']['coordinates'][1])
+                if mismaLocalidad(loc, l):
+                    trayectos_proximos_destino.append(doc)
+        else:
+            trayectos_proximos_destino = TrayectosPrueba.find({
+                'destino': { '$near':
+                {
+                    '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+                    '$maxDistance': int(radiodestino)
+                }
+            }, 
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }}).sort('horasalida', 1)
+
     else:
         user = Usuarios.find_one({'username': session['username']})
-        trayectos_proximos_origen = TrayectosPrueba.find({
-            'origen': { '$near':
-            {
-                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
-                '$maxDistance': int(radioorigen)
-            }
-        }, 
-            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-            'numeropasajeros': { '$gte': int(numpasajeros) }, 
-            'conductor': {'$ne': user['_id']},
-            'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
-        trayectos_proximos_destino = TrayectosPrueba.find({
-            'destino': { '$near':
-            {
-                '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
-                '$maxDistance': int(radiodestino)
-            }
-        }, 
-            'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
-            'numeropasajeros': { '$gte': int(numpasajeros) }, 
-            'conductor': {'$ne': user['_id']},
-            'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+        if loc_origen:
+            trayectos_proximos_origen = []
+            tray1 = TrayectosPrueba.find({
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }, 
+                'conductor': {'$ne': user['_id']},
+                'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+            loc = localidad(getLatitud(origen), getLongitud(origen))
+            for doc in tray1:
+                l = localidad(doc['origen']['coordinates'][0], doc['origen']['coordinates'][1])
+                if mismaLocalidad(loc, l):
+                    trayectos_proximos_origen.append(doc)
+        else:
+            trayectos_proximos_origen = TrayectosPrueba.find({
+                'origen': { '$near':
+                {
+                    '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(origen)), float(getLongitud(origen)) ] },
+                    '$maxDistance': int(radioorigen)
+                }
+            }, 
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }, 
+                'conductor': {'$ne': user['_id']},
+                'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+        
 
+
+        if loc_destino:
+            trayectos_proximos_destino = []
+            tray2 = TrayectosPrueba.find({
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }, 
+                'conductor': {'$ne': user['_id']},
+                'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
+            loc = localidad(getLatitud(destino), getLongitud(destino))
+            for doc in tray2:
+                l = localidad(doc['destino']['coordinates'][0], doc['destino']['coordinates'][1])
+                if mismaLocalidad(loc, l):
+                    trayectos_proximos_destino.append(doc)
+        else:
+            trayectos_proximos_destino = TrayectosPrueba.find({
+                'destino': { '$near':
+                {
+                    '$geometry': { 'type': "Point",  'coordinates': [ float(getLatitud(destino)), float(getLongitud(destino)) ] },
+                    '$maxDistance': int(radiodestino)
+                }
+            }, 
+                'horasalida': { '$gte': d_horasalida, '$lt' : d_horasalida_sup }, 
+                'numeropasajeros': { '$gte': int(numpasajeros) }, 
+                'conductor': {'$ne': user['_id']},
+                'pasajeros': {'$not': {'$elemMatch': {'comprador': user['_id']}}}}).sort('horasalida', 1)
 
     num_tray = 0
     trayectos = []
     for doc in trayectos_proximos_origen:
-        if (doc in trayectos_proximos_destino):
-            trayectos.append({
-                '_id': str(ObjectId(doc['_id'])),
-                'origen': doc['origenstr'],
-                'destino': doc['destinostr'],
-                'horasalida': doc['horasalida'],
-                'precio': doc['precio'],
-                'numeropasajeros': doc['numeropasajeros']
-            })
-            num_tray += 1
+            if (doc in trayectos_proximos_destino and doc['finalizado'] == 0):
+                trayectos.append({
+                    '_id': str(ObjectId(doc['_id'])),
+                    'origen': doc['origenstr'],
+                    'destino': doc['destinostr'],
+                    'horasalida': doc['horasalida'],
+                    'precio': doc['precio'],
+                    'numeropasajeros': doc['numeropasajeros']
+                })
+                num_tray += 1
     trayectos = trayectos[7*(int(pagina) - 1):7*(int(pagina))]
     datos = {
         'origen' : origen,
@@ -975,6 +1037,27 @@ def duracion(origen, destino):                                   # devuelve la d
     duracion = json_data['routes'][0]['legs'][0]['duration']['text'] #hay que controlar el error por si no encuentra ruta
     return duracion
 
+@app.route('/localidad/<lat>/<lon>', methods=['GET'])
+def localidad(lat, lon):
+    directions_api_url = "https://maps.googleapis.com/maps/api/geocode/json?"
+    url = directions_api_url + urllib.parse.urlencode({"latlng": str(lat) + ',' + str(lon), "sensor": "false", "language": "es", "key":API_KEY_MAPS})
+    json_data = requests.get(url).json()
+    return json_data
+    # return json_data['results'][0]['address_components'][2]['long_name']
+
+def mismaLocalidad(loc_1, loc_2):
+    misma = False
+    if loc_1['results'][1] and loc_2['results'][2]:
+        for r_1 in loc_1['results']:
+            if not(misma) and r_1['types'][0] == 'locality':
+                for a_1 in r_1['address_components']:
+                    if a_1['types'][0] == 'locality':
+                        for r_2 in loc_2['results']:
+                            if not(misma) and r_2['types'][0] == 'locality':
+                                for a_2 in r_2['address_components']:
+                                    if a_2['types'][0] == 'locality':
+                                        misma = a_1['long_name'] == a_2['long_name']
+    return misma
 
 #------------------------------------------------------------------
 #           _____ _____   _______ _____ ______ __  __ _____   ____  
