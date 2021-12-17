@@ -144,8 +144,8 @@ def crearViaje():
         numeropasajeros = request.form['numeropasajeros']
         finalizado = 0
         pasajeros = []
-        origen = { 'type': "Point", 'coordinates': [getLatitud(origenstr),getLongitud(origenstr)] }
-        destino = { 'type': "Point", 'coordinates': [getLatitud(destinostr),getLongitud(destinostr)] }
+        origen = { 'type': "Point", 'coordinates': [float(getLatitud(origenstr)),float(getLongitud(origenstr))] }
+        destino = { 'type': "Point", 'coordinates': [float(getLatitud(destinostr)),float(getLongitud(destinostr))] }
         if origenstr == destinostr :
             error = "Error: origen y destino iguales"
             return render_template('crearViaje.html',error=error,origen=origenstr,destino=destinostr,horasalida=horasalida,precio=precio,numeropasajeros=numeropasajeros)
