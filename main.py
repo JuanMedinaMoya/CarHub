@@ -480,7 +480,7 @@ def mostrarViaje(id):
             usuario = Usuarios.find_one({'_id': ObjectId(id)})
             pasajerosPerfil.append(usuario)
         
-    duracionViaje = duracion(origen=trayecto['origen'],destino=trayecto['destino'])
+    duracionViaje = duracion(origen=trayecto['origenstr'],destino=trayecto['destinostr'])
 
     return render_template('viaje.html', trayecto=trayecto, conductor=conductor, pasajeros=pasajerosPerfil, duracion=duracionViaje)
 

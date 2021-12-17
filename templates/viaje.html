@@ -34,8 +34,8 @@
 
       directionsService
          .route({
-            origin: "{{ trayecto['origen'] }}",
-            destination: "{{ trayecto['destino'] }}",
+            origin: "{{ trayecto['origenstr'] }}",
+            destination: "{{ trayecto['destinostr'] }}",
             travelMode: google.maps.TravelMode.DRIVING,
          })
          .then((response) => {
@@ -56,7 +56,7 @@
       <div class="textwidget">
          <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'].strftime('El %d/%m/%Y a las
             %H:%M') }}<br />
-            {{ trayecto['origen'] }} ➜ {{ trayecto['destino'] }} <br /><br /></h1>
+            {{ trayecto['origenstr'] }} ➜ {{ trayecto['destinostr'] }} <br /><br /></h1>
 
          <div class="contactstyle topform">
             <style>
@@ -69,11 +69,11 @@
             <ul class="list-group">
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
-                  {{ trayecto['origen'] }}
+                  {{ trayecto['origenstr'] }}
                </li>
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
-                  {{ trayecto['destino'] }}
+                  {{ trayecto['destinostr'] }}
                </li>
                <li class="list-group-item">
                   <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
