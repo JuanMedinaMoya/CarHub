@@ -59,7 +59,16 @@
 						<label for="origen">Origen</label>
 						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen" required>
 					</div>
-					<div class="form-group range-wrap">
+					<div class="form-group" onload="loadRadio1()">
+						<input type="radio" id="mostrarlocalidadorigen" name="mostrarlocalidadorigen" value="True"
+							onclick="checkRadioOrigen1()" style="width: 50px;" checked>
+						<label for="mostrarlocalidadorigen">Por localidad</label>
+						<input type="radio" id="mostrarradioorigen" name="mostrarradioorigen" value="False"
+							onclick="checkRadioOrigen2()" style="width: 50px;">
+						<label for="mostrarradioorigen">Por cercanía</label>
+					</div>
+
+					<div class="form-group range-wrap" id="rangoorigen" style="display: none;">
 						<label for="radioorigen">Radio origen</label>
 						<input type="range" class="range" id="radioorigen" name="radioorigen" value="1000" min="0"
 							max="10000" step="100" list="steplist1">
@@ -83,7 +92,15 @@
 						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
 							required>
 					</div>
-					<div class="form-group range-wrap">
+					<div class="form-group" onload="loadRadio2()">
+						<input type="radio" id="mostrarlocalidaddestino" name="mostrarlocalidaddestino" value="True"
+							onclick="checkRadioDestino1()" style="width: 50px;" checked>
+						<label for="mostrarlocalidaddestino">Por localidad</label>
+						<input type="radio" id="mostrarradiodestino" name="mostrarlocalidaddestino" value="False"
+							onclick="checkRadioDestino2()" style="width: 50px;">
+						<label for="mostrarradiodestino">Por cercanía</label>
+					</div>
+					<div class="form-group range-wrap" id="rangodestino" style="display: none;">
 						<label for="radiodestino">Radio destino</label>
 						<input type="range" class="range" id="radiodestino" name="radiodestino" value="1000" min="0"
 							max="10000" step="100" list="steplist2">
@@ -158,6 +175,42 @@
 </footer>
 <!-- SCRIPTS
 ================================================== -->
+<script>
+	function loadRadio1() {
+		if (document.getElementById("mostrarradioorigen").checked === true) {
+			document.getElementById("rangoorigen").style.display = "block";
+		}
+	}
+	function loadRadio2() {
+		if (document.getElementById("mostrarradiodestino").checked === true) {
+			document.getElementById("rangodestino").style.display = "block";
+		}
+	}
+	function checkRadioOrigen1() {
+		document.getElementById("mostrarlocalidadorigen").checked = true;
+		document.getElementById("mostrarlocalidadorigen").value = "True";
+		document.getElementById("mostrarradioorigen").checked = false;
+		document.getElementById("rangoorigen").style.display = "none";
+	}
+	function checkRadioOrigen2() {
+		document.getElementById("mostrarlocalidadorigen").checked = false;
+		document.getElementById("mostrarlocalidadorigen").value = "False";
+		document.getElementById("mostrarradioorigen").checked = true;
+		document.getElementById("rangoorigen").style.display = "block";
+	}
+	function checkRadioDestino1() {
+		document.getElementById("mostrarlocalidaddestino").checked = true;
+		document.getElementById("mostrarlocalidaddestino").value = "True";
+		document.getElementById("mostrarradiodestino").checked = false;
+		document.getElementById("rangodestino").style.display = "none";
+	}
+	function checkRadioDestino2() {
+		document.getElementById("mostrarlocalidaddestino").checked = false;
+		document.getElementById("mostrarlocalidaddestino").value = "False";
+		document.getElementById("mostrarradiodestino").checked = true;
+		document.getElementById("rangodestino").style.display = "block";
+	}
+</script>
 <script>
 	const allRanges = document.querySelectorAll(".range-wrap");
 	allRanges.forEach(wrap => {
