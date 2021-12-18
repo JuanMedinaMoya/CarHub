@@ -349,7 +349,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
             loc = localidad(getLatitud(origen), getLongitud(origen))
             for doc in tray1:
                 l = localidad(doc['origen']['coordinates'][0], doc['origen']['coordinates'][1])
-                if mismaLocalidad(loc, l):
+                if loc == l:
                     trayectos_proximos_origen.append(doc)
         else:
             trayectos_proximos_origen = Trayectos.find({
@@ -372,7 +372,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
             loc = localidad(getLatitud(destino), getLongitud(destino))
             for doc in tray2:
                 l = localidad(doc['destino']['coordinates'][0], doc['destino']['coordinates'][1])
-                if mismaLocalidad(loc, l):
+                if loc == l:
                     trayectos_proximos_destino.append(doc)
         else:
             trayectos_proximos_destino = Trayectos.find({
@@ -397,7 +397,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
             loc = localidad(getLatitud(origen), getLongitud(origen))
             for doc in tray1:
                 l = localidad(doc['origen']['coordinates'][0], doc['origen']['coordinates'][1])
-                if mismaLocalidad(loc, l):
+                if loc == l:
                     trayectos_proximos_origen.append(doc)
         else:
             trayectos_proximos_origen = Trayectos.find({
@@ -424,7 +424,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino, m
             loc = localidad(getLatitud(destino), getLongitud(destino))
             for doc in tray2:
                 l = localidad(doc['destino']['coordinates'][0], doc['destino']['coordinates'][1])
-                if mismaLocalidad(loc, l):
+                if loc == l:
                     trayectos_proximos_destino.append(doc)
         else:
             trayectos_proximos_destino = Trayectos.find({
@@ -1046,22 +1046,10 @@ def localidad(lat, lon):
     directions_api_url = "https://maps.googleapis.com/maps/api/geocode/json?"
     url = directions_api_url + urllib.parse.urlencode({"latlng": str(lat) + ',' + str(lon), "sensor": "false", "language": "es", "key":API_KEY_MAPS})
     json_data = requests.get(url).json()
-    return json_data
-    # return json_data['results'][0]['address_components'][2]['long_name']
-
-def mismaLocalidad(loc_1, loc_2):
-    misma = False
-    if loc_1['results'][1] and loc_2['results'][2]:
-        for r_1 in loc_1['results']:
-            if not(misma) and r_1['types'][0] == 'locality':
-                for a_1 in r_1['address_components']:
-                    if a_1['types'][0] == 'locality':
-                        for r_2 in loc_2['results']:
-                            if not(misma) and r_2['types'][0] == 'locality':
-                                for a_2 in r_2['address_components']:
-                                    if a_2['types'][0] == 'locality':
-                                        misma = a_1['long_name'] == a_2['long_name']
-    return misma
+    for r in json_data['results']:
+        if r['types'][0] == 'locality':
+            return r['place_id']
+    return None
 
 #------------------------------------------------------------------
 #           _____ _____   _______ _____ ______ __  __ _____   ____  
