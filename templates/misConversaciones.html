@@ -7,35 +7,28 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
-<!-- Incluye la cabecera -->
-<section id="home"
-    style="padding: 160px; background-image: url(static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
-    <div class="container">
-        <div class="textwidget">
-            <div class="contactstyle topform">
-                <div class="list-group">
-
-                    <header class="container">
-                        <h1 class="display-1">Mis Conversaciones</h1>
-                        <hr class="my-3">
-                    </header>
-                    <article class="container">
-                        <div class="list-group">
-                            {% for c in conversaciones %}
-                            <a href="/buscar_conversacion_id/{{ c['_id'] }}"
-                                class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h2 class="mb-1"></h2>
-                                </div>
-                            </a>
-                            {% endfor %}
-                        </div>
-                    </article>
+<div class="list-group">
+    <header class="container">
+        <h1 class="display-1">Mis Conversaciones</h1>
+        <hr class="my-3">
+    </header>
+    <article class="container">
+        <div class="list-group">
+            {% for c in listConversaciones %}
+            <a href="/buscar_conversacion_id/{{ c['_id'] }}" class="list-group-item list-group-item-action mx-auto" style="max-width: 400px;">
+                <div class="d-flex justify-content-start">
+                    <div class="img_cont">
+                        <img src="{{ c['profile_picture'] }}" class="rounded-circle user_img">
+                    </div>
+                    <div class="mx-3 my-auto">
+                        <span class="fs-3 fw-light text-truncate">{{ c['username'] }}</span>
+                    </div>
                 </div>
-            </div>
+            </a>
+            {% endfor %}
         </div>
-    </div>
-</section>
+    </article>
+</div>
 {% endblock %}
 {% block footer %}
 {{ super() }}

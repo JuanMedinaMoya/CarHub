@@ -26,7 +26,7 @@
 	<!-- Header
 ================================================== -->
 	{% block navbar %}
-	<header class="px-3 py-2 bg-light text-white">
+	<header class="px-3 py-2 bg-light text-white bg-opacity-50">
 		<div class="container">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 				<a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
@@ -65,7 +65,7 @@
 						</a>
 					</li>
 					<li>
-						<a id="5_link" href="/buscar_conversaciones_usuario/{{ session['username'] }}"
+						<a id="5_link" href="/mis_conversaciones/{{ session['username'] }}"
 							class="nav-link text-dark">
 							<i class="fas fa-comments"></i>
 							Mis Conversaciones
@@ -121,7 +121,7 @@
 				document.getElementById("3_link").className += " nav-text-selected";
 			} else if (url.startsWith("/mis_viajes_creados")) {
 				document.getElementById("4_link").className += " nav-text-selected";
-			} else if (url.startsWith("/buscar_conversaciones_usuario")) {
+			} else if (url.startsWith("/mis_conversaciones")) {
 				document.getElementById("5_link").className += " nav-text-selected";
 			} else if (url == "/perfil") {
 				document.getElementById("6_link").className += " nav-text-selected";

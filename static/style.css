@@ -5359,3 +5359,21 @@ border-radius: 50%;
   .button3 {background-color: #f44336;} /* Red */
 
   .nav-text-selected {background-color: #20b2aa;}
+
+  .img_cont{
+	position: relative;
+	height: 70px;
+	width: 70px;
+  }
+
+  .user_info{
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: 15px;
+ }
+
+ .user_img{
+	height: 70px;
+	width: 70px;
+	border:1.5px solid #f5f6fa;
+ }
