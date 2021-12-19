@@ -82,7 +82,7 @@ def login():
             #puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
             session["username"] = busq['username']
             #session["creador"] = puedeCrear
-            return render_template('index.html')
+            return redirect("/")
         else:
             error = "Error: contraseña incorrecta"
             return render_template('login.html',
@@ -147,7 +147,6 @@ def registro():
                                    contrasena=contrasena,
                                    contrasenarep=contrasenarep,
                                    error=error)
-
         id = Usuarios.insert({
             'username': username,
             'nombre': nombre,
@@ -163,7 +162,7 @@ def registro():
         })
         session["username"] = username
         session["creador"] = False
-        return render_template('index.html')
+        return redirect("/")
 
 
 @app.route('/crearviaje', methods=['POST', 'GET'])
