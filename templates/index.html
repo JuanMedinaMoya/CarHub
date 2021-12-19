@@ -7,233 +7,9 @@
 <script type="text/javascript"
 	src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-<script
+<script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
 	async></script>
-<style type="text/css">
-	.range-wrap {
-		position: relative;
-		margin: 0 auto 3rem;
-	}
-
-	.range {
-		width: 100%;
-	}
-
-	.bubble {
-		background: #0075ff;
-		color: white;
-		padding: 4px 12px;
-		position: absolute;
-		border-radius: 4px;
-		left: 50%;
-		top: 80%;
-		transform: translateX(-50%);
-	}
-
-	.bubble::after {
-		content: "";
-		position: absolute;
-		width: 2px;
-		height: 2px;
-		background: #0075ff;
-		top: -1px;
-		left: 50%;
-	}
-</style>
-{% endblock %}
-{% block navbar %}
-{{ super() }}
-{% endblock %}
-{% block body %}
-<section id="home"
-	style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
-	<div class="container">
-		<div class="textwidget">
-			<h1 class="toptitle" style="color:rgb(10, 124, 0);">Infinidad de VIAJES al<br />MEJOR PRECIO<br /><br /><i
-					class="fa fa-star roundicon"></i>
-			</h1>
-			<div class="contactstyle topform">
-				<form method="post" action="/busqueda" enctype="multipart/form-data">
-					<div class="form-group">
-						<label for="origen">Origen</label>
-						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen" required>
-					</div>
-					<div class="form-group" onload="loadRadio1()">
-						<input type="radio" id="mostrarlocalidadorigen" name="mostrarlocalidadorigen" value="True"
-							onclick="checkRadioOrigen1()" style="width: 50px;" checked>
-						<label for="mostrarlocalidadorigen">Por localidad</label>
-						<input type="radio" id="mostrarradioorigen" name="mostrarradioorigen" value="False"
-							onclick="checkRadioOrigen2()" style="width: 50px;">
-						<label for="mostrarradioorigen">Por cercanía</label>
-					</div>
-
-					<div class="form-group range-wrap" id="rangoorigen" style="display: none;">
-						<label for="radioorigen">Radio origen</label>
-						<input type="range" class="range" id="radioorigen" name="radioorigen" value="1000" min="0"
-							max="10000" step="100" list="steplist1">
-						<output class="bubble"></output>
-						<datalist id="steplist1">
-							<option value="0">0 km</option>
-							<option value="1000"></option>
-							<option value="2000">2 km</option>
-							<option value="3000"></option>
-							<option value="4000"></option>
-							<option value="5000">5 km</option>
-							<option value="6000"></option>
-							<option value="7000"></option>
-							<option value="8000"></option>
-							<option value="9000"></option>
-							<option value="10000">10 km</option>
-						</datalist>
-					</div>
-					<div class="form-group">
-						<label for="destino">Destino</label>
-						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
-							required>
-					</div>
-					<div class="form-group" onload="loadRadio2()">
-						<input type="radio" id="mostrarlocalidaddestino" name="mostrarlocalidaddestino" value="True"
-							onclick="checkRadioDestino1()" style="width: 50px;" checked>
-						<label for="mostrarlocalidaddestino">Por localidad</label>
-						<input type="radio" id="mostrarradiodestino" name="mostrarlocalidaddestino" value="False"
-							onclick="checkRadioDestino2()" style="width: 50px;">
-						<label for="mostrarradiodestino">Por cercanía</label>
-					</div>
-					<div class="form-group range-wrap" id="rangodestino" style="display: none;">
-						<label for="radiodestino">Radio destino</label>
-						<input type="range" class="range" id="radiodestino" name="radiodestino" value="1000" min="0"
-							max="10000" step="100" list="steplist2">
-						<output class="bubble"></output>
-						<datalist id="steplist2">
-							<option value="0">0 km</option>
-							<option value="1000"></option>
-							<option value="2000">2 km</option>
-							<option value="3000"></option>
-							<option value="4000"></option>
-							<option value="5000">5 km</option>
-							<option value="6000"></option>
-							<option value="7000"></option>
-							<option value="8000"></option>
-							<option value="9000"></option>
-							<option value="10000">10 km</option>
-						</datalist>
-					</div>
-
-					<div id="map" style="width: 400px; height: 400px;"></div>
-					<div class="form-group">
-						<label for="horasalida">Fecha</label>
-						<input type="date" class="form-control" name="horasalida" id="horasalida" placeholder="Fecha"
-							required>
-					</div>
-					<div class="form-group">
-						<label for="numeropasajeros">Número de pasajeros</label>
-						<input type="number" class="form-control" name="numeropasajeros" id="numeropasajeros"
-							placeholder="Pasajeros" min="1" required>
-					</div>
-					<button type="submit" value="Buscar" class="btn btn-primary btn-lg btn-block">Buscar</button>
-				</form>
-			</div>
-		</div>
-	</div>
-</section>
-<!-- THE END OF SECTIONS -->
-{% endblock %}
-{% block footer %}
-<!-- CONTACT
-================================================== -->
-<section id="contact" class="nopadding" style="background:#292929;">
-	<div class="col-md-6 whitetext" style="padding: 60px;">
-		<div class="textwidget">
-			<div class="bookarea">
-				CONTACT<br>
-				<span class="bordered">Escuela Superior de Ingeniería Informatica </span><br>
-				<span class="call">+34 638 28 99 82</span>
-			</div>
-		</div>
-	</div>
-	<div class="clearfix"></div>
-</section>
-<!-- FOOTER
-================================================== -->
-<footer id="footer" class="footer2">
-	<div class="copyright">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-				</div>
-				<div class="col-md-6 text-right">
-					<div class="footer-menu">
-						<ul id="menu-footer-links" class="menu">
-							<li><a href="/"></i>CarHub</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</footer>
-<!-- SCRIPTS
-================================================== -->
-<script>
-	function loadRadio1() {
-		if (document.getElementById("mostrarradioorigen").checked === true) {
-			document.getElementById("rangoorigen").style.display = "block";
-		}
-	}
-	function loadRadio2() {
-		if (document.getElementById("mostrarradiodestino").checked === true) {
-			document.getElementById("rangodestino").style.display = "block";
-		}
-	}
-	function checkRadioOrigen1() {
-		document.getElementById("mostrarlocalidadorigen").checked = true;
-		document.getElementById("mostrarlocalidadorigen").value = "True";
-		document.getElementById("mostrarradioorigen").checked = false;
-		document.getElementById("rangoorigen").style.display = "none";
-	}
-	function checkRadioOrigen2() {
-		document.getElementById("mostrarlocalidadorigen").checked = false;
-		document.getElementById("mostrarlocalidadorigen").value = "False";
-		document.getElementById("mostrarradioorigen").checked = true;
-		document.getElementById("rangoorigen").style.display = "block";
-	}
-	function checkRadioDestino1() {
-		document.getElementById("mostrarlocalidaddestino").checked = true;
-		document.getElementById("mostrarlocalidaddestino").value = "True";
-		document.getElementById("mostrarradiodestino").checked = false;
-		document.getElementById("rangodestino").style.display = "none";
-	}
-	function checkRadioDestino2() {
-		document.getElementById("mostrarlocalidaddestino").checked = false;
-		document.getElementById("mostrarlocalidaddestino").value = "False";
-		document.getElementById("mostrarradiodestino").checked = true;
-		document.getElementById("rangodestino").style.display = "block";
-	}
-</script>
-<script>
-	const allRanges = document.querySelectorAll(".range-wrap");
-	allRanges.forEach(wrap => {
-		const range = wrap.querySelector(".range");
-		const bubble = wrap.querySelector(".bubble");
-
-		range.addEventListener("input", () => {
-			setBubble(range, bubble);
-		});
-		setBubble(range, bubble);
-	});
-
-	function setBubble(range, bubble) {
-		const val = range.value;
-		const min = range.min ? range.min : 0;
-		const max = range.max ? range.max : 100;
-		const newVal = Number(((val - min) * 100) / (max - min));
-		bubble.innerHTML = val + 'm';
-
-		// Sorta magic numbers based on size of the native UI thumb
-		bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
-	}
-</script>
 <script>
 
 	function initMap() {
@@ -332,6 +108,237 @@
 		}
 	}
 </script>
+<style type="text/css">
+	.range-wrap {
+		position: relative;
+		margin: 0 auto 3rem;
+	}
+
+	.range {
+		width: 100%;
+	}
+
+	.bubble {
+		background: #0075ff;
+		color: white;
+		padding: 4px 12px;
+		position: absolute;
+		border-radius: 4px;
+		left: 50%;
+		top: 80%;
+		transform: translateX(-50%);
+	}
+
+	.bubble::after {
+		content: "";
+		position: absolute;
+		width: 2px;
+		height: 2px;
+		background: #0075ff;
+		top: -1px;
+		left: 50%;
+	}
+</style>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+<section id="home"
+	style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+	class="min-vh-100">
+	<div class="container">
+		<div class="textwidget">
+			<h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Busca
+				tu viaje<br /><br /><i class="fa fa-car roundicon"></i>
+			</h1>
+			<div class="contactstyle topform">
+				<form method="post" action="/busqueda" enctype="multipart/form-data">
+					<div class="form-group">
+						<label for="origen">Origen</label>
+						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen" required>
+					</div>
+					<div class="form-group" onload="loadRadio1()">
+						<input type="radio" id="mostrarlocalidadorigen" name="mostrarlocalidadorigen" value="True"
+							onclick="checkRadioOrigen1()" style="width: 50px;" checked>
+						<label for="mostrarlocalidadorigen">Por localidad</label>
+						<input type="radio" id="mostrarradioorigen" name="mostrarradioorigen" value="False"
+							onclick="checkRadioOrigen2()" style="width: 50px;">
+						<label for="mostrarradioorigen">Por cercanía</label>
+					</div>
+
+					<div class="form-group range-wrap" id="rangoorigen" style="display: none;">
+						<label for="radioorigen">Radio origen</label>
+						<input type="range" class="range" id="radioorigen" name="radioorigen" value="1000" min="0"
+							max="10000" step="100" list="steplist1">
+						<output class="bubble"></output>
+						<datalist id="steplist1">
+							<option value="0">0 km</option>
+							<option value="1000"></option>
+							<option value="2000">2 km</option>
+							<option value="3000"></option>
+							<option value="4000"></option>
+							<option value="5000">5 km</option>
+							<option value="6000"></option>
+							<option value="7000"></option>
+							<option value="8000"></option>
+							<option value="9000"></option>
+							<option value="10000">10 km</option>
+						</datalist>
+					</div>
+					<div class="form-group">
+						<label for="destino">Destino</label>
+						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
+							required>
+					</div>
+					<div class="form-group" onload="loadRadio2()">
+						<input type="radio" id="mostrarlocalidaddestino" name="mostrarlocalidaddestino" value="True"
+							onclick="checkRadioDestino1()" style="width: 50px;" checked>
+						<label for="mostrarlocalidaddestino">Por localidad</label>
+						<input type="radio" id="mostrarradiodestino" name="mostrarlocalidaddestino" value="False"
+							onclick="checkRadioDestino2()" style="width: 50px;">
+						<label for="mostrarradiodestino">Por cercanía</label>
+					</div>
+					<div class="form-group range-wrap" id="rangodestino" style="display: none;">
+						<label for="radiodestino">Radio destino</label>
+						<input type="range" class="range" id="radiodestino" name="radiodestino" value="1000" min="0"
+							max="10000" step="100" list="steplist2">
+						<output class="bubble"></output>
+						<datalist id="steplist2">
+							<option value="0">0 km</option>
+							<option value="1000"></option>
+							<option value="2000">2 km</option>
+							<option value="3000"></option>
+							<option value="4000"></option>
+							<option value="5000">5 km</option>
+							<option value="6000"></option>
+							<option value="7000"></option>
+							<option value="8000"></option>
+							<option value="9000"></option>
+							<option value="10000">10 km</option>
+						</datalist>
+					</div>
+
+					<div id="map" style="width: 400px; height: 400px;"></div>
+					<div class="form-group">
+						<label for="horasalida">Fecha</label>
+						<input type="date" class="form-control" name="horasalida" id="horasalida" placeholder="Fecha"
+							required>
+					</div>
+					<div class="form-group">
+						<label for="numeropasajeros">Número de pasajeros</label>
+						<input type="number" class="form-control" name="numeropasajeros" id="numeropasajeros"
+							placeholder="Pasajeros" min="1" required>
+					</div>
+					<button type="submit" value="Buscar" class="btn btn-primary btn-lg btn-block"
+						style="width: 100%;"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- THE END OF SECTIONS -->
+{% endblock %}
+{% block footer %}
+<!-- CONTACT
+================================================== -->
+<section id="contact" class="nopadding" style="background:#292929;">
+	<div class="col-md-6 whitetext" style="padding: 60px;">
+		<div class="textwidget">
+			<div class="bookarea">
+				CONTACT<br>
+				<span class="bordered">Escuela Superior de Ingeniería Informatica </span><br>
+				<span class="call">+34 638 28 99 82</span>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</section>
+<!-- FOOTER
+================================================== -->
+<footer id="footer" class="footer2">
+	<div class="copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+				</div>
+				<div class="col-md-6 text-right">
+					<div class="footer-menu">
+						<ul id="menu-footer-links" class="menu">
+							<li><a href="/"></i>CarHub</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<!-- SCRIPTS
+================================================== -->
+<script>
+	function loadRadio1() {
+		if (document.getElementById("mostrarradioorigen").checked === true) {
+			document.getElementById("rangoorigen").style.display = "block";
+		}
+	}
+	function loadRadio2() {
+		if (document.getElementById("mostrarradiodestino").checked === true) {
+			document.getElementById("rangodestino").style.display = "block";
+		}
+	}
+	function checkRadioOrigen1() {
+		document.getElementById("mostrarlocalidadorigen").checked = true;
+		document.getElementById("mostrarlocalidadorigen").value = "True";
+		document.getElementById("mostrarradioorigen").checked = false;
+		document.getElementById("rangoorigen").style.display = "none";
+	}
+	function checkRadioOrigen2() {
+		document.getElementById("mostrarlocalidadorigen").checked = false;
+		document.getElementById("mostrarlocalidadorigen").value = "False";
+		document.getElementById("mostrarradioorigen").checked = true;
+		document.getElementById("rangoorigen").style.display = "block";
+	}
+	function checkRadioDestino1() {
+		document.getElementById("mostrarlocalidaddestino").checked = true;
+		document.getElementById("mostrarlocalidaddestino").value = "True";
+		document.getElementById("mostrarradiodestino").checked = false;
+		document.getElementById("rangodestino").style.display = "none";
+	}
+	function checkRadioDestino2() {
+		document.getElementById("mostrarlocalidaddestino").checked = false;
+		document.getElementById("mostrarlocalidaddestino").value = "False";
+		document.getElementById("mostrarradiodestino").checked = true;
+		document.getElementById("rangodestino").style.display = "block";
+	}
+</script>
+<script>
+	const allRanges = document.querySelectorAll(".range-wrap");
+	allRanges.forEach(wrap => {
+		const range = wrap.querySelector(".range");
+		const bubble = wrap.querySelector(".bubble");
+
+		range.addEventListener("input", () => {
+			setBubble(range, bubble);
+		});
+		setBubble(range, bubble);
+	});
+
+	function setBubble(range, bubble) {
+		const val = range.value;
+		const min = range.min ? range.min : 0;
+		const max = range.max ? range.max : 100;
+		const newVal = Number(((val - min) * 100) / (max - min));
+		if (val < 1000) {
+			bubble.innerHTML = val + ' m';
+		} else {
+			bubble.innerHTML = val / 1000 + ' km';
+		}
+
+		// Sorta magic numbers based on size of the native UI thumb
+		bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+	}
+</script>
+
 <script>
 	var today = new Date();
 	var dd = today.getDate();

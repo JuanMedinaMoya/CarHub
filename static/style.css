@@ -5358,7 +5358,7 @@ border-radius: 50%;
   .button2 {background-color: #008CBA;} /* Blue */
   .button3 {background-color: #f44336;} /* Red */
 
-  .nav-text-selected {background-color: #20b2aa;}
+  .nav-text-selected {background-color: #20b2aa; border-radius: 20px;}
 
   .img_cont{
 	position: relative;

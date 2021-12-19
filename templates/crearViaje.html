@@ -1,15 +1,112 @@
-{% extends '/navbar.html' %}    
+{% extends '/navbar.html' %}
 {% block head %}
 {{ super() }}
 <title>Crear Viaje</title>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
-<script type="text/javascript" src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
+<script type="text/javascript"
+	src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
-      async
-></script>
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
+	async></script>
+<script>
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+			mapTypeControl: false,
+			center: { lat: 36.7213028, lng: -4.4216366 },
+			zoom: 13,
+		});
+
+		new AutocompleteDirectionsHandler(map);
+	}
+
+	class AutocompleteDirectionsHandler {
+		map;
+		originPlaceId;
+		destinationPlaceId;
+		directionsService;
+		directionsRenderer;
+		constructor(map) {
+			this.map = map;
+			this.originPlaceId = "";
+			this.destinationPlaceId = "";
+			this.travelMode = google.maps.TravelMode.DRIVING;
+			this.directionsService = new google.maps.DirectionsService();
+			this.directionsRenderer = new google.maps.DirectionsRenderer();
+			this.directionsRenderer.setMap(map);
+
+			const originInput = document.getElementById("origen");
+			const destinationInput = document.getElementById("destino");
+			const originAutocomplete = new google.maps.places.Autocomplete(originInput);
+
+			// Specify just the place data fields that you need.
+			originAutocomplete.setFields(["place_id"]);
+
+			const destinationAutocomplete = new google.maps.places.Autocomplete(
+				destinationInput
+			);
+
+			// Specify just the place data fields that you need.
+			destinationAutocomplete.setFields(["place_id"]);
+			this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+			this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
+
+
+		}
+		// Sets a listener on a radio button to change the filter type on Places
+		// Autocomplete.
+		setupClickListener(id, mode) {
+			const radioButton = document.getElementById(id);
+
+			radioButton.addEventListener("click", () => {
+				this.travelMode = mode;
+				this.route();
+			});
+		}
+		setupPlaceChangedListener(autocomplete, mode) {
+			autocomplete.bindTo("bounds", this.map);
+			autocomplete.addListener("place_changed", () => {
+				const place = autocomplete.getPlace();
+
+				if (!place.place_id) {
+					window.alert("Please select an option from the dropdown list.");
+					return;
+				}
+
+				if (mode === "ORIG") {
+					this.originPlaceId = place.place_id;
+				} else {
+					this.destinationPlaceId = place.place_id;
+				}
+
+				this.route();
+			});
+		}
+		route() {
+			if (!this.originPlaceId || !this.destinationPlaceId) {
+				return;
+			}
+
+			const me = this;
+
+			this.directionsService.route(
+				{
+					origin: { placeId: this.originPlaceId },
+					destination: { placeId: this.destinationPlaceId },
+					travelMode: this.travelMode,
+				},
+				(response, status) => {
+					if (status === "OK") {
+						me.directionsRenderer.setDirections(response);
+					} else {
+						window.alert("Directions request failed due to " + status);
+					}
+				}
+			);
+		}
+	}
+</script>
 
 {% endblock %}
 {% block navbar %}
@@ -19,164 +116,76 @@
 
 
 
-<section id="crearViaje" style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+<section id="crearViaje"
+	style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+	class="min-vh-100">
 	<div class="container">
 		<div class="textwidget">
-			<h1 class="toptitle" style="color:rgb(10, 124, 0);">Crea un Viaje!<br/> <br/><br/><i class="fa fa-star roundicon" ></i>
-			</h1>								
-			<div class="contactstyle topform">										
+			<h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Crea tu viaje<br /><br /><i
+					class="fa fa-car roundicon"></i>
+			</h1>
+			<div class="contactstyle topform">
 				<form method="post" action="/crearviaje" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="origen">Origen
 						</label>
-						<input type="text" class="form-control"  name="origen" id="origen" placeholder="Origen" value="{{origen}}" required>
+						<input type="text" class="form-control" name="origen" id="origen" placeholder="Origen"
+							value="{{origen}}" required>
 					</div>
 					<div class="form-group">
-					  <label for="destino">Destino</label>
-					  <input type="text" class="form-control"  name="destino" id="destino" placeholder="Destino" value="{{destino}}" required>
+						<label for="destino">Destino</label>
+						<input type="text" class="form-control" name="destino" id="destino" placeholder="Destino"
+							value="{{destino}}" required>
 					</div>
 					<div id="map" style="width: 400px; height: 400px;"></div>
 					<div class="form-group">
-					  <label for="horasalida">Fecha y hora</label>
-					  <input type="datetime-local" class="form-control" name="horasalida" id="horasalida" value="{{horasalida}}" required>
+						<label for="horasalida">Fecha y hora</label>
+						<input type="datetime-local" class="form-control" name="horasalida" id="horasalida"
+							value="{{horasalida}}" required>
 					</div>
 					<div class="form-group">
 						<label for="numeropasajeros">Número de pasajeros</label>
-						<input type="number" class="form-control"  name="numeropasajeros" id="numeropasajeros" min="1" placeholder="Pasajeros" value="{{numeropasajeros}}" required>
-					  </div>
-                      <div class="form-group">
+						<input type="number" class="form-control" name="numeropasajeros" id="numeropasajeros" min="1"
+							placeholder="Pasajeros" value="{{numeropasajeros}}" required>
+					</div>
+					<div class="form-group">
 						<label for="precio">Precio</label>
-						<input type="number" class="form-control"  name="precio" id="precio" placeholder="Precio" min="0.00" step="0.01" value="{{precio}}" required>
-					  </div>
-					  <p style="color:#FF0000";>{{error}}</p>
-					<button type="submit" value="Crear"class="btn btn-primary btn-lg btn-block" >Crear</button>
-				  </form>
-			</div>								
+						<input type="number" class="form-control" name="precio" id="precio" placeholder="Precio"
+							min="0.00" step="0.01" value="{{precio}}" required>
+					</div>
+					<p style="color:#FF0000" ;>{{error}}</p>
+					<button type="submit" value="Crear" class="btn btn-primary btn-lg btn-block" style="width: 100%;"><i class="fa fa-pencil" aria-hidden="true"></i>    Crear</button>
+				</form>
+			</div>
 		</div>
-		</div>
+	</div>
 </section>
 
 
 
+
 <script>
-	function initMap() {
-		const map = new google.maps.Map(document.getElementById("map"), {
-		  mapTypeControl: false,
-		  center: { lat: 36.7213028, lng: -4.4216366 },
-		  zoom: 13,
-		});
-	  
-		new AutocompleteDirectionsHandler(map);
-	  }
-	  
-	  class AutocompleteDirectionsHandler {
-		map;
-		originPlaceId;
-		destinationPlaceId;
-		directionsService;
-		directionsRenderer;
-		constructor(map) {
-		  this.map = map;
-		  this.originPlaceId = "";
-		  this.destinationPlaceId = "";
-		  this.travelMode = google.maps.TravelMode.DRIVING;
-		  this.directionsService = new google.maps.DirectionsService();
-		  this.directionsRenderer = new google.maps.DirectionsRenderer();
-		  this.directionsRenderer.setMap(map);
-	  
-		  const originInput = document.getElementById("origen");
-		  const destinationInput = document.getElementById("destino");
-		  const originAutocomplete = new google.maps.places.Autocomplete(originInput);
-	  
-		  // Specify just the place data fields that you need.
-		  originAutocomplete.setFields(["place_id"]);
-	  
-		  const destinationAutocomplete = new google.maps.places.Autocomplete(
-			destinationInput
-		  );
-	  
-		  // Specify just the place data fields that you need.
-		  destinationAutocomplete.setFields(["place_id"]);
-		  this.setupPlaceChangedListener(originAutocomplete, "ORIG");
-		  this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
-		  
-		  
-		}
-		// Sets a listener on a radio button to change the filter type on Places
-		// Autocomplete.
-		setupClickListener(id, mode) {
-		  const radioButton = document.getElementById(id);
-	  
-		  radioButton.addEventListener("click", () => {
-			this.travelMode = mode;
-			this.route();
-		  });
-		}
-		setupPlaceChangedListener(autocomplete, mode) {
-		  autocomplete.bindTo("bounds", this.map);
-		  autocomplete.addListener("place_changed", () => {
-			const place = autocomplete.getPlace();
-	  
-			if (!place.place_id) {
-			  window.alert("Please select an option from the dropdown list.");
-			  return;
-			}
-	  
-			if (mode === "ORIG") {
-			  this.originPlaceId = place.place_id;
-			} else {
-			  this.destinationPlaceId = place.place_id;
-			}
-	  
-			this.route();
-		  });
-		}
-		route() {
-		  if (!this.originPlaceId || !this.destinationPlaceId) {
-			return;
-		  }
-	  
-		  const me = this;
-	  
-		  this.directionsService.route(
-			{
-			  origin: { placeId: this.originPlaceId },
-			  destination: { placeId: this.destinationPlaceId },
-			  travelMode: this.travelMode,
-			},
-			(response, status) => {
-			  if (status === "OK") {
-				me.directionsRenderer.setDirections(response);
-			  } else {
-				window.alert("Directions request failed due to " + status);
-			  }
-			}
-		  );
-		}
-	  }
-</script>
-<script>
-	
+
 	var today = new Date();
 	var dd = today.getDate();
-	var mm = today.getMonth()+1; //January is 0 so need to add 1 to make it 1!
+	var mm = today.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
 	var yyyy = today.getFullYear();
-	if(dd<10){
-	dd='0'+dd
-	} 
-	if(mm<10){
-	mm='0'+mm
-	} 
+	if (dd < 10) {
+		dd = '0' + dd
+	}
+	if (mm < 10) {
+		mm = '0' + mm
+	}
 	var hh = today.getHours();
 	var nn = today.getMinutes();
-	
-	if(hh<10){
-		hh='0'+hh
-		} 
-	if(nn<10){
-		nn='0'+nn
+
+	if (hh < 10) {
+		hh = '0' + hh
 	}
-	t = yyyy+'-'+mm+'-'+dd+'T'+hh+':'+nn; 
+	if (nn < 10) {
+		nn = '0' + nn
+	}
+	t = yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + nn;
 	document.getElementById('horasalida').setAttribute("min", t);
 
 
