@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from dns.rdatatype import NULL
 
 from werkzeug.datastructures import Authorization
 from bson.objectid import ObjectId
@@ -679,7 +680,7 @@ def mostrarViaje(id):
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
-                           duracion=duracionViaje,fechahoy=datetime.utcnow(),usuario=user)
+                           duracion=duracionViaje,fechahoy=datetime.utcnow(),usuario=user, estavalorado= estavalorado(conductor, user))
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
@@ -734,7 +735,15 @@ def valorar(idtrayecto,idusuario):
             })
         return redirect('/perfilId/' +  str(usuariovalorado["_id"]))  # Crea la conversacion cuando se añade a la reserva
 
-
+def estavalorado(conductor, usuario):
+    v = Valoraciones.find_one({'valorado':conductor['_id'] , 'valorador':usuario['_id'] })
+    print(v)
+    print(conductor['_id'])
+    print (usuario['_id'])
+    if v == None:
+        return False
+    else:
+        return True
 
 #------------------------------------------------------------
 
