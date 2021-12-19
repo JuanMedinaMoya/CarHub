@@ -1,0 +1,77 @@
+{% extends '/navbar.html' %}
+
+{% block head %}
+{{ super() }}
+<title>Chat</title>
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+<section id="chat"
+    style="padding:160px 0;background-image: url(../../../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+    class="min-vh-100">
+    <div class="container">
+        <header class="mb-auto bg-light bg-opacity-50 rounded">
+            <div class="card-header msg_head">
+                <a href="/perfilId/{{ id2 }}" class="nav-link">
+                    <div class="d-flex bd-highlight">
+                        <div class="img_cont">
+                            <img src="{{ profile_picture }}" class="rounded-circle user_img">
+                        </div>
+                        <div class="user_info">
+                            <span class="fs-4 text-dark">{{ contact }}</span>
+                            <p class="text-secundary">{{ len_mensajes }} mensajes</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </header>
+        <article class="container shadow p-3 mb-2 bg-transparent rounded overflow-auto"
+            style="min-height: 500px;max-height: 200px; max-width: 100%">
+            {% for m in listMensajes %}
+            {% if m['idUser'] == id %} {# Mensaje del usuario #}
+            <div class="row justify-content-end">
+                <div class="col-auto">
+                    <div class="alert-success text-end px-5 py-2 ms-5 mb-4">
+                        <p class="text-break">
+                            {{ m['contenido'] }}
+                        </p>
+                        <span>Hora del mensaje</span>
+                    </div>
+                </div>
+            </div>
+            {% else %} {# Mensaje del interlocutor #}
+            <div class="row ">
+                <div class="col-auto justify-content-start">
+                    <div class="alert-dark text-start mb-4 px-5 py-2 me-5">
+                        <p class="text-break">
+                            {{ m['contenido'] }}
+                        </p>
+                        <span class="">Hora del mensaje</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </article>
+        <div class="container">
+            <form name="enviarMensaje" method="post" action="/conversacion/enviar_mensaje">
+                <div class="form">
+                    <input id="contenido" name="contenido" type="text" class="form-control"
+                        placeholder="Enviar un mensaje" required />
+                    <button class="btn btn-primary">
+                        <i class="bi bi-arrow-right-square-fill"></i>
+                    </button>
+                    <input type="hidden" name="id_conversacion" id="id_conversacion" value="id_conversacion">
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block footer %}
+{{ super() }}
+{% endblock %}
