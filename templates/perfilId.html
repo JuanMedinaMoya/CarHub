@@ -11,7 +11,8 @@
 <!-- INTRO
 ================================================== -->
 <section id="perfilId"
-   style="padding:160px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   style="padding:160px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+   class="min-vh-100">
    {% with messages = get_flashed_messages() %}
    {% if messages %}
    {% for message in messages %}
@@ -82,22 +83,28 @@
    </head>
 
    <body>
-
       <h2 style="text-align:center"></h2>
       <div class="card">
          <br>
-         <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil"
+         <img src="{{usuario['foto']}}" class="center" width="200" height="200" alt="fotoperfil"
             style="border-radius: 30%">
          <br>
          <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
          <p class="title">@{{ usuario['username'] }}</p>
-         <p>
+         <p class="my-auto">
             <xd> Correo:</xd> {{ usuario['correo'] }}<br>
             <xd> Teléfono:</xd> {{ usuario['telefono'] }}<br>
             <xd> DNI:</xd> {{ usuario['dni'] }}<br>
             <xd> Coche:</xd> {{ usuario['coche'] }}<br>
             <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
-            <br>
+         <div class="d-inline mx-auto">
+            <a href="/conversacion/{{ usuario['username']}}/{{session['username']}}"
+               class="nav-link text-success fs-2">
+               <i class="far fa-comment-dots"></i>
+            </a>
+         </div>
+         <br>
+         </p>
          <p style="font-size: 25px;">
             <xd> Valoracion:</xd> {{ media }}/5
          </p>
