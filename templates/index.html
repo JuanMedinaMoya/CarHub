@@ -7,9 +7,107 @@
 <script type="text/javascript"
 	src="https://rawgit.com/Logicify/jquery-locationpicker-plugin/master/dist/locationpicker.jquery.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-<script
+<script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI&callback=initMap&libraries=places&v=weekly"
 	async></script>
+<script>
+
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+			mapTypeControl: false,
+			center: { lat: 36.7213028, lng: -4.4216366 },
+			zoom: 13,
+		});
+
+		new AutocompleteDirectionsHandler(map);
+	}
+
+	class AutocompleteDirectionsHandler {
+		map;
+		originPlaceId;
+		destinationPlaceId;
+		directionsService;
+		directionsRenderer;
+		constructor(map) {
+			this.map = map;
+			this.originPlaceId = "";
+			this.destinationPlaceId = "";
+			this.travelMode = google.maps.TravelMode.DRIVING;
+			this.directionsService = new google.maps.DirectionsService();
+			this.directionsRenderer = new google.maps.DirectionsRenderer();
+			this.directionsRenderer.setMap(map);
+
+			const originInput = document.getElementById("origen");
+			const destinationInput = document.getElementById("destino");
+			const originAutocomplete = new google.maps.places.Autocomplete(originInput);
+
+			// Specify just the place data fields that you need.
+			originAutocomplete.setFields(["place_id"]);
+
+			const destinationAutocomplete = new google.maps.places.Autocomplete(
+				destinationInput
+			);
+
+			// Specify just the place data fields that you need.
+			destinationAutocomplete.setFields(["place_id"]);
+			this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+			this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
+
+
+		}
+		// Sets a listener on a radio button to change the filter type on Places
+		// Autocomplete.
+		setupClickListener(id, mode) {
+			const radioButton = document.getElementById(id);
+
+			radioButton.addEventListener("click", () => {
+				this.travelMode = mode;
+				this.route();
+			});
+		}
+		setupPlaceChangedListener(autocomplete, mode) {
+			autocomplete.bindTo("bounds", this.map);
+			autocomplete.addListener("place_changed", () => {
+				const place = autocomplete.getPlace();
+
+				if (!place.place_id) {
+					window.alert("Please select an option from the dropdown list.");
+					return;
+				}
+
+				if (mode === "ORIG") {
+					this.originPlaceId = place.place_id;
+				} else {
+					this.destinationPlaceId = place.place_id;
+				}
+
+				this.route();
+			});
+		}
+		route() {
+			if (!this.originPlaceId || !this.destinationPlaceId) {
+				return;
+			}
+
+			const me = this;
+
+			this.directionsService.route(
+				{
+					origin: { placeId: this.originPlaceId },
+					destination: { placeId: this.destinationPlaceId },
+					travelMode: this.travelMode,
+				},
+				(response, status) => {
+					if (status === "OK") {
+						me.directionsRenderer.setDirections(response);
+					} else {
+						window.alert("Directions request failed due to " + status);
+					}
+				}
+			);
+		}
+	}
+</script>
 <style type="text/css">
 	.range-wrap {
 		position: relative;
@@ -47,7 +145,8 @@
 {% endblock %}
 {% block body %}
 <section id="home"
-	style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+	style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+	class="min-vh-100">
 	<div class="container">
 		<div class="textwidget">
 			<h1 class="toptitle" style="color:rgb(10, 124, 0);">Infinidad de VIAJES al<br />MEJOR PRECIO<br /><br /><i
@@ -228,110 +327,17 @@
 		const min = range.min ? range.min : 0;
 		const max = range.max ? range.max : 100;
 		const newVal = Number(((val - min) * 100) / (max - min));
-		bubble.innerHTML = val + 'm';
+		if (val < 1000) {
+			bubble.innerHTML = val + ' m';
+		} else {
+			bubble.innerHTML = val / 1000 + ' km';
+		}
 
 		// Sorta magic numbers based on size of the native UI thumb
 		bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
 	}
 </script>
-<script>
 
-	function initMap() {
-		const map = new google.maps.Map(document.getElementById("map"), {
-			mapTypeControl: false,
-			center: { lat: 36.7213028, lng: -4.4216366 },
-			zoom: 13,
-		});
-
-		new AutocompleteDirectionsHandler(map);
-	}
-
-	class AutocompleteDirectionsHandler {
-		map;
-		originPlaceId;
-		destinationPlaceId;
-		directionsService;
-		directionsRenderer;
-		constructor(map) {
-			this.map = map;
-			this.originPlaceId = "";
-			this.destinationPlaceId = "";
-			this.travelMode = google.maps.TravelMode.DRIVING;
-			this.directionsService = new google.maps.DirectionsService();
-			this.directionsRenderer = new google.maps.DirectionsRenderer();
-			this.directionsRenderer.setMap(map);
-
-			const originInput = document.getElementById("origen");
-			const destinationInput = document.getElementById("destino");
-			const originAutocomplete = new google.maps.places.Autocomplete(originInput);
-
-			// Specify just the place data fields that you need.
-			originAutocomplete.setFields(["place_id"]);
-
-			const destinationAutocomplete = new google.maps.places.Autocomplete(
-				destinationInput
-			);
-
-			// Specify just the place data fields that you need.
-			destinationAutocomplete.setFields(["place_id"]);
-			this.setupPlaceChangedListener(originAutocomplete, "ORIG");
-			this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
-
-
-		}
-		// Sets a listener on a radio button to change the filter type on Places
-		// Autocomplete.
-		setupClickListener(id, mode) {
-			const radioButton = document.getElementById(id);
-
-			radioButton.addEventListener("click", () => {
-				this.travelMode = mode;
-				this.route();
-			});
-		}
-		setupPlaceChangedListener(autocomplete, mode) {
-			autocomplete.bindTo("bounds", this.map);
-			autocomplete.addListener("place_changed", () => {
-				const place = autocomplete.getPlace();
-
-				if (!place.place_id) {
-					window.alert("Please select an option from the dropdown list.");
-					return;
-				}
-
-				if (mode === "ORIG") {
-					this.originPlaceId = place.place_id;
-				} else {
-					this.destinationPlaceId = place.place_id;
-				}
-
-				this.route();
-			});
-		}
-		route() {
-			if (!this.originPlaceId || !this.destinationPlaceId) {
-				return;
-			}
-
-			const me = this;
-
-			this.directionsService.route(
-				{
-					origin: { placeId: this.originPlaceId },
-					destination: { placeId: this.destinationPlaceId },
-					travelMode: this.travelMode,
-				},
-				(response, status) => {
-					if (status === "OK") {
-						me.directionsRenderer.setDirections(response);
-					} else {
-						window.alert("Directions request failed due to " + status);
-					}
-				}
-			);
-		}
-	}
-</script>
 <script>
 	var today = new Date();
 	var dd = today.getDate();
