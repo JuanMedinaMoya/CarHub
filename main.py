@@ -171,7 +171,6 @@ def crearViaje():
         return render_template('crearViaje.html')
     else:
         usuario = Usuarios.find_one({"username": session["username"]})
-
         conductor = ObjectId(usuario['_id'])
         origenstr = request.form['origen']
         destinostr = request.form['destino']
@@ -878,6 +877,8 @@ def mis_viajes_1(usuario):
 
 @app.route('/mis_viajes/<usuario>/<pagina>', methods=['GET'])
 def mis_viajes(usuario, pagina):
+    if not 'username' in session or usuario != session['username']:
+        return not_access_permission()
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
     tray = Trayectos.find({
@@ -909,6 +910,8 @@ def mis_viajes(usuario, pagina):
 
 @app.route('/mis_viajes_creados/<usuario>/<pagina>', methods=['GET'])
 def mis_viajes_creados(usuario, pagina):
+    if not 'username' in session or usuario != session['username']:
+        return not_access_permission()
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
     tray = Trayectos.find({
@@ -1053,6 +1056,9 @@ def buscar_conversaciones_usuario(usuario):
 
 @app.route('/mis_conversaciones/<usuario>', methods=['GET'])
 def mis_conversaciones(usuario):
+    if not 'username' in session or usuario != session['username']:
+        return not_access_permission()
+    
     id = Usuarios.find_one({'username': usuario})['_id']
     mis_conversaciones = conversaciones = Conversaciones.find(
         {'$or': [{
@@ -1509,6 +1515,14 @@ def not_found(error=None):
     response.status = 404
     return response
 
-
+@app.errorhandler(403)
+def not_access_permission(error=None):
+    response = jsonify({
+        'mensaje': 'No tiene acceso al recurso ' + request.url,
+        'Status': 403
+    })
+    response.status = 403
+    return response
+    
 if __name__ == '__main__':
     app.run(debug=True)
