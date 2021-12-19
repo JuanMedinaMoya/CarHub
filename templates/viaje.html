@@ -67,7 +67,7 @@
                }
             </style>
 
-            <!-- Si no ha finalizado  -->
+            
             {% if trayecto['finalizado'] == 0 %}
                {% if session['username'] == conductor['username'] %}
                <p>
@@ -78,7 +78,7 @@
                   
                   {% endif %}
                   
-                  {% if trayecto['horasalida'] < 0 %}
+                  {% if fechahoy < trayecto['horasalida'] %}
                   <a href="/#">
                      <button type="button" class="btn btn-danger">Borrar</button>
                   </a>
@@ -88,8 +88,12 @@
                   </a>
                   {% endif %}
                </p>
-               {% else %} 
-                  {% if trayecto['horasalida'] < 0 %}
+               {% else %}
+                  {% if usuario is not none %}
+                       
+                  {% endif %}
+
+                  {% if fechahoy < trayecto['horasalida'] %}
                      <p>
                         <a href="/#">
                            <button type="button" class="btn btn-danger">Salirse</button>

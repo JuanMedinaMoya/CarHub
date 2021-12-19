@@ -663,6 +663,7 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
 
 @app.route('/trayecto/<id>', methods=['GET'])
 def mostrarViaje(id):
+    user = Usuarios.find_one({'username': session['username']})
     trayecto = Trayectos.find_one({'_id': ObjectId(id)})
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
     pasajeros = trayecto['pasajeros']
@@ -679,7 +680,7 @@ def mostrarViaje(id):
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
-                           duracion=duracionViaje)
+                           duracion=duracionViaje,fechahoy=datetime.utcnow(),usuario=user)
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
