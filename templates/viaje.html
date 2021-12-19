@@ -158,6 +158,10 @@
                   <div class="card card-body">
                      <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
                      <small>Coche: {{ conductor['coche'] }} </small>
+
+                     <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
+                        <button type="button" class="btn btn-warning">Valorar</button>
+                     </a>
                   </div>
                </a>
                </br>

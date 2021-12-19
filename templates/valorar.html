@@ -1,0 +1,128 @@
+{% extends 'navbar.html' %}
+{% block head %}
+{{ super() }}
+<title>Perfil</title>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+
+<!-- INTRO
+================================================== -->
+<section id="perfilId"
+   style="padding:160px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   {% with messages = get_flashed_messages() %}
+   {% if messages %}
+   {% for message in messages %}
+   <div class="alert">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      {{ message }}
+   </div>
+   {% endfor %}
+   {% endif %}
+   {% endwith %}
+
+   <style>
+      .card {
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+         max-width: 450px;
+         margin: auto;
+         text-align: center;
+         font-family: arial;
+         opacity: 100;
+         background-color: #FFFFFF;
+      }
+
+      .title {
+         color: grey;
+         font-size: 18px;
+      }
+
+      button {
+         border: none;
+         outline: 0;
+         display: inline-block;
+         padding: 8px;
+         color: white;
+         background-color: #1bb9a0;
+         text-align: center;
+         cursor: pointer;
+         width: 100%;
+         font-size: 18px;
+      }
+
+      .button3 {
+         background-color: #f44336;
+      }
+
+      /* Red */
+
+      button:hover,
+      a:hover {
+         opacity: 0.7;
+
+      }
+
+      .checked {
+         color: rgb(10, 124, 0);
+      }
+
+      xd {
+         color: rgb(10, 124, 0);
+         opacity: 0.5;
+      }
+
+      .center {
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+      }
+   </style>
+   </head>
+
+   <body>
+
+      <h2 style="text-align:center"></h2>
+      <div class="card">
+         <br>
+         <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil"
+            style="border-radius: 30%">
+         <br>
+         <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
+         <p class="title">@{{ usuario['username'] }}</p>
+
+         <div class="form-group">
+            <form action="/valorar/{{trayecto['_id']}}/{{ usuario['_id'] }}" method="post">
+                <label for="origen">Puntuacion
+                </label>
+                <input type="number" class="form-control" name="valoracion" id="valoracion" placeholder="0"
+                   required>
+                
+                <label for="origen">Comentario
+                </label>
+                <br>
+            
+                 <textarea class="md-textarea form-control" name="comentario" cols="40" rows="5"  placeholder="Comenta" required></textarea>  
+                 <button type="submit" value="Crear" class="btn btn-primary btn-lg btn-block" style="width: 100%;"><i class="fa fa-pencil" aria-hidden="true"></i>    Valorar</button>
+            </form>
+         </div>
+
+         </p>
+      </div>
+
+
+
+
+</section>
+
+<!-- SCRIPTS
+================================================== -->
+<script src="static/assets/js/jquery.js"></script>
+<script src="static/assets/js/plugins.js"></script>
+<script src="static/contact/topvalidate.js"></script>
+<script src="static/contact/bottomvalidate.js"></script>
+{% endblock %}
+{% block footer %}
+{{ super() }}
+{% endblock %}

@@ -708,6 +708,34 @@ def anadirPasajero(idtrayecto):
                     )  # Crea la conversacion cuando se añade a la reserva
 
 
+@app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
+def valorar(idtrayecto,idusuario):
+    if request.method == 'GET':
+        username = session["username"]
+        usuarioact = Usuarios.find_one({"username": username})
+        trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+        usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+        return render_template('valorar.html', usuario=usuariovalorado, trayecto = trayecto, usuarioact = usuarioact )
+    else:
+        username = session["username"]
+        usuarioact = Usuarios.find_one({"username": username})
+        trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+        usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+        valoracion = request.form['valoracion']
+        comentario = request.form['comentario']
+        
+        Valoraciones.insert({
+                'valorado': usuariovalorado['_id'],
+                'trayecto': trayecto['_id'],
+                'valorador': usuarioact['_id'],
+                'puntuacion': int(valoracion),
+                'comentario': comentario
+
+            })
+        return redirect('/perfilId/' +  str(usuariovalorado["_id"]))  # Crea la conversacion cuando se añade a la reserva
+
+
+
 #------------------------------------------------------------
 
 #------------------------------------------------------------
