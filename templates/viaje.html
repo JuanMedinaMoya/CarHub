@@ -67,19 +67,57 @@
                }
             </style>
 
-            <!-- Solo para el admin para editar, borrar o finalizar  -->
-            {% if session['username'] == conductor['username'] %}
-            <p>
-               <a href="/#">
-                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
-               </a>
-               <a href="/#">
-                  <button type="button" class="btn btn-danger">Borrar</button>
-               </a>
-               <a href="/#">
-                  <button type="button" class="btn btn-dark">Finalizar</button>
-               </a>
-            </p>
+            
+            {% if trayecto['finalizado'] == 0 %}
+               {% if session['username'] == conductor['username'] %}
+               <p>
+                  {% if trayecto['pasajeros']|length == 0 %}
+                  <a href="/#">
+                     <button type="button" class="btn btn-primary btn-lg">Editar</button>
+                  </a>
+                  
+                  {% endif %}
+                  
+                  {% if fechahoy < trayecto['horasalida'] %}
+                  <a href="/#">
+                     <button type="button" class="btn btn-danger">Borrar</button>
+                  </a>
+                  {% else %}
+                  <a href="/#">
+                     <button type="button" class="btn btn-dark">Finalizar</button>
+                  </a>
+                  {% endif %}
+               </p>
+               {% else %}
+                  {% if usuario is not none %}
+                       
+                  {% endif %}
+
+                  {% if fechahoy < trayecto['horasalida'] %}
+                     <p>
+                        <a href="/#">
+                           <button type="button" class="btn btn-danger">Salirse</button>
+                        </a>
+                     </p>
+                  {% endif %}
+               {% endif %}
+            {% else %}
+               {% if session['username'] == conductor['username'] %}
+                  <p>
+                     {% for pasajero in pasajeros %}
+                        <a href="/#">
+                           <button type="button" class="btn btn-primary btn-lg">Valorar a {{ pasajero['username'] }}</button>
+                        </a>
+                     {% endfor %}
+                  </p>
+               {% else %}
+               <p>
+                  <a href="/#">
+                     <button type="button" class="btn btn-primary btn-lg">Valorar a {{conductor['username']}}</button>
+                  </a>
+               </p>
+               {% endif %}
+               <!-- Si no ha finalizado  -->
             {% endif %}
 
             <ul class="list-group">
