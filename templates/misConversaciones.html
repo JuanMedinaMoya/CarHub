@@ -7,28 +7,35 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
-<div class="list-group">
-    <header class="container">
-        <h1 class="display-1">Mis Conversaciones</h1>
-        <hr class="my-3">
-    </header>
-    <article class="container">
+<section id="misConversaciones"
+    style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+    <div class="container">
         <div class="list-group">
-            {% for c in listConversaciones %}
-            <a href="/buscar_conversacion_id/{{ c['_id'] }}" class="list-group-item list-group-item-action mx-auto" style="max-width: 400px;">
-                <div class="d-flex justify-content-start">
-                    <div class="img_cont">
-                        <img src="{{ c['profile_picture'] }}" class="rounded-circle user_img">
+            <article class="container">
+                <div class="list-group">
+                    {% for c in listConversaciones %}
+                    <a href="/buscar_conversacion_id/{{ c['_id'] }}"
+                        class="list-group-item list-group-item-action mx-auto" style="max-width: 400px;">
+                        <div class="d-flex justify-content-start">
+                            <div class="img_cont">
+                                <img src="{{ c['profile_picture'] }}" class="rounded-circle user_img">
+                            </div>
+                            <div class="mx-3 my-auto">
+                                <span class="fs-3 fw-light text-truncate">{{ c['username'] }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% if len == 0 %}
+                    <div class="bg-success bg-opacity-25">
+                        <h3 class="display-3 " style="color:rgb(10, 124, 0);">¡ Todavía no tiene conversaciones creadas !</h3>
                     </div>
-                    <div class="mx-3 my-auto">
-                        <span class="fs-3 fw-light text-truncate">{{ c['username'] }}</span>
-                    </div>
+                    {% endif %}
                 </div>
-            </a>
-            {% endfor %}
+            </article>
         </div>
-    </article>
-</div>
+    </div>
+</section>
 {% endblock %}
 {% block footer %}
 {{ super() }}

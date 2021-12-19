@@ -26,7 +26,7 @@
 	<!-- Header
 ================================================== -->
 	{% block navbar %}
-	<header class="px-3 py-2 bg-light text-white bg-opacity-50">
+	<header class="px-3 py-2 bg-light text-white">
 		<div class="container">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 				<a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
@@ -78,7 +78,7 @@
 						</a>
 					</li>
 					<li>
-						<a id="7_link" href="/logout" class="nav-link text-dark">
+						<a id="7_link" href="/logout" class="nav-link text-danger">
 							<i class="fas fa-sign-out-alt"></i>
 							Cerrar Sesión
 						</a>
@@ -90,7 +90,7 @@
 						</a>
 					</li>
 					<li>
-						<a id="9_link" href="/registro" class="nav-link text-darkx">
+						<a id="9_link" href="/registro" class="nav-link text-dark">
 							Registrarse
 						</a>
 					</li>
@@ -125,6 +125,10 @@
 				document.getElementById("5_link").className += " nav-text-selected";
 			} else if (url == "/perfil") {
 				document.getElementById("6_link").className += " nav-text-selected";
+			} else if(url == "/login") {
+				document.getElementById("8_link").className += " nav-text-selected";
+			} else if(url == "/registro") {
+				document.getElementById("9_link").className += " nav-text-selected";
 			}
 		}
 	</script>

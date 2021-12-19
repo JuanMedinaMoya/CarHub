@@ -50,8 +50,8 @@
          ================================================== -->
 <!-- trayecto = json con toda la informacion de un trayecto-->
 {% block body %}
-<section id="home"
-   style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;">
+<section id="viaje"
+   style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
    <div class="container">
       <div class="textwidget">
          <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'].strftime('El %d/%m/%Y a las
@@ -137,7 +137,6 @@
                </a>
                {% endfor %}
                {% endif %}
-
             </div>
          </div>
       </div>

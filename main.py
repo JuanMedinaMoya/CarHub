@@ -393,7 +393,7 @@ def eliminar_usuario():
 @app.route('/logout')
 def logout():
     session.clear()
-    return render_template('index.html')
+    return redirect("/")
 
 
 @app.route('/busqueda', methods=['POST'])
@@ -1071,7 +1071,7 @@ def mis_conversaciones(usuario):
             'username': contact['username'],
             'profile_picture': contact['foto']
         })
-    return render_template('misConversaciones.html', listConversaciones=listConversaciones)
+    return render_template('misConversaciones.html', listConversaciones=listConversaciones, len=len(listConversaciones))
 
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____
