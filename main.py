@@ -1514,6 +1514,7 @@ def ruta(origen, destino):  # devuelve el json con toda la informacion
     url = directions_api_url + urllib.parse.urlencode({
         "origin": origen,
         "destination": destino,
+        "language": "es",
         "key": API_KEY_MAPS
     })
     json_data = requests.get(url).json()
