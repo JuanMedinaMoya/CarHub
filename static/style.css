@@ -5371,9 +5371,11 @@ border-radius: 50%;
 	margin-bottom: auto;
 	margin-left: 15px;
  }
-
  .user_img{
 	height: 70px;
 	width: 70px;
 	border:1.5px solid #f5f6fa;
+ }
+ .msg_head{
+	position: relative;
  }

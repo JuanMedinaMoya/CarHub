@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from dns.rdatatype import NULL
 
 from werkzeug.datastructures import Authorization
 from bson.objectid import ObjectId
@@ -721,7 +722,7 @@ def mostrarViaje(id):
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
-                           duracion=duracionViaje,fechahoy=datetime.utcnow(),usuario=user)
+                           duracion=duracionViaje,fechahoy=datetime.utcnow(),usuario=user, estavalorado= estavalorado(conductor, user))
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
@@ -745,10 +746,46 @@ def anadirPasajero(idtrayecto):
             'numeropasajeros': numpasajeros - int(nump)
         }
     })
-    return redirect('/crear_conversacion/' + ObjectId(conductor) + '/' +
+    return redirect('/conversacion/' + ObjectId(conductor) + '/' +
                     ObjectId(usuario['_id'])
                     )  # Crea la conversacion cuando se añade a la reserva
 
+
+@app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
+def valorar(idtrayecto,idusuario):
+    if request.method == 'GET':
+        username = session["username"]
+        usuarioact = Usuarios.find_one({"username": username})
+        trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+        usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+        return render_template('valorar.html', usuario=usuariovalorado, trayecto = trayecto, usuarioact = usuarioact )
+    else:
+        username = session["username"]
+        usuarioact = Usuarios.find_one({"username": username})
+        trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+        usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+        valoracion = request.form['valoracion']
+        comentario = request.form['comentario']
+        
+        Valoraciones.insert({
+                'valorado': usuariovalorado['_id'],
+                'trayecto': trayecto['_id'],
+                'valorador': usuarioact['_id'],
+                'puntuacion': int(valoracion),
+                'comentario': comentario
+
+            })
+        return redirect('/perfilId/' +  str(usuariovalorado["_id"]))  # Crea la conversacion cuando se añade a la reserva
+
+def estavalorado(conductor, usuario):
+    v = Valoraciones.find_one({'valorado':conductor['_id'] , 'valorador':usuario['_id'] })
+    print(v)
+    print(conductor['_id'])
+    print (usuario['_id'])
+    if v == None:
+        return False
+    else:
+        return True
 
 #------------------------------------------------------------
 
@@ -1121,6 +1158,44 @@ def mis_conversaciones(usuario):
         })
     return render_template('misConversaciones.html', listConversaciones=listConversaciones, len=len(listConversaciones))
 
+@app.route('/conversacion/<contact>/<username>')
+def crear_obtener_chat(contact, username):    
+    id1 = Usuarios.find_one({'username': username})['_id']
+    id2 = Usuarios.find_one({'username': contact})['_id']
+    conversacion = Conversaciones.find_one({
+            '$or': [{
+                'user1': ObjectId(id1),
+                'user2': ObjectId(id2)
+            }, {
+                'user1': ObjectId(id2),
+                'user2': ObjectId(id1)
+            }]
+        })
+    if conversacion == None:
+        crear_conversacion(contact, username)
+        conversacion = Conversaciones.find_one({
+            '$or': [{
+                'user1': ObjectId(id1),
+                'user2': ObjectId(id2)
+            }, {
+                'user1': ObjectId(id2),
+                'user2': ObjectId(id1)
+            }]
+        })
+    
+            
+    return redirect('/conversacion/chat/' + str(conversacion['_id']))
+
+@app.route('/conversacion/chat/<id_conversacion>')
+def entrar_conversacion(id_conversacion):
+    if Conversaciones.count_documents({'_id': ObjectId(id_conversacion)}) == 1:
+        conversacion = Conversaciones.find_one({'_id': ObjectId(id_conversacion)})
+        id = Usuarios.find_one({'username': session["username"]})['_id']
+        contact = conversacion['user2'] if conversacion['user1'] == id else conversacion['user1']
+        contact = Usuarios.find_one({'_id': contact}, {'foto':1, 'username':1})
+        return render_template('chat.html', id=id, id2=contact['_id'], contact=contact['username'], profile_picture=contact['foto'], listMensajes=conversacion['listMensajes'], id_conversacion=id_conversacion, len_mensajes=len(conversacion['listMensajes']))
+    else:
+        return not_found()
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____
 # |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
