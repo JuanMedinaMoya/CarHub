@@ -48,15 +48,17 @@
 {% endblock %}
 <!-- INTRO
          ================================================== -->
-<!-- trayecto = json con toda la informacion de un trayecto-->
 {% block body %}
 <section id="viaje"
-   style="padding:160px 0;background-image: url(static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   style="padding:160px 0;background-image: url(../static/images/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+   class="min-vh-100">
    <div class="container">
       <div class="textwidget">
-         <h1 class="toptitle" style="color:rgb(10, 124, 0);">{{ trayecto['horasalida'].strftime('El %d/%m/%Y a las
-            %H:%M') }}<br />
-            {{ trayecto['origenstr'] }} ➜ {{ trayecto['destinostr'] }} <br /><br /></h1>
+         <h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">
+            {{trayecto['horasalida'].strftime('El %d/%m/%Y a las %H:%M') }}<br />
+            {{ trayecto['origenstr'] }} ➜ {{ trayecto['destinostr'] }}<br /><br />
+            <i class="fa fa-car roundicon"></i>
+         </h1>
 
          <div class="contactstyle topform">
             <style>
@@ -67,49 +69,48 @@
                }
             </style>
 
-            
+
             {% if trayecto['finalizado'] == 0 %}
-               {% if session['username'] == conductor['username'] %}
-               <p>
-                  {% if trayecto['pasajeros']|length == 0 %}
-                  <a href="/#">
-                     <button type="button" class="btn btn-primary btn-lg">Editar</button>
-                  </a>
-                  
-                  {% endif %}
-                  
-                  {% if fechahoy < trayecto['horasalida'] %}
-                  <a href="/#">
-                     <button type="button" class="btn btn-danger">Borrar</button>
+            {% if session['username'] == conductor['username'] %}
+            <p>
+               {% if trayecto['pasajeros']|length == 0 %}
+
+               <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
+                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
+               </a>
+
+               {% endif %}
+
+               {% if fechahoy < trayecto['horasalida'] %} <a href="/#">
+                  <button type="button" class="btn btn-danger">Borrar</button>
                   </a>
                   {% else %}
                   <a href="/#">
                      <button type="button" class="btn btn-dark">Finalizar</button>
                   </a>
                   {% endif %}
-               </p>
-               {% else %}
-                  {% if usuario is not none %}
-                       
-                  {% endif %}
-
-                  {% if fechahoy < trayecto['horasalida'] %}
-                     <p>
-                        <a href="/#">
-                           <button type="button" class="btn btn-danger">Salirse</button>
-                        </a>
-                     </p>
-                  {% endif %}
-               {% endif %}
+            </p>
             {% else %}
+            {% if usuario is not none %}
+
+            {% endif %}
+
+            {% if fechahoy < trayecto['horasalida'] %} <p>
+               <a href="/#">
+                  <button type="button" class="btn btn-danger">Salirse</button>
+               </a>
+               </p>
+               {% endif %}
+               {% endif %}
+               {% else %}
                {% if session['username'] == conductor['username'] %}
-                  <p>
-                     {% for pasajero in pasajeros %}
-                        <a href="/#">
-                           <button type="button" class="btn btn-primary btn-lg">Valorar a {{ pasajero['username'] }}</button>
-                        </a>
-                     {% endfor %}
-                  </p>
+               <p>
+                  {% for pasajero in pasajeros %}
+                  <a href="/#">
+                     <button type="button" class="btn btn-primary btn-lg">Valorar a {{ pasajero['username'] }}</button>
+                  </a>
+                  {% endfor %}
+               </p>
                {% else %}
                <p>
                   <a href="/#">
@@ -118,64 +119,70 @@
                </p>
                {% endif %}
                <!-- Si no ha finalizado  -->
-            {% endif %}
-
-            <ul class="list-group">
-               <li class="list-group-item">
-                  <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
-                  {{ trayecto['origenstr'] }}
-               </li>
-               <li class="list-group-item">
-                  <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
-                  {{ trayecto['destinostr'] }}
-               </li>
-               <li class="list-group-item">
-                  <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
-                  {{ duracion }}
-               </li>
-               <div id="map" style="width: 400px; height: 400px;"></div>
-
-               <!-- Solo para el admin para editar, borrar o finalizar  -->
-               {% if session['username'] != conductor['username'] %}
-               <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="pagar trayecto">
-                  <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
-                     aria-current="true">
-                     <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
-                  </a>
-               </span>
                {% endif %}
 
-            </ul>
+               <ul class="list-group">
+                  <li class="list-group-item">
+                     <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
+                     {{ trayecto['origenstr'] }}
+                  </li>
+                  <li class="list-group-item">
+                     <h3 style="color:rgb(10, 124, 0);">LLEGADA: </h3>
+                     {{ trayecto['destinostr'] }}
+                  </li>
+                  <li class="list-group-item">
+                     <h3 style="color:rgb(10, 124, 0);">Duracion estimada: </h3>
+                     {{ duracion }}
+                  </li>
+                  <li class="list-group-item">
+                     <h3 style="color:rgb(10, 124, 0);">Asientos disponibles: </h3>
+                     {{ trayecto['numeropasajeros'] }}
+                  </li>
+                  <br>
+                  <div id="map" style="width: 400px; height: 400px;"></div>
 
-            </br>
+                  <!-- Solo para el admin para editar, borrar o finalizar  -->
+                  {% if session['username'] != conductor['username'] %}
+                  <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                     title="pagar trayecto">
+                     <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
+                        aria-current="true">
+                        <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
+                     </a>
+                  </span>
+                  {% endif %}
 
-            <div class="col">
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
-               </div>
-               <a href="/perfilId/{{ conductor['_id'] }}"
-                  class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="card card-body">
-                     <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
-                     <small>Coche: {{ conductor['coche'] }} </small>
-                  </div>
-               </a>
+               </ul>
+
                </br>
 
-               {% if pasajeros %}
-               <div class="row">
-                  <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
-               </div>
-               {% for pasajero in pasajeros %}
-               <a href="/perfilId/{{ pasajero['_id'] }}"
-                  class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="card card-body">
-                     <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
+               <div class="col">
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
                   </div>
-               </a>
-               {% endfor %}
-               {% endif %}
-            </div>
+                  <a href="/perfilId/{{ conductor['_id'] }}"
+                     class="list-group-item list-group-item-action flex-column align-items-start">
+                     <div class="card card-body">
+                        <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
+                        <small>Coche: {{ conductor['coche'] }} </small>
+                     </div>
+                  </a>
+                  </br>
+
+                  {% if pasajeros %}
+                  <div class="row">
+                     <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
+                  </div>
+                  {% for pasajero in pasajeros %}
+                  <a href="/perfilId/{{ pasajero['_id'] }}"
+                     class="list-group-item list-group-item-action flex-column align-items-start">
+                     <div class="card card-body">
+                        <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
+                     </div>
+                  </a>
+                  {% endfor %}
+                  {% endif %}
+               </div>
          </div>
       </div>
    </div>

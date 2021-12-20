@@ -218,6 +218,48 @@ def crearViaje():
             })
             return render_template('index.html')
 
+@app.route('/editarviaje/<id>',methods=['POST'])
+def editarViaje(id):
+        trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+        origenstr = request.form['origen']
+        destinostr = request.form['destino']
+        horasalida = request.form['horasalida']
+        d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
+        numeropasajeros = request.form['numeropasajeros']
+        precio = request.form['precio']      
+        
+        origen = {
+            'type':
+            "Point",
+            'coordinates':
+            [float(getLatitud(origenstr)),
+             float(getLongitud(origenstr))]
+        }
+
+        destino = {
+            'type':
+            "Point",
+            'coordinates':
+            [float(getLatitud(destinostr)),
+             float(getLongitud(destinostr))]
+        }
+        if origenstr == destinostr:
+            error = "Error: origen y destino iguales"
+            return render_template('editarViaje.html', error=error, trayecto=trayecto)
+        else:
+            Trayectos.update_one({'_id': ObjectId(id)}, {
+                '$set': {
+                'origenstr': origenstr,
+                'origen': origen,
+                'destinostr': destinostr,
+                'destino': destino,
+                'horasalida': d_horasalida,
+                'precio': int(precio),
+                'numeropasajeros': int(numeropasajeros)
+                }
+            })
+        return mostrarViaje(id)
+
 
 @app.route('/perfil', methods=['POST', 'GET'])
 def perfil():
@@ -1232,6 +1274,10 @@ def pasajeros_trayecto(idtrayecto):
     else:
         return not_found()
 
+@app.route('/mostrar_editar_trayecto/<idtrayecto>', methods=['GET'])
+def mostrar_editar_trayecto(idtrayecto):
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    return render_template('editarViaje.html', trayecto=trayecto)
 
 #------------------------------------------------------------------
 # __      __     _      ____  _____            _____ _____ ____  _   _ ______  _____
