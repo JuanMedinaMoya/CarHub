@@ -1325,7 +1325,7 @@ def getHTMLListaMensajes(listMensajes):
                         <p class="text-break">
                             {{ m['contenido'] }}
                         </p>
-                        <span>Hora del mensaje</span>
+                        <span>{{ m['fecha']|datetime }}</span>
                     </div>
                 </div>
             </div>
@@ -1336,7 +1336,7 @@ def getHTMLListaMensajes(listMensajes):
                         <p class="text-break">
                             {{ m['contenido'] }}
                         </p>
-                        <span class="">Hora del mensaje</span>
+                        <span class="">{{ m['fecha']|datetime }}</span>
                     </div>
                 </div>
             </div>
