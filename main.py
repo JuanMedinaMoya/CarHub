@@ -710,11 +710,19 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
 @app.route('/trayecto/<id>', methods=['GET'])
 def mostrarViaje(id):
     user = None
+    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+    pasajeros = trayecto['pasajeros']
+    espasajero = False
     if session.get('username') is not None:
         user = Usuarios.find_one({'username': session['username']})
-    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+        
+        for p in pasajeros:
+                if p['comprador'] == user['_id']:
+                    espasajero = True
+
+    
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
-    pasajeros = trayecto['pasajeros']
+    
     pasajerosPerfil = []
 
     if pasajeros:
@@ -722,8 +730,7 @@ def mostrarViaje(id):
             usuario = Usuarios.find_one({'_id': ObjectId(pas['comprador'])})
             pasajerosPerfil.append(usuario)
 
-    espasajero = False
-    if user in pasajeros: espasajero = True
+    
 
 
     duracionViaje = duracion(origen=trayecto['origenstr'],
