@@ -717,8 +717,8 @@ def mostrarViaje(id):
     pasajeros = trayecto['pasajeros']
     pasajerosPerfil = []
     if pasajeros:
-        for id in pasajeros:
-            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+        for pas in pasajeros:
+            usuario = Usuarios.find_one({'_id': ObjectId(pas['comprador'])})
             pasajerosPerfil.append(usuario)
 
     duracionViaje = duracion(origen=trayecto['origenstr'],
@@ -760,8 +760,7 @@ def anadirPasajero(idtrayecto):
         }
     })
 
-    return redirect('/conversacion/' + ObjectId(conductor) + '/' + ObjectId(
-        usuario['_id']))  # Crea la conversacion cuando se añade a la reserva
+    return redirect('/trayecto/'+idtrayecto)  # Crea la conversacion cuando se añade a la reserva
 
 
 @app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
