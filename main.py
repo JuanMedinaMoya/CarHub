@@ -709,7 +709,9 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
 
 @app.route('/trayecto/<id>', methods=['GET'])
 def mostrarViaje(id):
-    user = Usuarios.find_one({'username': session['username']})
+    user = None
+    if session.get('username') is not None:
+        user = Usuarios.find_one({'username': session['username']})
     trayecto = Trayectos.find_one({'_id': ObjectId(id)})
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
     pasajeros = trayecto['pasajeros']
@@ -722,14 +724,21 @@ def mostrarViaje(id):
     duracionViaje = duracion(origen=trayecto['origenstr'],
                              destino=trayecto['destinostr'])
 
-    return render_template('viaje.html',
+    if(user):
+        return render_template('viaje.html',
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
                            fechahoy=datetime.utcnow(),
-                           usuario=user,
                            estavalorado=estavalorado(conductor, user))
+    else:
+        return render_template('viaje.html',
+                           trayecto=trayecto,
+                           conductor=conductor,
+                           pasajeros=pasajerosPerfil,
+                           duracion=duracionViaje,
+                           fechahoy=datetime.utcnow())
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
@@ -799,6 +808,14 @@ def estavalorado(conductor, usuario):
         return False
     else:
         return True
+
+@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST'])
+def finalizarTrayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},
+                         {'$set': {
+                             'finalizado': 1
+                         }})
+    return redirect('/trayecto/'+idtrayecto)
 
 
 #------------------------------------------------------------
