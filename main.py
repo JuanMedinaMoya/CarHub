@@ -1536,7 +1536,7 @@ def media_valoraciones(id):
         return 0
     else:
         media = suma / total
-        return media
+        return round(media, 1)
 
 
 def num_valoraciones(id):
