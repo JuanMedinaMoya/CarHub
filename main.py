@@ -1007,7 +1007,6 @@ def mis_viajes(usuario, pagina):
                 if p['comprador'] == id_usuario:
                     tray.append(t)
 
-    #tray.sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
     num_tray = len(tray)
 
     #tray = Trayectos.find({
