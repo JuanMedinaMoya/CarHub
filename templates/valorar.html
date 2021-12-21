@@ -11,7 +11,8 @@
 <!-- INTRO
 ================================================== -->
 <section id="perfilId"
-   style="padding:160px 0;background-image: url(../../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   style="padding:160px 0;background-image: url(../../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+   class="min-vh-100">
    {% with messages = get_flashed_messages() %}
    {% if messages %}
    {% for message in messages %}
@@ -78,6 +79,48 @@
          margin-left: auto;
          margin-right: auto;
       }
+
+      .rate {
+         float: inline-start;
+         height: 46px;
+         padding: 0 10px;
+      }
+
+      .rate:not(:checked)>input {
+         position: absolute;
+         top: -9999px;
+      }
+
+      .rate:not(:checked)>label {
+         float: right;
+         width: 1em;
+         overflow: hidden;
+         white-space: nowrap;
+         cursor: pointer;
+         font-size: 30px;
+         color: #ccc;
+      }
+
+      .rate:not(:checked)>label:before {
+         content: '★ ';
+      }
+
+      .rate>input:checked~label {
+         color: #ffc700;
+      }
+
+      .rate:not(:checked)>label:hover,
+      .rate:not(:checked)>label:hover~label {
+         color: #deb217;
+      }
+
+      .rate>input:checked+label:hover,
+      .rate>input:checked+label:hover~label,
+      .rate>input:checked~label:hover,
+      .rate>input:checked~label:hover~label,
+      .rate>label:hover~input:checked~label {
+         color: #c59b08;
+      }
    </style>
    </head>
 
@@ -94,17 +137,36 @@
 
          <div class="form-group">
             <form action="/valorar/{{trayecto['_id']}}/{{ usuario['_id'] }}" method="post">
-                <label for="origen">Puntuacion
-                </label>
-                <input type="number" class="form-control" name="valoracion" id="valoracion" placeholder="0"
-                   required>
-                
-                <label for="origen">Comentario
-                </label>
-                <br>
-            
-                 <textarea class="md-textarea form-control" name="comentario" cols="40" rows="5"  placeholder="Comenta" required></textarea>  
-                 <button type="submit" value="Crear" class="btn btn-primary btn-lg btn-block" style="width: 100%;"><i class="fa fa-pencil" aria-hidden="true"></i>    Valorar</button>
+               <label for="origen">Puntuación
+               </label>
+               <div class="container">
+                  <div class="row justify-content-md-center">
+                     <div class="col-md-auto">
+                        <div class="rate">
+                           <input type="radio" id="star1" name="valoracion" value="1" />
+                           <label for="star1" title="1 estrella">1 estrella</label>
+                           <input type="radio" id="star2" name="valoracion" value="2" />
+                           <label for="star2" title="2 estrellas">2 estrellas</label>
+                           <input type="radio" id="star3" name="valoracion" value="3" />
+                           <label for="star3" title="3 estrellas">3 estrellas</label>
+                           <input type="radio" id="star4" name="valoracion" value="4" />
+                           <label for="star4" title="4 estrellas">4 estrellas</label>
+                           <input type="radio" id="star5" name="valoracion" value="5" required />
+                           <label for="star5" title="5 estrellas">5 estrellas</label>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <br>
+               <label for="origen">Comentario
+               </label>
+               <br>
+
+               <textarea class="md-textarea form-control" name="comentario" cols="40" rows="5"
+                  placeholder="Pon tu comentario aquí" required></textarea>
+               <button type="submit" value="Crear" class="btn btn-primary btn-lg btn-block" style="width: 100%;"><i
+                     class="fa fa-pencil" aria-hidden="true"></i> Valorar</button>
             </form>
          </div>
 
