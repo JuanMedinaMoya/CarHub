@@ -7,10 +7,40 @@
 {{ super() }}
 {% endblock %}
 {% block body %}
+<style type="text/css">
+   .isDisabled {
+      color: currentColor;
+      pointer-events: none;
+      opacity: 0.5;
+      text-decoration: none;
+   }
+
+   div {
+      position: relative;
+   }
+
+   .pagination {
+      width: 750px;
+      margin: 0 auto;
+      list-style: none;
+      width: 50%;
+   }
+
+   .pagination li {
+      float: left;
+   }
+
+   .pagination a {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+   }
+</style>
 <!-- INTRO
 ================================================== -->
 <section id="busqueda"
-   style="padding: 160px; background-image: url(../../../../../../../../../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   style="padding: 160px; background-image: url(../../../../../../../../../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+   class="min-vh-100">
    <div class="container">
       <div class="textwidget">
          <div class="contactstyle topform">
@@ -26,34 +56,37 @@
                   </div>
                   <small>{{ trayecto['horasalida'].strftime('A las %H:%M el %d/%m/%Y') }}</small>
                   <small>
-                     <p class="mb-1">Número de pasajeros: {{ trayecto['numeropasajeros'] }}</p>
+                     <p class="mb-1">Asientos disponibles: {{ trayecto['numeropasajeros'] }}</p>
                   </small>
                </a>
                {% endfor %}
             </div>
             {% if datos['encontrado'] %}
-            <nav aria-label="Page navigation example" style="margin-left: 25%;">
+            <nav aria-label="Page navigation example" style="padding-top: 20px;">
                <ul class="pagination">
                   <li class="page-item">
-                     {% if datos['pagina'] > 1 %}
-                     <a class="page-link" href="{{ datos['pagina'] - 1 }}" aria-label="Previous">
+
+                     <a class="page-link {% if datos['pagina'] <= 1 %} isDisabled {% endif %}"
+                        href="{{ datos['pagina'] - 1 }}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                      </a>
-                     {% endif %}
+
                   </li>
                   {% if datos['pagina'] > 1 %}
-                  <li class="page-item"><a class="page-link" href="{{ datos['pagina'] - 1 }}">{{ datos['pagina'] - 1 }}</a></li>
+                  <li class="page-item"><a class="page-link" href="{{ datos['pagina'] - 1 }}">{{ datos['pagina'] - 1
+                        }}</a></li>
                   {% endif %}
-                  <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina'] }}</a></li>
-                  {% if datos['ultimaPag'] + 1 > datos['pagina'] %}
-                  <li class="page-item"><a class="page-link" href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1 }}</a></li>
-                  {% endif %}
+                  <li class="page-item active"><a class="page-link" href="{{ datos['pagina'] }}">{{ datos['pagina']
+                        }}</a></li>
+                  <li class="page-item"><a
+                        class="page-link {% if datos['ultimaPag'] + 1 <= datos['pagina'] %} isDisabled {% endif %}"
+                        href="{{ datos['pagina'] + 1 }}">{{ datos['pagina'] + 1 }}</a></li>
                   <li class="page-item">
-                     {% if datos['ultimaPag'] + 1 > datos['pagina'] %}
-                     <a class="page-link" href="{{ datos['pagina'] + 1 }}" aria-label="Next">
+                     <a class="page-link {% if datos['ultimaPag'] + 1 <= datos['pagina'] %} isDisabled {% endif %}"
+                        href="{{ datos['pagina'] + 1 }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                      </a>
-                     {% endif %}
+
                   </li>
                </ul>
             </nav>
@@ -69,10 +102,10 @@
 
 <!-- SCRIPTS
 ================================================== -->
-      <script src="static/assets/js/jquery.js"></script>
-      <script src="static/assets/js/plugins.js"></script>
-      <script src="static/contact/topvalidate.js"></script>
-      <script src="static/contact/bottomvalidate.js"></script>
+<script src="static/assets/js/jquery.js"></script>
+<script src="static/assets/js/plugins.js"></script>
+<script src="static/contact/topvalidate.js"></script>
+<script src="static/contact/bottomvalidate.js"></script>
 {% endblock %}
 {% block footer %}
 {{ super() }}
