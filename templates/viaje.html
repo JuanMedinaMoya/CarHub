@@ -127,7 +127,7 @@
                   <div id="map" style="width: 400px; height: 400px;"></div>
 
                   <!-- Solo para los que compran el viaje  -->
-                  {% if session['username'] != conductor['username'] %}
+                  {% if trayecto['finalizado'] == 0 and session['username'] != conductor['username'] and not espasajero %}
                   <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                      title="pagar trayecto">
                      <!-- Button trigger modal -->
