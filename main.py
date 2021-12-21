@@ -1258,7 +1258,6 @@ def recibirMensajes():
         listMensajes
     )]
     rendered = getHTMLListaMensajes(listMensajes)
-    print(rendered)
     return rendered    
 
 def getHTMLListaMensajes(listMensajes):
