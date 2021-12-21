@@ -744,24 +744,22 @@ def mostrarViaje(id):
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
 def anadirPasajero(idtrayecto):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    usuario = Usuarios.find_one({"username": session["username"]})
+
     numpasajeros = trayecto['numeropasajeros']
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
-    finalizado = trayecto['finalizado']
-    usuario = Usuarios.find_one({"username": session["username"]})
-    nump = request.form['numeropasajeros']
+    asientos = request.form['asientos']
 
-    nuevopasajero = []
-    nuevopasajero.append(usuario)
-    pa = {'pasajeros': int(nump)}
-    nuevopasajero.append(pa)
-    pasajeros.append(nuevopasajero)
+    pasajeros.append({'comprador' : ObjectId(usuario['_id']), 'personas': int(asientos) })
+
     Trayectos.update_one({'_id': ObjectId(idtrayecto)}, {
         '$set': {
-            'pasajeros': pasajeros.append(nuevopasajero),
-            'numeropasajeros': numpasajeros - int(nump)
+            'pasajeros': pasajeros,
+            'numeropasajeros': numpasajeros - int(asientos)
         }
     })
+
     return redirect('/conversacion/' + ObjectId(conductor) + '/' + ObjectId(
         usuario['_id']))  # Crea la conversacion cuando se añade a la reserva
 

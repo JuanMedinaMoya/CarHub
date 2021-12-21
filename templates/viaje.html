@@ -63,36 +63,38 @@
          <div class="contactstyle topform">
             <style>
                #activo {
-                  background-color: rgb(10, 124, 0);
-                  border-color: rgb(10, 80, 3);
+                  color: #fff;
+                  background-color: #20b2aa;
+                  border-color: #20b2aa;
                   text-align: center;
                }
             </style>
 
 
             {% if trayecto['finalizado'] == 0 %}
-               {% if session['username'] == conductor['username'] %}
-               <p>
-                  {% if trayecto['pasajeros']|length == 0 %}
+            {% if session['username'] == conductor['username'] %}
+            <p>
+               {% if trayecto['pasajeros']|length == 0 %}
 
-                  <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
-                     <button type="button" class="btn btn-primary btn-lg">Editar</button>
+               <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
+                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
+               </a>
+
+               {% endif %}
+
+               {% if fechahoy < trayecto['horasalida'] %} <a href="/borrartrayecto/{{ trayecto['_id'] }}">
+                  <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')"
+                     class="btn btn-danger">Borrar</button>
                   </a>
-
+                  {% else %}
+                  <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
+                     <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')"
+                        class="btn btn-dark">Finalizar</button>
+                  </a>
                   {% endif %}
-
-                  {% if fechahoy < trayecto['horasalida'] %} 
-                     <a href="/borrartrayecto/{{ trayecto['_id'] }}">
-                     <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')" class="btn btn-danger">Borrar</button>
-                     </a>
-                     {% else %}
-                     <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
-                        <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')" class="btn btn-dark">Finalizar</button>
-                     </a>
-                     {% endif %}
-               </p>
-               {% else %}
-               {% if session['username'] and session['username'] != conductor['username'] %}
+            </p>
+            {% else %}
+            {% if session['username'] and session['username'] != conductor['username'] %}
 
             {% if fechahoy < trayecto['horasalida'] %} <p>
                <a href="/#">
@@ -101,7 +103,7 @@
                </p>
                {% endif %}
                {% endif %}
-               {% else %}
+               {% endif %}
                {% if session['username'] == conductor['username'] %}
                <p>
                   {% for pasajero in pasajeros %}
@@ -156,28 +158,34 @@
                   <!-- Modal -->
                   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                      aria-hidden="true">
-                     <div class="modal-dialog">
+                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                            <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel">Pagar trayecto</h5>
+                              <h3 class="modal-title" id="exampleModalLabel" style="color:rgb(10, 124, 0);">Pagar viaje
+                              </h3>
                               <button type="button" class="btn-close" data-bs-dismiss="modal"
                                  aria-label="Close"></button>
                            </div>
-                           <div class="modal-body">
-                              <p>Seleccione el numero de asientos:</p>
-                           </div>
-                           <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <button type="button" class="btn btn-primary">Save changes</button>
-                           </div>
+                           <form method="post" action="/anadirpasajero/{{ trayecto['_id'] }}" enctype="multipart/form-data">
+                              <div class="modal-body">
+                                 <p>
+                                 <h3>Precio por asiento: {{ trayecto['precio'] }} €</h3><br>
+                                 Seleccione el numero de asientos:
+                                 </p>
+                                 <input type="number" id="asientos" name="asientos" value="1" min="1"
+                                    max="{{ trayecto['numeropasajeros'] }}">
+                              </div>
+                              <div class="modal-footer">
+                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                 <button type="submit" class="btn btn-primary">Confirmar y pagar</button>
+                              </div>
+                           </form>
                         </div>
                      </div>
                   </div>
-
-
-
                </ul>
 
+               <br>
                <div class="col">
                   <div class="row">
                      <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
