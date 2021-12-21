@@ -63,8 +63,9 @@
          <div class="contactstyle topform">
             <style>
                #activo {
-                  background-color: rgb(10, 124, 0);
-                  border-color: rgb(10, 80, 3);
+                  color: #fff;
+                  background-color: #20b2aa;
+                  border-color: #20b2aa;
                   text-align: center;
                }
             </style>
@@ -104,6 +105,7 @@
                   {% endif %}                      
             {% endif %}
 
+
                <ul class="list-group">
                   <li class="list-group-item">
                      <h3 style="color:rgb(10, 124, 0);">SALIDA: </h3>
@@ -124,19 +126,50 @@
                   <br>
                   <div id="map" style="width: 400px; height: 400px;"></div>
 
-                  <!-- Solo para el admin para editar, borrar o finalizar  -->
+                  <!-- Solo para los que compran el viaje  -->
                   {% if session['username'] != conductor['username'] %}
                   <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                      title="pagar trayecto">
-                     <a href="#pagartrayecto" class="list-group-item list-group-item-action active btn " id="activo"
-                        aria-current="true">
+                     <!-- Button trigger modal -->
+                     <button type="button" class="list-group-item list-group-item-action active btn " id="activo"
+                        data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
-                     </a>
+                     </button>
+                     <!-------------------------->
                   </span>
                   {% endif %}
 
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                     <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h3 class="modal-title" id="exampleModalLabel" style="color:rgb(10, 124, 0);">Pagar viaje
+                              </h3>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                 aria-label="Close"></button>
+                           </div>
+                           <form method="post" action="/anadirpasajero/{{ trayecto['_id'] }}" enctype="multipart/form-data">
+                              <div class="modal-body">
+                                 <p>
+                                 <h3>Precio por asiento: {{ trayecto['precio'] }} €</h3><br>
+                                 Seleccione el numero de asientos:
+                                 </p>
+                                 <input type="number" id="asientos" name="asientos" value="1" min="1"
+                                    max="{{ trayecto['numeropasajeros'] }}">
+                              </div>
+                              <div class="modal-footer">
+                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                 <button type="submit" class="btn btn-primary">Confirmar y pagar</button>
+                              </div>
+                           </form>
+                        </div>
+                     </div>
+                  </div>
                </ul>
 
+               <br>
                <div class="col">
                   <div class="row">
                      <h3 style="color:rgb(10, 124, 0);">Conductor: </h3>
