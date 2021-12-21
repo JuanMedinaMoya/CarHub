@@ -1007,22 +1007,32 @@ def mis_viajes(usuario, pagina):
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
 
-    tray = []
-    for t in Trayectos.find():
-        if t['pasajeros']:
-            for p in t['pasajeros']:
-                if p['comprador'] == id_usuario:
-                    tray.append(t)
 
-    #tray.sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
-    num_tray = len(tray)
+    # tray = []
+    # for t in Trayectos.find():
+    #     if t['pasajeros']:
+    #         for p in t['pasajeros']:
+    #             if p['comprador'] == id_usuario:
+    #                 tray.append(t)
 
-    #tray = Trayectos.find({
-    #    'pasajeros': id_usuario
-    #}).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
-    #num_tray = Trayectos.count({'pasajeros': id_usuario})
-    #tray = Trayectos.find().sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    #tray = []
+    
+
+    tray = Trayectos.find({
+        'pasajeros': {
+            '$elemMatch': {
+                'comprador': id_usuario
+            }
+        }
+    }).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
+
+    num_tray = Trayectos.count_documents({
+        'pasajeros': {
+            '$elemMatch': {
+                'comprador': id_usuario
+            }
+        }
+    })
+
     datos = {
         'pagina': int(pagina),
         'ultimaPag': int((num_tray - 1) // 7),
@@ -1053,8 +1063,11 @@ def mis_viajes_creados(usuario, pagina):
     tray = Trayectos.find({
         'conductor': id_usuario
     }).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
-    num_tray = Trayectos.count({'conductor': id_usuario})
-    #tray = []
+
+    num_tray = Trayectos.count_documents({
+        'conductor': id_usuario
+    })
+
     datos = {
         'pagina': int(pagina),
         'ultimaPag': int((num_tray - 1) // 7),
