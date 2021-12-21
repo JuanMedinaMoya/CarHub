@@ -1290,6 +1290,14 @@ def getHTMLListaMensajes(listMensajes):
             '''
     return render_template_string(listInHtml, listMensajes=listMensajes, id=id)
 
+@app.template_filter('datetime')
+def date_format(value):
+    months = ('Enero','Febrero',"Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+    month = months[value.month-1]
+    hora = str(value.hour).zfill(2)
+    minutos = str(value.minute).zfill(2)
+    return "{} de {} del {} a las {}:{}hs".format(value.day, month, value.year, hora, minutos)
+
 
 #------------------------------------------------------------------
 #  _______ _____        __     ________ _____ _______ ____   _____
