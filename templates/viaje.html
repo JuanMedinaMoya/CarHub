@@ -71,29 +71,28 @@
 
 
             {% if trayecto['finalizado'] == 0 %}
-            {% if session['username'] == conductor['username'] %}
-            <p>
-               {% if trayecto['pasajeros']|length == 0 %}
+               {% if session['username'] == conductor['username'] %}
+               <p>
+                  {% if trayecto['pasajeros']|length == 0 %}
 
-               <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
-                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
-               </a>
-
-               {% endif %}
-
-               {% if fechahoy < trayecto['horasalida'] %} <a href="/#">
-                  <button type="button" class="btn btn-danger">Borrar</button>
+                  <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
+                     <button type="button" class="btn btn-primary btn-lg">Editar</button>
                   </a>
-                  {% else %}
-                  <a href="/#">
-                     <button type="button" class="btn btn-dark">Finalizar</button>
-                  </a>
+
                   {% endif %}
-            </p>
-            {% else %}
-            {% if usuario is not none %}
 
-            {% endif %}
+                  {% if fechahoy < trayecto['horasalida'] %} 
+                     <a href="/borrartrayecto/{{ trayecto['_id'] }}">
+                     <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')" class="btn btn-danger">Borrar</button>
+                     </a>
+                     {% else %}
+                     <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
+                        <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')" class="btn btn-dark">Finalizar</button>
+                     </a>
+                     {% endif %}
+               </p>
+               {% else %}
+               {% if session['username'] and session['username'] != conductor['username'] %}
 
             {% if fechahoy < trayecto['horasalida'] %} <p>
                <a href="/#">
