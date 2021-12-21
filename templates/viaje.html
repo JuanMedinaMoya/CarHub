@@ -72,7 +72,7 @@
 
 
             {% if trayecto['finalizado'] == 0 %}
-                  {% if session['username'] == conductor['username'] %}
+                  {% if session['username'] and session['username'] == conductor['username'] %}
                         <p align="center">
                            {% if trayecto['pasajeros']|length == 0 %}
 
@@ -93,7 +93,7 @@
                         </p>
                   {% else %}
 
-                        {% if session['username'] != conductor['username'] and espasajero %}
+                        {% if session['username'] and session['username'] != conductor['username'] and espasajero %}
                               {% if fechahoy < trayecto['horasalida'] %} 
                                     <p align="center">
                                        <a href="/#">
@@ -127,7 +127,7 @@
                   <div id="map" style="width: 400px; height: 400px;"></div>
 
                   <!-- Solo para los que compran el viaje  -->
-                  {% if trayecto['finalizado'] == 0 and session['username'] != conductor['username'] and not espasajero %}
+                  {% if session['username'] and trayecto['finalizado'] == 0 and session['username'] != conductor['username'] and not espasajero %}
                   <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                      title="pagar trayecto">
                      <!-- Button trigger modal -->
@@ -179,7 +179,7 @@
                      <div class="card card-body">
                         <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
                         <small>Coche: {{ conductor['coche'] }} </small>
-                        {%if trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and estavalorado == false%}
+                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and estavalorado == false%}
                         <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
                            <button type="button" class="btn btn-warning">Valorar</button>
                         </a>
@@ -199,7 +199,7 @@
                         <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
                      </div>
 
-                     {%if trayecto['finalizado'] == 1 and session['username'] == conductor['username'] and estavalorado == false%}
+                     {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] == conductor['username'] and estavalorado == false%}
                         <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
                            <button type="button" class="btn btn-warning">Valorar</button>
                         </a>
