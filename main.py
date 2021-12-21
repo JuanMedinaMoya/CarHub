@@ -730,7 +730,7 @@ def mostrarViaje(id):
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
-                           fechahoy=datetime.utcnow(),
+                           fechahoy=datetime.now(),
                            estavalorado=estavalorado(conductor, user))
     else:
         return render_template('viaje.html',
@@ -738,7 +738,7 @@ def mostrarViaje(id):
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
-                           fechahoy=datetime.utcnow())
+                           fechahoy=datetime.now())
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
@@ -809,7 +809,7 @@ def estavalorado(conductor, usuario):
     else:
         return True
 
-@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST'])
+@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST','GET'])
 def finalizarTrayecto(idtrayecto):
     Trayectos.update_one({'_id': ObjectId(idtrayecto)},
                          {'$set': {
@@ -817,6 +817,10 @@ def finalizarTrayecto(idtrayecto):
                          }})
     return redirect('/trayecto/'+idtrayecto)
 
+@app.route('/borrartrayecto/<id>', methods=['POST','GET'])
+def borrarTrayecto(id):
+    trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
+    return redirect('/mis_viajes_creados/'+session["username"]+'/1')
 
 #------------------------------------------------------------
 

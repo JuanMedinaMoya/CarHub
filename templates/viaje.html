@@ -71,54 +71,38 @@
 
 
             {% if trayecto['finalizado'] == 0 %}
-               {% if session['username'] == conductor['username'] %}
-               <p>
-                  {% if trayecto['pasajeros']|length == 0 %}
+                  {% if session['username'] == conductor['username'] %}
+                        <p align="center">
+                           {% if trayecto['pasajeros']|length == 0 %}
 
-                  <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
-                     <button type="button" class="btn btn-primary btn-lg">Editar</button>
-                  </a>
+                           <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
+                              <button type="button" class="btn btn-primary btn-lg">Editar</button>
+                           </a>
 
-                  {% endif %}
+                           {% endif %}
+                           {% if fechahoy < trayecto['horasalida'] %} 
+                              <a href="/borrartrayecto/{{ trayecto['_id'] }}">
+                              <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')" class="btn btn-danger">Borrar</button>
+                              </a>
+                           {% else %}
+                              <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
+                                 <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')" class="btn btn-dark">Finalizar</button>
+                              </a>
+                           {% endif %}
+                        </p>
+                  {% else %}
 
-                  {% if fechahoy < trayecto['horasalida'] %} 
-                     <a href="/borrartrayecto/{{ trayecto['_id'] }}">
-                     <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')" class="btn btn-danger">Borrar</button>
-                     </a>
-                     {% else %}
-                     <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
-                        <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')" class="btn btn-dark">Finalizar</button>
-                     </a>
-                     {% endif %}
-               </p>
-               {% else %}
-               {% if session['username'] and session['username'] != conductor['username'] %}
-
-            {% if fechahoy < trayecto['horasalida'] %} <p>
-               <a href="/#">
-                  <button type="button" class="btn btn-danger">Salirse</button>
-               </a>
-               </p>
-               {% endif %}
-               {% endif %}
-               {% else %}
-               {% if session['username'] == conductor['username'] %}
-               <p>
-                  {% for pasajero in pasajeros %}
-                  <a href="/#">
-                     <button type="button" class="btn btn-primary btn-lg">Valorar a {{ pasajero['username'] }}</button>
-                  </a>
-                  {% endfor %}
-               </p>
-               {% else %}
-               <p>
-                  <a href="/#">
-                     <button type="button" class="btn btn-primary btn-lg">Valorar a {{conductor['username']}}</button>
-                  </a>
-               </p>
-               {% endif %}
-               <!-- Si no ha finalizado  -->
-               {% endif %}
+                        {% if session['username'] != conductor['username'] and espasajero %}
+                              {% if fechahoy < trayecto['horasalida'] %} 
+                                    <p align="center">
+                                       <a href="/#">
+                                          <button type="button" class="btn btn-danger">Salirse</button>
+                                       </a>
+                                    </p>
+                              {% endif %}
+                        {% endif %}
+                  {% endif %}                      
+            {% endif %}
 
                <ul class="list-group">
                   <li class="list-group-item">
@@ -162,7 +146,7 @@
                      <div class="card card-body">
                         <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
                         <small>Coche: {{ conductor['coche'] }} </small>
-                        {%if estavalorado == false%}
+                        {%if trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and estavalorado == false%}
                         <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
                            <button type="button" class="btn btn-warning">Valorar</button>
                         </a>
@@ -181,6 +165,12 @@
                      <div class="card card-body">
                         <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
                      </div>
+
+                     {%if trayecto['finalizado'] == 1 and session['username'] == conductor['username'] and estavalorado == false%}
+                        <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
+                           <button type="button" class="btn btn-warning">Valorar</button>
+                        </a>
+                     {%endif%}
                   </a>
                   {% endfor %}
                   {% endif %}
