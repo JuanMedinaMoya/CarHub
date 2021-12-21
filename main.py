@@ -709,52 +709,71 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
 
 @app.route('/trayecto/<id>', methods=['GET'])
 def mostrarViaje(id):
-    user = Usuarios.find_one({'username': session['username']})
+    user = None
     trayecto = Trayectos.find_one({'_id': ObjectId(id)})
-    conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
     pasajeros = trayecto['pasajeros']
+    espasajero = False
+    if session.get('username') is not None:
+        user = Usuarios.find_one({'username': session['username']})
+        
+        for p in pasajeros:
+                if p['comprador'] == user['_id']:
+                    espasajero = True
+
+    
+    conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
+    
     pasajerosPerfil = []
+
     if pasajeros:
-        for id in pasajeros:
-            usuario = Usuarios.find_one({'_id': ObjectId(id)})
+        for pas in pasajeros:
+            usuario = Usuarios.find_one({'_id': ObjectId(pas['comprador'])})
             pasajerosPerfil.append(usuario)
+
+    
+
 
     duracionViaje = duracion(origen=trayecto['origenstr'],
                              destino=trayecto['destinostr'])
 
-    return render_template('viaje.html',
+    if(user):
+        return render_template('viaje.html',
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
-                           fechahoy=datetime.utcnow(),
-                           usuario=user,
+                           fechahoy=datetime.now(),
+                           espasajero=espasajero,
                            estavalorado=estavalorado(conductor, user))
+    else:
+        return render_template('viaje.html',
+                           trayecto=trayecto,
+                           conductor=conductor,
+                           pasajeros=pasajerosPerfil,
+                           duracion=duracionViaje,
+                           fechahoy=datetime.now())
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
 def anadirPasajero(idtrayecto):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    usuario = Usuarios.find_one({"username": session["username"]})
+
     numpasajeros = trayecto['numeropasajeros']
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
-    finalizado = trayecto['finalizado']
-    usuario = Usuarios.find_one({"username": session["username"]})
-    nump = request.form['numeropasajeros']
+    asientos = request.form['asientos']
 
-    nuevopasajero = []
-    nuevopasajero.append(usuario)
-    pa = {'pasajeros': int(nump)}
-    nuevopasajero.append(pa)
-    pasajeros.append(nuevopasajero)
+    pasajeros.append({'comprador' : ObjectId(usuario['_id']), 'personas': int(asientos) })
+
     Trayectos.update_one({'_id': ObjectId(idtrayecto)}, {
         '$set': {
-            'pasajeros': pasajeros.append(nuevopasajero),
-            'numeropasajeros': numpasajeros - int(nump)
+            'pasajeros': pasajeros,
+            'numeropasajeros': numpasajeros - int(asientos)
         }
     })
-    return redirect('/conversacion/' + ObjectId(conductor) + '/' + ObjectId(
-        usuario['_id']))  # Crea la conversacion cuando se añade a la reserva
+
+    return redirect('/trayecto/'+idtrayecto)  # Crea la conversacion cuando se añade a la reserva
 
 
 @app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
@@ -800,6 +819,18 @@ def estavalorado(conductor, usuario):
     else:
         return True
 
+@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST','GET'])
+def finalizarTrayecto(idtrayecto):
+    Trayectos.update_one({'_id': ObjectId(idtrayecto)},
+                         {'$set': {
+                             'finalizado': 1
+                         }})
+    return redirect('/trayecto/'+idtrayecto)
+
+@app.route('/borrartrayecto/<id>', methods=['POST','GET'])
+def borrarTrayecto(id):
+    trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
+    return redirect('/mis_viajes_creados/'+session["username"]+'/1')
 
 #------------------------------------------------------------
 
@@ -975,10 +1006,21 @@ def mis_viajes(usuario, pagina):
         return not_access_permission()
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
-    tray = Trayectos.find({
-        'pasajeros': id_usuario
-    }).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
-    num_tray = Trayectos.count({'pasajeros': id_usuario})
+
+    tray = []
+    for t in Trayectos.find():
+        if t['pasajeros']:
+            for p in t['pasajeros']:
+                if p['comprador'] == id_usuario:
+                    tray.append(t)
+
+    #tray.sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
+    num_tray = len(tray)
+
+    #tray = Trayectos.find({
+    #    'pasajeros': id_usuario
+    #}).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
+    #num_tray = Trayectos.count({'pasajeros': id_usuario})
     #tray = Trayectos.find().sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
     datos = {

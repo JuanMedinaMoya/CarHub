@@ -91,18 +91,14 @@
          <br>
          <h1>{{usuario['nombre']}} {{ usuario['apellidos'] }} </h1>
          <p class="title">@{{ usuario['username'] }}</p>
-         <p class="my-auto">
-            <xd> Correo:</xd> {{ usuario['correo'] }}<br>
-            <xd> Teléfono:</xd> {{ usuario['telefono'] }}<br>
-            <xd> DNI:</xd> {{ usuario['dni'] }}<br>
-            <xd> Coche:</xd> {{ usuario['coche'] }}<br>
-            <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
+         {% if session['username'] and session['username'] != usuario['username'] %} 
          <div class="d-inline mx-auto">
             <a href="/conversacion/{{ usuario['username']}}/{{session['username']}}"
                class="nav-link text-success fs-2">
                <i class="far fa-comment-dots"></i>
             </a>
          </div>
+         {% endif %} 
          <br>
          </p>
          <p style="font-size: 25px;">
