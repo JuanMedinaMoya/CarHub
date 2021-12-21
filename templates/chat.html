@@ -40,7 +40,7 @@
                         <p class="text-break">
                             {{ m['contenido'] }}
                         </p>
-                        <span>Hora del mensaje</span>
+                        <span>{{ m['fecha']|datetime }}</span>
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                         <p class="text-break">
                             {{ m['contenido'] }}
                         </p>
-                        <span class="">Hora del mensaje</span>
+                        <span class="">{{ m['fecha']|datetime }}</span>
                     </div>
                 </div>
             </div>
@@ -69,9 +69,11 @@
         </div>
     </div>
 </section>
+<script src="/static/js/luxon.js"></script>
 <script>
     var intervalo = 5000;
     var currentTotal = "{{ len_mensajes }}";
+    var DateTime = luxon.DateTime;
     function enviarMensaje() {
         const http = new XMLHttpRequest();
         const url = "/enviarMensaje";

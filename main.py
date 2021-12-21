@@ -710,11 +710,19 @@ def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
 @app.route('/trayecto/<id>', methods=['GET'])
 def mostrarViaje(id):
     user = None
+    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+    pasajeros = trayecto['pasajeros']
+    espasajero = False
     if session.get('username') is not None:
         user = Usuarios.find_one({'username': session['username']})
-    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+        
+        for p in pasajeros:
+                if p['comprador'] == user['_id']:
+                    espasajero = True
+
+    
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
-    pasajeros = trayecto['pasajeros']
+    
     pasajerosPerfil = []
 
     if pasajeros:
@@ -722,8 +730,7 @@ def mostrarViaje(id):
             usuario = Usuarios.find_one({'_id': ObjectId(pas['comprador'])})
             pasajerosPerfil.append(usuario)
 
-    espasajero = False
-    if user in pasajeros: espasajero = True
+    
 
 
     duracionViaje = duracion(origen=trayecto['origenstr'],
@@ -1323,6 +1330,14 @@ def getHTMLListaMensajes(listMensajes):
             {% endfor %}
             '''
     return render_template_string(listInHtml, listMensajes=listMensajes, id=id)
+
+@app.template_filter('datetime')
+def date_format(value):
+    months = ('Enero','Febrero',"Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+    month = months[value.month-1]
+    hora = str(value.hour).zfill(2)
+    minutos = str(value.minute).zfill(2)
+    return "{} de {} del {} a las {}:{}hs".format(value.day, month, value.year, hora, minutos)
 
 
 #------------------------------------------------------------------
