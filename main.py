@@ -716,10 +716,15 @@ def mostrarViaje(id):
     conductor = Usuarios.find_one({'_id': ObjectId(trayecto['conductor'])})
     pasajeros = trayecto['pasajeros']
     pasajerosPerfil = []
+
     if pasajeros:
         for pas in pasajeros:
             usuario = Usuarios.find_one({'_id': ObjectId(pas['comprador'])})
             pasajerosPerfil.append(usuario)
+
+    espasajero = False
+    if user in pasajeros: espasajero = True
+
 
     duracionViaje = duracion(origen=trayecto['origenstr'],
                              destino=trayecto['destinostr'])
@@ -731,6 +736,7 @@ def mostrarViaje(id):
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
                            fechahoy=datetime.now(),
+                           espasajero=espasajero,
                            estavalorado=estavalorado(conductor, user))
     else:
         return render_template('viaje.html',
@@ -993,10 +999,21 @@ def mis_viajes(usuario, pagina):
         return not_access_permission()
     #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
-    tray = Trayectos.find({
-        'pasajeros': id_usuario
-    }).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
-    num_tray = Trayectos.count({'pasajeros': id_usuario})
+
+    tray = []
+    for t in Trayectos.find():
+        if t['pasajeros']:
+            for p in t['pasajeros']:
+                if p['comprador'] == id_usuario:
+                    tray.append(t)
+
+    #tray.sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
+    num_tray = len(tray)
+
+    #tray = Trayectos.find({
+    #    'pasajeros': id_usuario
+    #}).sort('horasalida', 1)[7 * (int(pagina) - 1):7 * (int(pagina))]
+    #num_tray = Trayectos.count({'pasajeros': id_usuario})
     #tray = Trayectos.find().sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
     #tray = []
     datos = {
