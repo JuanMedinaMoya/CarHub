@@ -23,7 +23,8 @@
                         </div>
                         <div class="user_info">
                             <span class="fs-4 text-dark">{{ contact }}</span>
-                            <p class="text-secundary">{{ len_mensajes }} mensajes</p>
+                            <p class="text-secundary">
+                            <p id="total" name="total" class="d-inline">{{ len_mensajes }}</p> mensajes</p>
                         </div>
                     </div>
                 </a>
@@ -70,11 +71,12 @@
 </section>
 <script>
     var intervalo = 5000;
+    var currentTotal = "{{ len_mensajes }}";
     function enviarMensaje() {
         const http = new XMLHttpRequest();
         const url = "/enviarMensaje";
         http.onreadystatechange = function () {
-            if(this.readyState == 4 && this.status == 200) {
+            if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("contenido").value = "";
                 recibirMensajes();
             }
@@ -83,29 +85,32 @@
         http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         var id = "{{ id_conversacion }}";
         var contenido = document.getElementById("contenido").value;
-        http.send("contenido="+contenido+"&id_conversacion="+id);
+        http.send("contenido=" + contenido + "&id_conversacion=" + id);
     }
     function recibirMensajes() {
         const http = new XMLHttpRequest();
         const url = "/recibirMensajes";
-        http.onreadystatechange = function() {
-            if(this.readyState == 4 && this.status == 200) {
-                var node = document.createElement("div");
-                node.innerHTML = this.response;
-                document.getElementById("chatBox").appendChild(node);
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText.trim() !== "") {
+                    var node = document.createElement("div");
+                    node.innerHTML = this.response;
+                    document.getElementById("chatBox").appendChild(node);
+                    document.getElementById("total").textContent = document.getElementById("chatBox").childElementCount;
+                    currentTotal = document.getElementById("chatBox").childElementCount;
+                }
             }
         }
         http.open('POST', url);
         http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        var currentTotal = "{{ len_mensajes }}";
         var id = "{{ id_conversacion }}";
-        http.send("currentTotal="+currentTotal+"&id_conversacion="+id);
+        http.send("currentTotal=" + currentTotal + "&id_conversacion=" + id);
     }
     document.getElementById("enviar").addEventListener("click", function () {
         enviarMensaje();
     })
     document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(recibirMensajes, intervalo);
+        setInterval(recibirMensajes, intervalo);
     })
 </script>
 {% endblock %}
