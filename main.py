@@ -766,7 +766,7 @@ def anadirPasajero(idtrayecto):
 
     pasajeros.append({'comprador' : ObjectId(usuario['_id']), 'personas': int(asientos) })
 
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)}, {
+    Trayectos.update({'_id': ObjectId(idtrayecto)}, {
         '$set': {
             'pasajeros': pasajeros,
             'numeropasajeros': numpasajeros - int(asientos)
