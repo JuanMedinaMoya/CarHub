@@ -1,23 +1,19 @@
 {% extends '/navbar.html' %}
 {% block head %}
 {{ super() }}
-<title>Login</title>
+<title>Busqueda</title>
 {% endblock %}
-
 {% block navbar %}
 {{ super() }}
 {% endblock %}
 {% block body %}
 
 
-
-<!-- INTRO
-================================================== -->
 <section id="login"
-   style="padding:160px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   style="padding:50px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
    <div class="container">
       <div class="textwidget">
-         <h1 class="toptitle" style="color:rgb(10, 124, 0);">Inicia sesión<br /><br /><i
+         <h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Inicia sesión<br /><br /><i
                class="fa fa-star roundicon"></i>
          </h1>
 
@@ -28,7 +24,9 @@
                   <input type="text" name="correousername" id="correousername"
                      placeholder="Correo electrónico o username " value="{{correousername}}" required>
                   <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña " value="{{contrasena}}" required>
-                  <input type="submit" id="iniciasesion" class="clearfix btn" value="¡Inicia sesión!">
+                  <button type="submit" value="¡Inicia sesión!" class="btn btn-primary btn-lg btn-block" style="width: 100%;">
+                     ¡Inicia sesión!
+                  </button>
                   <p style="color:#FF0000";>{{error}}</p>
                </div>
                <div>
@@ -42,10 +40,8 @@
 
 <!-- SCRIPTS
 ================================================== -->
-<script src="static/assets/js/jquery.js"></script>
-<script src="static/assets/js/plugins.js"></script>
-<script src="static/contact/topvalidate.js"></script>
-<script src="static/contact/bottomvalidate.js"></script>
+
+
 
 {% endblock %}
 {% block footer %}

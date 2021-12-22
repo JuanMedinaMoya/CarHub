@@ -1,7 +1,64 @@
-{% extends 'navbar.html' %}
+{% extends '/navbar.html' %}
 {% block head %}
 {{ super() }}
 <title>Perfil</title>
+<style>
+   .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 450px;
+      margin: auto;
+      text-align: center;
+      font-family: arial;
+      opacity: 100;
+      background-color: #FFFFFF;
+   }
+
+   .title {
+      color: grey;
+      font-size: 18px;
+   }
+
+   button {
+      border: none;
+      outline: 0;
+      display: inline-block;
+      padding: 8px;
+      color: white;
+      background-color: #1bb9a0;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+   }
+
+   .button3 {
+      background-color: #f44336;
+   }
+
+   /* Red */
+
+   a {
+      text-decoration: none;
+      
+      color: black;
+   }
+
+   button:hover,
+   a:hover {
+      opacity: 0.7;
+   }
+
+   xd {
+      color: rgb(10, 124, 0);
+      opacity: 0.5;
+   }
+
+   .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+</style>
 {% endblock %}
 {% block navbar %}
 {{ super() }}
@@ -11,80 +68,11 @@
 <!-- INTRO
 ================================================== -->
 <section id="perfil"
-   style="padding:60px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
-   {% with messages = get_flashed_messages() %}
-   {% if messages %}
-   {% for message in messages %}
-   <div class="alert">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      {{ message }}
-   </div>
-   {% endfor %}
-   {% endif %}
-   {% endwith %}
-
-   <style>
-      .card {
-         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-         max-width: 450px;
-         margin: auto;
-         text-align: center;
-         font-family: arial;
-         opacity: 100;
-         background-color: #FFFFFF;
-      }
-
-      .title {
-         color: grey;
-         font-size: 18px;
-      }
-
-      button {
-         border: none;
-         outline: 0;
-         display: inline-block;
-         padding: 8px;
-         color: white;
-         background-color: #1bb9a0;
-         text-align: center;
-         cursor: pointer;
-         width: 100%;
-         font-size: 18px;
-      }
-
-      .button3 {
-         background-color: #f44336;
-      }
-
-      /* Red */
-
-      a {
-         text-decoration: none;
-         
-         color: black;
-      }
-
-      button:hover,
-      a:hover {
-         opacity: 0.7;
-      }
-
-      xd {
-         color: rgb(10, 124, 0);
-         opacity: 0.5;
-      }
-
-      .center {
-         display: block;
-         margin-left: auto;
-         margin-right: auto;
-       }
-   </style>
-   </head>
-
-   <body>
-
-      <h2 style="text-align:center"></h2>
+   style="padding:50px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   
+   <h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Mi Perfil<br /><br /><i
+      class="fa fa-car roundicon"></i>
+   </h1> 
       <div class="card">
          <br>
          <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
@@ -99,16 +87,14 @@
             <xd> Paypal:</xd> {{ usuario['paypal'] }}<br>
          </p>
          <p><a href="/editarperfil">
-               <button>Editar</button></a>
+            <button type="submit" value="¡Inicia sesión!" class="btn btn-primary btn-lg btn-block" style="width: 100%;">
+               Editar perfil
+            </button>
             <a href="/eliminarusuario">
-               <button onclick="return confirm('¿Estás seguro de que deseas eliminar tu usuario?')" style="background-color: #f44336;">Eliminar usuario</button>
+               <button onclick="return confirm('¿Estás seguro de que deseas eliminar tu usuario?')" class="btn btn-primary btn-lg btn-block" style="width: 100%; background-color: #f44336;">Eliminar usuario</button>
             </a>
 
-            <script> 
-               function myFunction() {
-                  confirm("¿Estás seguro de que desea eliminar tu usuario?");
-               }
-            </script>
+            
 
          </p>
       </div>
@@ -117,10 +103,6 @@
 
 <!-- SCRIPTS
 ================================================== -->
-<script src="static/assets/js/jquery.js"></script>
-<script src="static/assets/js/plugins.js"></script>
-<script src="static/contact/topvalidate.js"></script>
-<script src="static/contact/bottomvalidate.js"></script>
 {% endblock %}
 {% block footer %}
 {{ super() }}

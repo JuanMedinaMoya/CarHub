@@ -59,61 +59,49 @@
 <!-- INTRO
 ================================================== -->
 <section id="perfilEditar"
-   style="padding:160px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
-
-   {% with messages = get_flashed_messages() %}
-   {% if messages %}
-   {% for message in messages %}
-   <div class="alert">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      {{ message }}
-   </div>
-   {% endfor %}
-   {% endif %}
-   {% endwith %}
-
-   <h2 style="text-align:center"></h2>
-
+   style="padding:50px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;" class="min-vh-100">
+   <h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Editar Perfil<br /><br /><i
+      class="fa fa-car roundicon"></i>
+   </h1> 
    <div class="card">
       <br>
-      <img src={{usuario['foto']}} class="center" width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
+      <img src="{{usuario['foto']}}" class="center" width="200" height="200" alt="fotoperfil" style="border-radius: 50%">
       <br>
       <div class="contactstyle topform">
          <form name="perfilEditar" method="post" action="/editarperfil" enctype="multipart/form-data">
             <div class="form">
                <label for="txt">Nombre</label>
-               <input type="text" name="nombre" id="nombre" value="{{usuario["nombre"]}}" required>
+               <input type="text" name="nombre" id="nombre" value="{{usuario['nombre']}}" required>
                <label for="txt">Apellidos</label>
-               <input type="text" name="apellidos" id="apellidos" value="{{usuario["apellidos"]}}" required>
+               <input type="text" name="apellidos" id="apellidos" value="{{usuario['apellidos']}}" required>
                <label for="txt">Correo</label>
-               <input type="email" name="correo" id="correo" value="{{usuario["correo"]}}" required>
+               <input type="email" name="correo" id="correo" value="{{usuario['correo']}}" required>
                <label for="txt">DNI</label>
-               <input type="text" name="dni" id="dni" value="{{usuario["dni"]}}" required>
+               <input type="text" name="dni" id="dni" value="{{usuario['dni']}}" required>
                <label for="txt">Teléfono</label>
-               <input type="number" name="telefono" id="telefono" value="{{usuario["telefono"]}}" required>
+               <input type="number" name="telefono" id="telefono" value="{{usuario['telefono']}}" required>
                <label for="txt">Foto</label>
                <input type="file" name="foto" id="foto">
                <label for="txt">Coche</label>
-               <input type="text" name="coche" id="coche" value="{{usuario["coche"]}}">
+               <input type="text" name="coche" id="coche" value="{{usuario['coche']}}">
                <label for="txt">Paypal</label>
-               <input type="text" name="paypal" id="paypal" value="{{usuario["paypal"]}}">
+               <input type="text" name="paypal" id="paypal" value="{{usuario['paypal']}}">
                <label for="txt">Contraseña</label>
                <input type="password" name="contrasena" id="contrasena" value=""minlength="6">
                <label for="txt">Repita contraseña</label>
                <input type="password" name="contrasenarep" id="contrasenarep" value="" minlength="6">
                <p style="color:#FF0000";>{{error}}</p>
-               <input type="submit" id="guardarcambios" class="clearfix btn" value="Guardar cambios">
+               <button type="submit" value="Guardar cambios" class="btn btn-primary btn-lg btn-block" style="width: 100%;">
+                  Guardar cambios
+               </button>
             </div>
          </form>
-
+      </div>
+   </div>
 </section>
 
 <!-- SCRIPTS
 ================================================== -->
-<script src="static/assets/js/jquery.js"></script>
-<script src="static/assets/js/plugins.js"></script>
-<script src="static/contact/topvalidate.js"></script>
-<script src="static/contact/bottomvalidate.js"></script>
 {% endblock %}
 {% block footer %}
 {{ super() }}

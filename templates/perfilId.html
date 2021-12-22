@@ -11,18 +11,8 @@
 <!-- INTRO
 ================================================== -->
 <section id="perfilId"
-   style="padding:60px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
+   style="padding:50px 0;background-image: url(../static/assets/img/fondo.jpg); background-position: center; background-repeat: no-repeat;background-size: cover;background-attachment:fixed;"
    class="min-vh-100">
-   {% with messages = get_flashed_messages() %}
-   {% if messages %}
-   {% for message in messages %}
-   <div class="alert">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      {{ message }}
-   </div>
-   {% endfor %}
-   {% endif %}
-   {% endwith %}
 
    <style>
       .card {
@@ -80,10 +70,10 @@
          margin-right: auto;
       }
    </style>
-   </head>
-
-   <body>
-      <h2 style="text-align:center"></h2>
+  
+   <h1 class="toptitle" style="color:#20b2aa; -webkit-text-stroke: 1px black;">Perfil del viajero<br /><br /><i
+      class="fa fa-car roundicon"></i>
+   </h1>
       <div class="card">
          <br>
          <img src="{{usuario['foto']}}" class="center" width="200" height="200" alt="fotoperfil"
