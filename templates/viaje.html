@@ -74,7 +74,7 @@
             {% if trayecto['finalizado'] == 0 %}
                   {% if session['username'] and session['username'] == conductor['username'] %}
                         <p align="center">
-                           {% if trayecto['pasajeros']|length == 0 %}
+                           {% if trayecto['pasajeros']|length == 0 and fechahoy < trayecto['horasalida'] %}
 
                            <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
                               <button type="button" class="btn btn-primary btn-lg">Editar</button>
@@ -176,18 +176,19 @@
                   </div>
                   <a href="/perfilId/{{ conductor['_id'] }}"
                      class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="card card-body">
-                        <p>{{ conductor['nombre'] }} {{ conductor['apellidos'] }}</p>
+                     
+                        {{ conductor['nombre'] }} {{ conductor['apellidos'] }}
+                        <br>
                         <small>Coche: {{ conductor['coche'] }} </small>
-                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and estavalorado == false%}
+                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and not conductorvalorado %}
                         <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
                            <button type="button" class="btn btn-warning">Valorar</button>
                         </a>
                         {%endif%}
-                     </div>
+                    
                   </a>
-                  </br>
-
+                  <br>
+                  <br>
                   {% if pasajeros %}
                   <div class="row">
                      <h3 style="color:rgb(10, 124, 0);">Pasajeros </h3>
@@ -195,15 +196,20 @@
                   {% for pasajero in pasajeros %}
                   <a href="/perfilId/{{ pasajero['_id'] }}"
                      class="list-group-item list-group-item-action flex-column align-items-start">
-                     <div class="card card-body">
-                        <p>{{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}</p>
-                     </div>
-
-                     {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] == conductor['username'] and estavalorado == false%}
-                        <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
-                           <button type="button" class="btn btn-warning">Valorar</button>
-                        </a>
+                     
+                        {{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}
+                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] == conductor['username'] %}
+                              {% for v in viajerosvalorados %}
+                                    {% if v['viajero'] == pasajero['_id'] and not v['estavalorado']  %}
+                                    <a href="/valorar/{{trayecto['_id']}}/{{ pasajero['_id'] }}">
+                                       <button type="button" class="btn btn-warning">Valorar</button>
+                                    </a>
+                                    {% endif %}
+                              {% endfor %}
+                        
                      {%endif%}
+                     
+                     
                   </a>
                   {% endfor %}
                   {% endif %}
