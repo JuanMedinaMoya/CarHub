@@ -96,8 +96,8 @@
                         {% if session['username'] and session['username'] != conductor['username'] and espasajero %}
                               {% if fechahoy < trayecto['horasalida'] %} 
                                     <p align="center">
-                                       <a href="/#">
-                                          <button type="button" class="btn btn-danger">Salirse</button>
+                                       <a href="/salir_trayecto/{{ session['username'] }}/{{ trayecto['_id'] }}">
+                                          <button type="button" onclick="return confirm('¿Estás seguro de que quieres salir de este viaje?')" class="btn btn-danger">Salir</button>
                                        </a>
                                     </p>
                               {% endif %}
