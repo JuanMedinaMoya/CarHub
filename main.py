@@ -1024,18 +1024,8 @@ def mis_viajes_1(usuario):
 def mis_viajes(usuario, pagina):
     if not 'username' in session or usuario != session['username']:
         return not_access_permission()
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
-    id_usuario = Usuarios.find_one({'username': usuario})['_id']
-
-
-    # tray = []
-    # for t in Trayectos.find():
-    #     if t['pasajeros']:
-    #         for p in t['pasajeros']:
-    #             if p['comprador'] == id_usuario:
-    #                 tray.append(t)
-
     
+    id_usuario = Usuarios.find_one({'username': usuario})['_id']
 
     tray = Trayectos.find({
         'pasajeros': {
@@ -1078,7 +1068,8 @@ def mis_viajes(usuario, pagina):
 def mis_viajes_creados(usuario, pagina):
     if not 'username' in session or usuario != session['username']:
         return not_access_permission()
-    #tray = Trayectos.find({'origen': origen, 'destino': destino, 'numeropasajeros': int(numeropasajeros)}).sort('horasalida', 1)[7*(int(pagina) - 1):7*(int(pagina))]
+    
+    
     id_usuario = Usuarios.find_one({'username': usuario})['_id']
     tray = Trayectos.find({
         'conductor': id_usuario
@@ -1532,6 +1523,26 @@ def pasajeros_trayecto(idtrayecto):
 def mostrar_editar_trayecto(idtrayecto):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     return render_template('editarViaje.html', trayecto=trayecto)
+
+@app.route('/salir_trayecto/<usuario>/<idtrayecto>', methods=['GET'])
+def salir_trayecto(usuario, idtrayecto):
+    if not 'username' in session or usuario != session['username']:
+        return not_access_permission()
+    
+    idusuario = Usuarios.find_one({'username': usuario})['_id']
+    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+    for pas in trayecto['pasajeros']:
+        if pas['comprador'] == ObjectId(idusuario):
+            num_pasajeros = pas['personas']
+    Trayectos.update({'_id': ObjectId(idtrayecto)}, { '$set': { 'numeropasajeros': trayecto['numeropasajeros'] + num_pasajeros } })
+    Trayectos.update({'_id': ObjectId(idtrayecto)}, {
+            '$pull': {
+                 'pasajeros': { 'comprador': ObjectId(idusuario) } }
+    })
+
+    return redirect('/mis_viajes/' + usuario + '/' + str(1))
+    
+
 
 
 #------------------------------------------------------------------
