@@ -206,7 +206,7 @@ def crearViaje():
                                    precio=precio,
                                    numeropasajeros=numeropasajeros)
         else:
-            Trayectos.insert({
+            id = Trayectos.insert({
                 'conductor': conductor,
                 'origenstr': origenstr,
                 'origen': origen,
@@ -218,7 +218,7 @@ def crearViaje():
                 'finalizado': finalizado,
                 'pasajeros': pasajeros
             })
-            return render_template('index.html')
+            return redirect('/trayecto/'+str(id))
 
 
 @app.route('/editarviaje/<id>', methods=['POST'])
@@ -737,14 +737,34 @@ def mostrarViaje(id):
                              destino=trayecto['destinostr'])
 
     if(user):
-        return render_template('viaje.html',
-                           trayecto=trayecto,
-                           conductor=conductor,
-                           pasajeros=pasajerosPerfil,
-                           duracion=duracionViaje,
-                           fechahoy=datetime.now(),
-                           espasajero=espasajero,
-                           estavalorado=estavalorado(conductor, user))
+        if user['_id'] == trayecto['conductor'] :
+            pasval = []
+            for p in pasajeros:
+                esta = Valoraciones.find_one({'valorador': ObjectId(user['_id']),'trayecto': ObjectId(id),'valorado': ObjectId(p['comprador'])})
+                pasval.append({
+                'viajero': p['comprador'],
+                'estavalorado': esta
+            }) 
+                
+                
+            return render_template('viaje.html',
+                            trayecto=trayecto,
+                            conductor=conductor,
+                            pasajeros=pasajerosPerfil,
+                            duracion=duracionViaje,
+                            fechahoy=datetime.now(),
+                            espasajero=espasajero,
+                            viajerosvalorados=pasval)
+        else :
+            condval = Valoraciones.find_one({'valorador': ObjectId(user['_id']),'trayecto': ObjectId(id),'valorado': ObjectId(trayecto['conductor'])}) != None
+            return render_template('viaje.html',
+                            trayecto=trayecto,
+                            conductor=conductor,
+                            pasajeros=pasajerosPerfil,
+                            duracion=duracionViaje,
+                            fechahoy=datetime.now(),
+                            espasajero=espasajero,
+                            conductorvalorado=condval)
     else:
         return render_template('viaje.html',
                            trayecto=trayecto,
@@ -803,7 +823,7 @@ def valorar(idtrayecto, idusuario):
             'comentario': comentario
         })
         return redirect('/perfilId/' + str(usuariovalorado["_id"])
-                        )  # Crea la conversacion cuando se añade a la reserva
+                        ) 
 
 
 def estavalorado(conductor, usuario):
