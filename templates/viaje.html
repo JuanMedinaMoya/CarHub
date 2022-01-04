@@ -135,10 +135,19 @@
                   <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                      title="pagar trayecto">
                      <!-- Button trigger modal -->
+                     {%if puedeCrear == true %}
                      <button type="button" class="list-group-item list-group-item-action active btn " id="activo"
                         data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
                      </button>
+
+                     {% else %}
+                     <button type="button" disabled class="list-group-item list-group-item-action active btn " id="activo" 
+                        data-bs-toggle="modal" data-bs-target="#exampleModal" >
+                        <h3 style="color:rgb(255, 255, 255);">Precio: {{ trayecto['precio'] }} €</h3>
+                     </button>
+                     <p style="color:#FF0000";>Para realizar esta función rellena los datos necesarios en editar perfil (*)</p>
+                     {% endif %}
                      <!-------------------------->
                   </span>
                   {% endif %}

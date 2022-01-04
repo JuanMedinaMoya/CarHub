@@ -104,7 +104,7 @@ def auth():
     if Usuarios.find_one({"correo": email}):
         usuario = Usuarios.find_one({"correo": email})   
         session["username"] = usuario["username"] 
-        puedeCrear = (usuario['paypal'] != "") and (usuario['coche'] != "") and (usuario['dni'] != "") and (usuario['fechanacimiento'] != "") and (usuario['telefono'] != "")
+        puedeCrear = (usuario['paypal'] != "") and (usuario['coche'] != "") and (usuario['dni'] != "")  and (usuario['telefono'] != "")
         session["creador"] = puedeCrear
 
     else:
@@ -124,7 +124,7 @@ def auth():
         })
         usuario = Usuarios.find_one({"correo": email})   
         session["username"] = arraystr[0]
-        puedeCrear = (usuario['paypal'] != "") or (usuario['coche'] != "") or (usuario['dni'] != "") or (usuario['fechanacimiento'] != "") or (usuario['telefono'] != "")
+        puedeCrear = (usuario['paypal'] != "") and (usuario['coche'] != "") and (usuario['dni'] != "") and (usuario['telefono'] != "")
         session["creador"] = puedeCrear
          
     # do something with the token and profile
@@ -828,6 +828,9 @@ def mostrarViaje(id):
                             espasajero=espasajero,
                             viajerosvalorados=pasval)
         else :
+
+            puedeCrear = (user['paypal'] != "") and (user['dni'] != "")  and (user['telefono'] != "")
+          
             condval = Valoraciones.find_one({'valorador': ObjectId(user['_id']),'trayecto': ObjectId(id),'valorado': ObjectId(trayecto['conductor'])}) != None
             return render_template('viaje.html',
                             trayecto=trayecto,
@@ -836,7 +839,8 @@ def mostrarViaje(id):
                             duracion=duracionViaje,
                             fechahoy=datetime.now(),
                             espasajero=espasajero,
-                            conductorvalorado=condval)
+                            conductorvalorado=condval,
+                            puedeCrear=puedeCrear)
     else:
         return render_template('viaje.html',
                            trayecto=trayecto,
@@ -1598,7 +1602,7 @@ def mostrar_editar_trayecto(idtrayecto):
 
 @app.route('/salir_trayecto/<usuario>/<idtrayecto>', methods=['GET'])
 def salir_trayecto(usuario, idtrayecto):
-    if not 'username' in session or usuario != session['username']:
+    if usuario != session['username']:
         return not_access_permission()
     
     idusuario = Usuarios.find_one({'username': usuario})['_id']
