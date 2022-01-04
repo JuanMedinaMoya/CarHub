@@ -100,7 +100,7 @@ def auth():
     user_info = resp.json()
     email = user_info["email"]
     arraystr = email.split('@', 1)
-    
+        
     if Usuarios.find_one({"correo": email}):
         usuario = Usuarios.find_one({"correo": email})   
         session["username"] = usuario["username"] 
@@ -1967,3 +1967,6 @@ def not_access_permission(error=None):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    
+## API PAYPAL

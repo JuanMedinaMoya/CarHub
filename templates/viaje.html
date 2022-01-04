@@ -72,38 +72,39 @@
 
 
             {% if trayecto['finalizado'] == 0 %}
-                  {% if session['username'] and session['username'] == conductor['username'] %}
-                        <p align="center">
-                           {% if trayecto['pasajeros']|length == 0 and fechahoy < trayecto['horasalida'] %}
+            {% if session['username'] and session['username'] == conductor['username'] %}
+            <p align="center">
+               {% if trayecto['pasajeros']|length == 0 and fechahoy < trayecto['horasalida'] %} <a
+                  href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
+                  <button type="button" class="btn btn-primary btn-lg">Editar</button>
+                  </a>
 
-                           <a href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
-                              <button type="button" class="btn btn-primary btn-lg">Editar</button>
-                           </a>
+                  {% endif %}
+                  {% if fechahoy < trayecto['horasalida'] %} <a href="/borrartrayecto/{{ trayecto['_id'] }}">
+                     <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')"
+                        class="btn btn-danger">Borrar</button>
+                     </a>
+                     {% else %}
+                     <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
+                        <button type="button"
+                           onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')"
+                           class="btn btn-dark">Finalizar</button>
+                     </a>
+                     {% endif %}
+            </p>
+            {% else %}
 
-                           {% endif %}
-                           {% if fechahoy < trayecto['horasalida'] %} 
-                              <a href="/borrartrayecto/{{ trayecto['_id'] }}">
-                              <button type="button" onclick="return confirm('¿Estás seguro de que quieres eliminar tu viaje?')" class="btn btn-danger">Borrar</button>
-                              </a>
-                           {% else %}
-                              <a href="/finalizartrayecto/{{ trayecto['_id'] }}">
-                                 <button type="button" onclick="return confirm('¿Estás seguro de que quieres finalizar tu viaje?')" class="btn btn-dark">Finalizar</button>
-                              </a>
-                           {% endif %}
-                        </p>
-                  {% else %}
-
-                        {% if session['username'] and session['username'] != conductor['username'] and espasajero %}
-                              {% if fechahoy < trayecto['horasalida'] %} 
-                                    <p align="center">
-                                       <a href="/salir_trayecto/{{ session['username'] }}/{{ trayecto['_id'] }}">
-                                          <button type="button" onclick="return confirm('¿Estás seguro de que quieres salir de este viaje?')" class="btn btn-danger">Salir</button>
-                                       </a>
-                                    </p>
-                              {% endif %}
-                        {% endif %}
-                  {% endif %}                      
-            {% endif %}
+            {% if session['username'] and session['username'] != conductor['username'] and espasajero %}
+            {% if fechahoy < trayecto['horasalida'] %} <p align="center">
+               <a href="/salir_trayecto/{{ session['username'] }}/{{ trayecto['_id'] }}">
+                  <button type="button" onclick="return confirm('¿Estás seguro de que quieres salir de este viaje?')"
+                     class="btn btn-danger">Salir</button>
+               </a>
+               </p>
+               {% endif %}
+               {% endif %}
+               {% endif %}
+               {% endif %}
 
 
                <ul class="list-group">
@@ -131,7 +132,8 @@
                   <div id="map" style="width: 400px; height: 400px;"></div>
 
                   <!-- Solo para los que compran el viaje  -->
-                  {% if session['username'] and trayecto['finalizado'] == 0 and session['username'] != conductor['username'] and not espasajero %}
+                  {% if session['username'] and trayecto['finalizado'] == 0 and session['username'] !=
+                  conductor['username'] and not espasajero %}
                   <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
                      title="pagar trayecto">
                      <!-- Button trigger modal -->
@@ -163,18 +165,22 @@
                               <button type="button" class="btn-close" data-bs-dismiss="modal"
                                  aria-label="Close"></button>
                            </div>
-                           <form method="post" action="/anadirpasajero/{{ trayecto['_id'] }}" enctype="multipart/form-data">
+                           <form method="post" action="/anadirpasajero/{{ trayecto['_id'] }}"
+                              enctype="multipart/form-data">
                               <div class="modal-body">
                                  <p>
-                                 <h3>Precio por asiento: {{ trayecto['precio'] }} €</h3><br>
+                                 <h3>Precio : <small id="precio">{{ trayecto['precio'] }}</small> €</h3><br>
                                  Seleccione el numero de asientos:
                                  </p>
                                  <input type="number" id="asientos" name="asientos" value="1" min="1"
                                     max="{{ trayecto['numeropasajeros'] }}">
                               </div>
                               <div class="modal-footer">
-                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                 <button type="submit" class="btn btn-primary">Confirmar y pagar</button>
+                                 <div id="smart-button-container" class="flex-fill">
+                                    <div style="text-align: center;">
+                                       <div id="paypal-button-container"></div>
+                                    </div>
+                                 </div>
                               </div>
                            </form>
                         </div>
@@ -189,16 +195,17 @@
                   </div>
                   <a href="/perfilId/{{ conductor['_id'] }}"
                      class="list-group-item list-group-item-action flex-column align-items-start">
-                     
-                        {{ conductor['nombre'] }} {{ conductor['apellidos'] }}
-                        <br>
-                        <small>Coche: {{ conductor['coche'] }} </small>
-                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] != conductor['username'] and espasajero and not conductorvalorado %}
-                        <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
-                           <button type="button" class="btn btn-warning">Valorar</button>
-                        </a>
-                        {%endif%}
-                    
+
+                     {{ conductor['nombre'] }} {{ conductor['apellidos'] }}
+                     <br>
+                     <small>Coche: {{ conductor['coche'] }} </small>
+                     {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] !=
+                     conductor['username'] and espasajero and not conductorvalorado %}
+                     <a href="/valorar/{{trayecto['_id']}}/{{ conductor['_id'] }}">
+                        <button type="button" class="btn btn-warning">Valorar</button>
+                     </a>
+                     {%endif%}
+
                   </a>
                   <br>
                   <br>
@@ -209,20 +216,21 @@
                   {% for pasajero in pasajeros %}
                   <a href="/perfilId/{{ pasajero['_id'] }}"
                      class="list-group-item list-group-item-action flex-column align-items-start">
-                     
-                        {{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}
-                        {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] == conductor['username'] %}
-                              {% for v in viajerosvalorados %}
-                                    {% if v['viajero'] == pasajero['_id'] and not v['estavalorado']  %}
-                                    <a href="/valorar/{{trayecto['_id']}}/{{ pasajero['_id'] }}">
-                                       <button type="button" class="btn btn-warning">Valorar</button>
-                                    </a>
-                                    {% endif %}
-                              {% endfor %}
-                        
+
+                     {{ pasajero['nombre'] }} {{ pasajero['apellidos'] }}
+                     {%if session['username'] and trayecto['finalizado'] == 1 and session['username'] ==
+                     conductor['username'] %}
+                     {% for v in viajerosvalorados %}
+                     {% if v['viajero'] == pasajero['_id'] and not v['estavalorado'] %}
+                     <a href="/valorar/{{trayecto['_id']}}/{{ pasajero['_id'] }}">
+                        <button type="button" class="btn btn-warning">Valorar</button>
+                     </a>
+                     {% endif %}
+                     {% endfor %}
+
                      {%endif%}
-                     
-                     
+
+
                   </a>
                   {% endfor %}
                   {% endif %}
@@ -235,4 +243,51 @@
 {% endblock %}
 {% block footer %}
 {{ super() }}
+<script src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=EUR"
+   data-sdk-integration-source="button-factory"></script>
+<script>
+   function initPayPalButton() {
+      paypal.Buttons({
+         style: {
+            shape: 'rect',
+            color: 'silver',
+            layout: 'horizontal',
+            label: 'paypal',
+         },
+
+         createOrder: function (data, actions) {
+            return actions.order.create({
+               purchase_units: [{ "amount": { "currency_code": "EUR", "value": parseFloat(document.getElementById('precio').textContent) } }]
+            });
+         },
+
+         onApprove: function (data, actions) {
+            return actions.order.capture().then(function (orderData) {
+
+               // Full available details
+               console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+               // Show a success message within this page, e.g.
+               const element = document.getElementById('paypal-button-container');
+               element.innerHTML = '';
+               element.innerHTML = '<h3>Thank you for your payment!</h3>';
+
+               // Or go to another URL:  actions.redirect('thank_you.html');
+
+            });
+         },
+
+         onError: function (err) {
+            console.log(err);
+         }
+      }).render('#paypal-button-container');
+   }
+   initPayPalButton();
+</script>
+<script>
+   document.getElementById('asientos').addEventListener('change', function () {
+      var precio = "{{ trayecto['precio'] }}";
+      document.getElementById('precio').textContent = parseFloat(precio)*parseFloat(document.getElementById('asientos').value);
+   })
+</script>
 {% endblock %}
