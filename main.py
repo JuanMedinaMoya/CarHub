@@ -19,6 +19,8 @@ from datetime import datetime
 from imgurpython import ImgurClient
 import os
 from itertools import chain
+import paypalrestsdk
+
 
 from werkzeug.wrappers import response
 
@@ -49,6 +51,14 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 TrayectosPrueba = mongo.db.TrayectosPrueba
+
+
+# PAYPAL
+
+paypalrestsdk.configure({
+  "mode": "sandbox", # sandbox or live
+  "client_id": "AR51Pz6BL67biGY-8D-QlYML9Drg5KndkJXAV5TYO8xhURMtxNKawDxGN0M6aV7uMvlIhLGiqDLghL04",
+  "client_secret": "EGlNU3xHz_fRF57pkgvrXOB7AJSD_yzjlkUrZx5SgxH3onk-tPV0JGCBpTPeeIIihGHASaSCLL-6fYH9" })
 
 #CLIENTE
 
@@ -1819,6 +1829,55 @@ def visibilidad(lugar, fechayhora):
 
     return str(visibilidad)
 
+#------------------------------------------------------------------
+#  _____    __     _______        _      
+# |  __ \ /\\ \   / /  __ \ /\   | |     
+# | |__) /  \\ \_/ /| |__) /  \  | |     
+# |  ___/ /\ \\   / |  ___/ /\ \ | |     
+# | |  / ____ \| |  | |  / ____ \| |____ 
+# |_| /_/    \_\_|  |_| /_/    \_\______|
+#------------------------------------------------------------------
+
+@app.route('/payment', methods=['POST'])
+def payment():
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"},
+        "redirect_urls": {
+            "return_url": "http://localhost:5000/payment/execute",
+            "cancel_url": "http://localhost:5000/"},
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": "item",
+                    "sku": "item",
+                    "price": "5.00",
+                    "currency": "EUR",
+                    "quantity": 1}]},
+            "amount": {
+                "total": "5.00",
+                "currency": "EUR"},
+            "description": "This is the payment transaction description."}]})
+
+    if payment.create():
+        print("Payment created successfully")
+    else:
+        print(payment.error)
+    
+    return jsonify({'paymentID' : payment.id})
+
+@app.route('/execute', methods=['POST'])
+def execute():
+    payment = paypalrestsdk.Payment.find(request.form['paymentID'])
+
+    if payment.execute({'payer_id' : request.form['payerID']}) :
+        print('Execute success!')
+        success = True
+    else:
+        print(payment.error)
+
+    return jsonify({'success' : success})
 
 @app.errorhandler(404)
 def not_found(error=None):
