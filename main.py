@@ -94,7 +94,7 @@ def auth():
     if Usuarios.find_one({"correo": email}):
         usuario = Usuarios.find_one({"correo": email})   
         session["username"] = usuario["username"] 
-        puedeCrear = (usuario['paypal'] != "") or (usuario['coche'] != "") or (usuario['dni'] != "") or (usuario['fechanacimiento'] != "") or (usuario['telefono'] != "")
+        puedeCrear = (usuario['paypal'] != "") and (usuario['coche'] != "") and (usuario['dni'] != "") and (usuario['fechanacimiento'] != "") and (usuario['telefono'] != "")
         session["creador"] = puedeCrear
 
     else:
