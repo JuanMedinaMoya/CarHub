@@ -20,6 +20,10 @@
       font-size: 18px;
    }
 
+   rojo {
+      color: red;
+    }
+
    button {
       border: none;
       outline: 0;
@@ -76,20 +80,21 @@
                <input type="text" name="apellidos" id="apellidos" value="{{usuario['apellidos']}}" required>
                <label for="txt">Correo</label>
                <input type="email" name="correo" id="correo" value="{{usuario['correo']}}" required>
-               <label for="txt">DNI</label>
-               <input type="text" name="dni" id="dni" value="{{usuario['dni']}}" required>
-               <label for="txt">Teléfono</label>
+               <label for="txt">DNI</label> <rojo>*</rojo>
+               <input type="text" name="dni" id="dni" value="{{usuario['dni']}}" required> 
+               <label for="txt">Teléfono</label> <rojo>*</rojo>
                <input type="number" name="telefono" id="telefono" value="{{usuario['telefono']}}" required>
                <label for="txt">Foto</label>
                <input type="file" name="foto" id="foto">
-               <label for="txt">Coche</label>
+               <label for="txt">Coche</label> <rojo>*</rojo>
                <input type="text" name="coche" id="coche" value="{{usuario['coche']}}">
-               <label for="txt">Paypal</label>
+               <label for="txt">Paypal</label> <rojo>*</rojo>
                <input type="text" name="paypal" id="paypal" value="{{usuario['paypal']}}">
                <label for="txt">Contraseña</label>
                <input type="password" name="contrasena" id="contrasena" value=""minlength="6">
                <label for="txt">Repita contraseña</label>
                <input type="password" name="contrasenarep" id="contrasenarep" value="" minlength="6">
+               <rojo>(*) Campos necesarios para acceder a viajes</rojo>
                <p style="color:#FF0000";>{{error}}</p>
                <button type="submit" value="Guardar cambios" class="btn btn-primary btn-lg btn-block" style="width: 100%;">
                   Guardar cambios
