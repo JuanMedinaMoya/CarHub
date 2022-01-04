@@ -19,6 +19,11 @@ from datetime import datetime
 from imgurpython import ImgurClient
 import os
 from itertools import chain
+import paypalrestsdk
+
+
+from authlib.integrations.flask_client import OAuth
+from flask import url_for, render_template
 
 from werkzeug.wrappers import response
 
@@ -33,6 +38,21 @@ API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
 app.secret_key = "CarHub"
+
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id="303862866938-8ihkvhq8i058p9t8df7i8qt6khtbtg52.apps.googleusercontent.com",
+    client_secret="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",
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',  # This is only needed if using openId to fetch user info
+    client_kwargs={'scope': 'openid email profile'},
+)
+
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
@@ -50,6 +70,14 @@ Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 TrayectosPrueba = mongo.db.TrayectosPrueba
 
+
+# PAYPAL
+
+paypalrestsdk.configure({
+  "mode": "sandbox", # sandbox or live
+  "client_id": "AR51Pz6BL67biGY-8D-QlYML9Drg5KndkJXAV5TYO8xhURMtxNKawDxGN0M6aV7uMvlIhLGiqDLghL04",
+  "client_secret": "EGlNU3xHz_fRF57pkgvrXOB7AJSD_yzjlkUrZx5SgxH3onk-tPV0JGCBpTPeeIIihGHASaSCLL-6fYH9" })
+
 #CLIENTE
 
 
@@ -57,6 +85,50 @@ TrayectosPrueba = mongo.db.TrayectosPrueba
 @app.route('/home')
 def index():
     return render_template('index.html')
+
+@app.route('/logingoogle')
+def logingoogle():
+    google = oauth.create_client('google')
+    redirect_uri = url_for('auth', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/auth')
+def auth():
+    token = google.authorize_access_token()
+    resp = google.get('userinfo')
+    resp.raise_for_status()
+    user_info = resp.json()
+    email = user_info["email"]
+    arraystr = email.split('@', 1)
+    
+    if Usuarios.find_one({"correo": email}):
+        usuario = Usuarios.find_one({"correo": email})   
+        session["username"] = usuario["username"] 
+        puedeCrear = (usuario['paypal'] != "") and (usuario['coche'] != "") and (usuario['dni'] != "") and (usuario['fechanacimiento'] != "") and (usuario['telefono'] != "")
+        session["creador"] = puedeCrear
+
+    else:
+        id = Usuarios.insert({
+            
+            'username': arraystr[0],
+            'nombre': user_info["given_name"],
+            'apellidos': user_info["family_name"],
+            'correo': email,
+            'contrasena': "",
+            'foto': user_info["picture"],
+            'dni': "",
+            'fechanacimiento': "",
+            'telefono': "",
+            'coche': "",
+            'paypal': ""
+        })
+        usuario = Usuarios.find_one({"correo": email})   
+        session["username"] = arraystr[0]
+        puedeCrear = (usuario['paypal'] != "") or (usuario['coche'] != "") or (usuario['dni'] != "") or (usuario['fechanacimiento'] != "") or (usuario['telefono'] != "")
+        session["creador"] = puedeCrear
+         
+    # do something with the token and profile
+    return redirect('/')
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -81,9 +153,9 @@ def login():
                                    error=error)
 
         if check_password_hash(busq['contrasena'], contrasena):
-            #puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
+            puedeCrear =  (busq['paypal'] != "") or (busq['coche'] != "") or (busq['dni'] != "") or (busq['fechanacimiento'] != "") or (busq['telefono'] != "")
             session["username"] = busq['username']
-            #session["creador"] = puedeCrear
+            session["creador"] = puedeCrear
             return redirect("/")
         else:
             error = "Error: contraseña incorrecta"
@@ -1819,6 +1891,55 @@ def visibilidad(lugar, fechayhora):
 
     return str(visibilidad)
 
+#------------------------------------------------------------------
+#  _____    __     _______        _      
+# |  __ \ /\\ \   / /  __ \ /\   | |     
+# | |__) /  \\ \_/ /| |__) /  \  | |     
+# |  ___/ /\ \\   / |  ___/ /\ \ | |     
+# | |  / ____ \| |  | |  / ____ \| |____ 
+# |_| /_/    \_\_|  |_| /_/    \_\______|
+#------------------------------------------------------------------
+
+@app.route('/payment', methods=['POST'])
+def payment():
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"},
+        "redirect_urls": {
+            "return_url": "http://localhost:5000/payment/execute",
+            "cancel_url": "http://localhost:5000/"},
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": "item",
+                    "sku": "item",
+                    "price": "5.00",
+                    "currency": "EUR",
+                    "quantity": 1}]},
+            "amount": {
+                "total": "5.00",
+                "currency": "EUR"},
+            "description": "This is the payment transaction description."}]})
+
+    if payment.create():
+        print("Payment created successfully")
+    else:
+        print(payment.error)
+    
+    return jsonify({'paymentID' : payment.id})
+
+@app.route('/execute', methods=['POST'])
+def execute():
+    payment = paypalrestsdk.Payment.find(request.form['paymentID'])
+
+    if payment.execute({'payer_id' : request.form['payerID']}) :
+        print('Execute success!')
+        success = True
+    else:
+        print(payment.error)
+
+    return jsonify({'success' : success})
 
 @app.errorhandler(404)
 def not_found(error=None):
