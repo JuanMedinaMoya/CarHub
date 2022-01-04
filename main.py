@@ -92,8 +92,11 @@ def auth():
     arraystr = email.split('@', 1)
     
     if Usuarios.find_one({"correo": email}):
-         usuario = Usuarios.find_one({"correo": email})   
-         session["username"] = usuario["username"] 
+        usuario = Usuarios.find_one({"correo": email})   
+        session["username"] = usuario["username"] 
+        puedeCrear = (usuario['paypal'] != "") or (usuario['coche'] != "") or (usuario['dni'] != "") or (usuario['fechanacimiento'] != "") or (usuario['telefono'] != "")
+        session["creador"] = puedeCrear
+
     else:
         id = Usuarios.insert({
             
@@ -109,7 +112,10 @@ def auth():
             'coche': "",
             'paypal': ""
         })
+        usuario = Usuarios.find_one({"correo": email})   
         session["username"] = arraystr[0]
+        puedeCrear = (usuario['paypal'] != "") or (usuario['coche'] != "") or (usuario['dni'] != "") or (usuario['fechanacimiento'] != "") or (usuario['telefono'] != "")
+        session["creador"] = puedeCrear
          
     # do something with the token and profile
     return redirect('/')
@@ -137,9 +143,9 @@ def login():
                                    error=error)
 
         if check_password_hash(busq['contrasena'], contrasena):
-            #puedeCrear = (busq['paypal'] != "") and (busq['coche'] != "")
+            puedeCrear =  (busq['paypal'] != "") or (busq['coche'] != "") or (busq['dni'] != "") or (busq['fechanacimiento'] != "") or (busq['telefono'] != "")
             session["username"] = busq['username']
-            #session["creador"] = puedeCrear
+            session["creador"] = puedeCrear
             return redirect("/")
         else:
             error = "Error: contraseña incorrecta"
