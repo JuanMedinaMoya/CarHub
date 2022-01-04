@@ -20,6 +20,9 @@ from imgurpython import ImgurClient
 import os
 from itertools import chain
 
+from authlib.integrations.flask_client import OAuth
+from flask import url_for, render_template
+
 from werkzeug.wrappers import response
 
 app = Flask(__name__)
@@ -33,6 +36,21 @@ API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
 app.secret_key = "CarHub"
+
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id="303862866938-8ihkvhq8i058p9t8df7i8qt6khtbtg52.apps.googleusercontent.com",
+    client_secret="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",
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',  # This is only needed if using openId to fetch user info
+    client_kwargs={'scope': 'openid email profile'},
+)
+
 
 mongo = PyMongo(app)
 maps = GoogleMaps(app)
@@ -57,6 +75,44 @@ TrayectosPrueba = mongo.db.TrayectosPrueba
 @app.route('/home')
 def index():
     return render_template('index.html')
+
+@app.route('/logingoogle')
+def logingoogle():
+    google = oauth.create_client('google')
+    redirect_uri = url_for('auth', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/auth')
+def auth():
+    token = google.authorize_access_token()
+    resp = google.get('userinfo')
+    resp.raise_for_status()
+    user_info = resp.json()
+    email = user_info["email"]
+    arraystr = email.split('@', 1)
+    
+    if Usuarios.find_one({"correo": email}):
+         usuario = Usuarios.find_one({"correo": email})   
+         session["username"] = usuario["username"] 
+    else:
+        id = Usuarios.insert({
+            
+            'username': arraystr[0],
+            'nombre': user_info["given_name"],
+            'apellidos': user_info["family_name"],
+            'correo': email,
+            'contrasena': "",
+            'foto': user_info["picture"],
+            'dni': "",
+            'fechanacimiento': "",
+            'telefono': "",
+            'coche': "",
+            'paypal': ""
+        })
+        session["username"] = arraystr[0]
+         
+    # do something with the token and profile
+    return redirect('/')
 
 
 @app.route('/login', methods=['POST', 'GET'])
