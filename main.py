@@ -33,7 +33,7 @@ app.config[
     "MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 app.config["FOTO_UPLOADS"] = os.getcwd()
 
-API_KEY_MAPS = "AIzaSyDznNAUPqKZhq9Czvpzq3Nl8ppJOd0L_XI"
+API_KEY_MAPS = "AIzaSyC1GXp71yv3zHYbZBvgu6a0CTL7SMxEZzk"
 API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
 app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
 
@@ -42,8 +42,8 @@ app.secret_key = "CarHub"
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id="303862866938-8ihkvhq8i058p9t8df7i8qt6khtbtg52.apps.googleusercontent.com",
-    client_secret="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",
+    client_id="195417323379-cfskdhqvf71gkoajilafthirmlvgt3da.apps.googleusercontent.com",
+    client_secret="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",
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
