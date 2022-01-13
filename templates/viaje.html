@@ -60,6 +60,42 @@
             <i class="fa fa-car roundicon"></i>
          </h1>
 
+         <h3 class="title">
+            <b>
+                Tiempo Semanal en {{ trayecto['destinostr'] }}
+            </b>
+           
+         </h3>
+        <div class="container mb-5">
+            <div class="row">
+               {%for i in range(0,7)%}
+                    <div class="col-sm" style="background-color: rgba(255, 255, 255, 0.494);">
+                     
+                        <article class="media">
+                            <div class="media-left">
+                              <h5 class="title"> {{tiempo[4][i] }}</h5>
+                                <figure class="image is-50x50">
+                                    <img src="http://openweathermap.org/img/w/{{tiempo[3][i]}}.png" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                       
+                                    <p>
+                                        <span class="subtitle">Max: {{tiempo[0][i] }}° C</span><br>
+
+                                        <span class="subtitle">Min: {{tiempo[1][i] }}° C</span>
+                                        <br> {{ tiempo[2][i] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+               {%endfor%}
+
+            </div>
+        </div>
+
          <div class="contactstyle topform">
             <style>
                #activo {
@@ -74,7 +110,9 @@
             {% if trayecto['finalizado'] == 0 %}
             {% if session['username'] and session['username'] == conductor['username'] %}
             <p align="center">
-               {% if trayecto['pasajeros']|length == 0 and fechahoy < trayecto['horasalida'] %} <a
+               
+               {% if trayecto['pasajeros']|length == 0 and fechahoy < trayecto['horasalida'] %} 
+               <a
                   href="/mostrar_editar_trayecto/{{ trayecto['_id'] }}">
                   <button type="button" class="btn btn-primary btn-lg">Editar</button>
                   </a>

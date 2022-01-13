@@ -826,7 +826,8 @@ def mostrarViaje(id):
                             duracion=duracionViaje,
                             fechahoy=datetime.now(),
                             espasajero=espasajero,
-                            viajerosvalorados=pasval)
+                            viajerosvalorados=pasval,
+                             tiempo=daily(trayecto['destinostr']))
         else :
 
             puedeCrear = (user['paypal'] != "") and (user['dni'] != "")  and (user['telefono'] != "")
@@ -840,14 +841,16 @@ def mostrarViaje(id):
                             fechahoy=datetime.now(),
                             espasajero=espasajero,
                             conductorvalorado=condval,
-                            puedeCrear=puedeCrear)
+                            puedeCrear=puedeCrear,
+                            tiempo=daily(trayecto['destinostr']))
     else:
         return render_template('viaje.html',
                            trayecto=trayecto,
                            conductor=conductor,
                            pasajeros=pasajerosPerfil,
                            duracion=duracionViaje,
-                           fechahoy=datetime.now())
+                           fechahoy=datetime.now(),
+                            tiempo=daily(trayecto['destinostr']))
 
 
 @app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
@@ -1844,6 +1847,29 @@ def infotiempo(lugar):
     })
     json_data = requests.get(url).json()
     return json_data
+
+@app.route('/daily/<lugar>', methods=['GET'])
+def daily(lugar):
+    json_data_lugar = infotiempo(lugar)
+    list = json_data_lugar['daily']
+    tempmaxlist=[]
+    tempminlist=[]
+    weatherlist=[]
+    iconlist=[]
+    data=[]
+    timelist=[]
+    for i in list:
+        tempmaxlist.append(round((i['temp']['max']-273.15),1))
+        tempminlist.append(round((i['temp']['min']-273.15),1))
+        weatherlist.append(i['weather'][0]['description'])
+        iconlist.append(i['weather'][0]['icon'])
+        timelist.append(datetime.utcfromtimestamp(int(i['dt'])).strftime('%d-%m-%Y')     )
+    data.append(tempmaxlist)
+    data.append(tempminlist)
+    data.append(weatherlist)
+    data.append(iconlist)
+    data.append(timelist)
+    return (data)
 
 
 @app.route('/lluvias/<lugar>/<fechayhora>', methods=['GET'])
