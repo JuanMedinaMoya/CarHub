@@ -302,13 +302,11 @@
          onApprove: function compraRealizada (data, actions) {
             return actions.order.capture().then(function (orderData) {
 
-               // Full available details
                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
 
-               // Show a success message within this page, e.g.
                const element = document.getElementById('paypal-button-container');
                element.innerHTML = '<h3>¡Tu reserva ha sido completada con éxito! Prepara el equipaje <i class="fas fa-suitcase-rolling"></i></h3>';
-               // actions.redirect('thank_you.html');
+
                setTimeout(function () {
                   window.location.pathname = '/anadirpasajero/' + "{{ trayecto['_id'] }}" + "/" + document.getElementById('asientos').value;
                }, 3000);
