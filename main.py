@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 from flask import Flask, json, request, jsonify, Response, session, flash, redirect
 from flask_pymongo import PyMongo
 from flask import render_template
-from pymongo import mongo_client
+import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import redirect
 from bson import json_util
@@ -28,10 +28,16 @@ from werkzeug.wrappers import response
 
 app = Flask(__name__)
 
+uri = os.environ['MONGODB_URI']+ '?ssl_cert_reqs=CERT_NONE'
+
+client = pymongo.client(uri)
+
+db = client.get_default_database()
+
 app.config[
-    "MONGO_URI"] = os.environ('MONGODB_URI')
+    "MONGO_URI"] = os.environ.get('MONGODB_URI')
 app.config["FOTO_UPLOADS"] = os.getcwd()
-app.config['GOOGLEMAPS_KEY'] = os.enviro('API_KEY_MAPS') 
+app.config['GOOGLEMAPS_KEY'] = os.environ.get('API_KEY_MAPS') 
 
 app.secret_key = "CarHub"
 
@@ -60,11 +66,10 @@ client = ImgurClient(client_id, client_secret,
                      "43d6958c71e03f7d0f6e5cfdb62122557c31edc6",
                      "e2b6db72adc1a6bbf8c63246d6a5d45c4c8ffc86")    
 
-Usuarios = mongo.db.Usuarios
-Trayectos = mongo.db.Trayectos
-Conversaciones = mongo.db.Conversaciones
-Valoraciones = mongo.db.Valoraciones
-TrayectosPrueba = mongo.db.TrayectosPrueba
+Usuarios = db['Usuarios']
+Trayectos = db['Trayectos']
+Conversaciones = db['Conversaciones']
+Valoraciones = db['Valoraciones']
 
 #CLIENTE
 
@@ -1743,7 +1748,7 @@ def getLatitud(lugar):
         "input": lugar,
         "inputtype": 'textquery',
         "fields": 'geometry',
-        "key": os.environ('API_KEY_MAPS')
+        "key": os.environ.get('API_KEY_MAPS')
     })
     json_data_place = requests.get(url).json()
     latitud = str(
@@ -1757,7 +1762,7 @@ def getLongitud(lugar):
         "input": lugar,
         "inputtype": 'textquery',
         "fields": 'geometry',
-        "key": os.environ('API_KEY_MAPS')
+        "key": os.environ.get('API_KEY_MAPS')
     })
     json_data_place = requests.get(url).json()
     longitud = str(
@@ -1773,7 +1778,7 @@ def ruta(origen, destino):  # devuelve el json con toda la informacion
         "origin": origen,
         "destination": destino,
         "language": "es",
-        "key": os.environ('API_KEY_MAPS')
+        "key": os.environ.get('API_KEY_MAPS')
     })
     json_data = requests.get(url).json()
 
@@ -1804,7 +1809,7 @@ def localidad(lat, lon):
             "latlng": str(lat) + ',' + str(lon),
             "sensor": "false",
             "language": "es",
-            "key": os.environ('API_KEY_MAPS')
+            "key": os.environ.get('API_KEY_MAPS')
         })
     json_data = requests.get(url).json()
     for r in json_data['results']:
@@ -1831,7 +1836,7 @@ def infotiempo(lugar):
     url = tiempo_url + urllib.parse.urlencode({
         "lat": getLatitud(lugar),
         "lon": getLongitud(lugar),
-        "appid": os.environ('API_KEY_MAPS')
+        "appid": os.environ.get('API_KEY_TIEMPO')
     })
     json_data = requests.get(url).json()
     return json_data
