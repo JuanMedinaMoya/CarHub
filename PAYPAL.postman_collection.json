@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "86bc69b9-12b0-4431-92c8-252d895d10e4",
+		"name": "PAYPAL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Generar TOKEN API Paypal",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "EGlNU3xHz_fRF57pkgvrXOB7AJSD_yzjlkUrZx5SgxH3onk-tPV0JGCBpTPeeIIihGHASaSCLL-6fYH9",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "AR51Pz6BL67biGY-8D-QlYML9Drg5KndkJXAV5TYO8xhURMtxNKawDxGN0M6aV7uMvlIhLGiqDLghL04",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api-m.sandbox.paypal.com/v1/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"api-m",
+						"sandbox",
+						"paypal",
+						"com"
+					],
+					"path": [
+						"v1",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
