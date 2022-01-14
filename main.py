@@ -62,7 +62,7 @@ client_secret = "90c28199ac4625ad38af84077253b22d3a346436"
 
 client = ImgurClient(client_id, client_secret,
                      "43d6958c71e03f7d0f6e5cfdb62122557c31edc6",
-                     "e2b6db72adc1a6bbf8c63246d6a5d45c4c8ffc86")
+                     "e2b6db72adc1a6bbf8c63246d6a5d45c4c8ffc86")    
 
 Usuarios = mongo.db.Usuarios
 Trayectos = mongo.db.Trayectos
@@ -862,15 +862,15 @@ def mostrarViaje(id):
                             tiempo=daily(trayecto['destinostr']))
 
 
-@app.route('/anadirpasajero/<idtrayecto>', methods=['GET', 'POST'])
-def anadirPasajero(idtrayecto):
+@app.route('/anadirpasajero/<idtrayecto>/<numreservas>', methods=['GET', 'POST'])
+def anadirPasajero(idtrayecto,numreservas):
     trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
     usuario = Usuarios.find_one({"username": session["username"]})
 
     numpasajeros = trayecto['numeropasajeros']
     conductor = trayecto['conductor']
     pasajeros = trayecto['pasajeros']
-    asientos = request.form['asientos']
+    asientos = numreservas
 
     pasajeros.append({'comprador' : ObjectId(usuario['_id']), 'personas': int(asientos) })
 
@@ -881,7 +881,7 @@ def anadirPasajero(idtrayecto):
         }
     })
 
-    return redirect('/trayecto/'+idtrayecto)  # Crea la conversacion cuando se añade a la reserva
+    return redirect('/trayecto/'+idtrayecto)
 
 
 @app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
