@@ -19,7 +19,6 @@ from datetime import datetime
 from imgurpython import ImgurClient
 import os
 from itertools import chain
-import paypalrestsdk
 
 
 from authlib.integrations.flask_client import OAuth
@@ -69,23 +68,6 @@ Trayectos = mongo.db.Trayectos
 Conversaciones = mongo.db.Conversaciones
 Valoraciones = mongo.db.Valoraciones
 TrayectosPrueba = mongo.db.TrayectosPrueba
-
-
-# PAYPAL
-
-paypalrestsdk.configure({
-  "mode": "sandbox",
-  "client_id": "AR51Pz6BL67biGY-8D-QlYML9Drg5KndkJXAV5TYO8xhURMtxNKawDxGN0M6aV7uMvlIhLGiqDLghL04",
-  "client_secret": "EGlNU3xHz_fRF57pkgvrXOB7AJSD_yzjlkUrZx5SgxH3onk-tPV0JGCBpTPeeIIihGHASaSCLL-6fYH9" })
-
-# {
-#     "scope": "https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/vault/payment-tokens/read https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller Braintree:Vault https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://uri.paypal.com/services/vault/payment-tokens/readwrite https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks",
-#     "access_token": "A21AAL7EN35jDvku3qxWBUXl67uau9jN3323P9ahbNJb7uju_VRzosMdWZ4RPXCD9er47cj3L8KOI64Ym3tUBvoAFUh9l9VRQ",
-#     "token_type": "Bearer",
-#     "app_id": "APP-80W284485P519543T",
-#     "expires_in": 32400,
-#     "nonce": "2022-01-14T12:26:41ZFHDmLGFlyDoGT0UR44_DBcM5Mt1q5WXc9B0Hwl-J1ys"
-# }
 
 #CLIENTE
 

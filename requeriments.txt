@@ -5,5 +5,4 @@ pip install flask
 pip install pymongo (3.12.1)
 pip install requests
 pip install imgurpython
-pip install paypalrestsdk
 pip install oauth
