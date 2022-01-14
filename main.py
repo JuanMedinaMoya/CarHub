@@ -29,12 +29,9 @@ from werkzeug.wrappers import response
 app = Flask(__name__)
 
 app.config[
-    "MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
+    "MONGO_URI"] = os.environ('MONGODB_URI')
 app.config["FOTO_UPLOADS"] = os.getcwd()
-
-API_KEY_MAPS = "AIzaSyC1GXp71yv3zHYbZBvgu6a0CTL7SMxEZzk"
-API_KEY_TIEMPO = "be0d42dee8a7dc753453bdaa8a20f26a"
-app.config['GOOGLEMAPS_KEY'] = API_KEY_MAPS
+app.config['GOOGLEMAPS_KEY'] = os.enviro('API_KEY_MAPS') 
 
 app.secret_key = "CarHub"
 
@@ -1746,7 +1743,7 @@ def getLatitud(lugar):
         "input": lugar,
         "inputtype": 'textquery',
         "fields": 'geometry',
-        "key": API_KEY_MAPS
+        "key": os.environ('API_KEY_MAPS')
     })
     json_data_place = requests.get(url).json()
     latitud = str(
@@ -1760,7 +1757,7 @@ def getLongitud(lugar):
         "input": lugar,
         "inputtype": 'textquery',
         "fields": 'geometry',
-        "key": API_KEY_MAPS
+        "key": os.environ('API_KEY_MAPS')
     })
     json_data_place = requests.get(url).json()
     longitud = str(
@@ -1776,7 +1773,7 @@ def ruta(origen, destino):  # devuelve el json con toda la informacion
         "origin": origen,
         "destination": destino,
         "language": "es",
-        "key": API_KEY_MAPS
+        "key": os.environ('API_KEY_MAPS')
     })
     json_data = requests.get(url).json()
 
@@ -1807,7 +1804,7 @@ def localidad(lat, lon):
             "latlng": str(lat) + ',' + str(lon),
             "sensor": "false",
             "language": "es",
-            "key": API_KEY_MAPS
+            "key": os.environ('API_KEY_MAPS')
         })
     json_data = requests.get(url).json()
     for r in json_data['results']:
@@ -1834,7 +1831,7 @@ def infotiempo(lugar):
     url = tiempo_url + urllib.parse.urlencode({
         "lat": getLatitud(lugar),
         "lon": getLongitud(lugar),
-        "appid": API_KEY_TIEMPO
+        "appid": os.environ('API_KEY_MAPS')
     })
     json_data = requests.get(url).json()
     return json_data
@@ -1911,56 +1908,6 @@ def visibilidad(lugar, fechayhora):
                 return "0"
 
     return str(visibilidad)
-
-#------------------------------------------------------------------
-#  _____    __     _______        _      
-# |  __ \ /\\ \   / /  __ \ /\   | |     
-# | |__) /  \\ \_/ /| |__) /  \  | |     
-# |  ___/ /\ \\   / |  ___/ /\ \ | |     
-# | |  / ____ \| |  | |  / ____ \| |____ 
-# |_| /_/    \_\_|  |_| /_/    \_\______|
-#------------------------------------------------------------------
-
-@app.route('/payment', methods=['POST'])
-def payment():
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"},
-        "redirect_urls": {
-            "return_url": "http://localhost:5000/payment/execute",
-            "cancel_url": "http://localhost:5000/"},
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "item",
-                    "sku": "item",
-                    "price": "5.00",
-                    "currency": "EUR",
-                    "quantity": 1}]},
-            "amount": {
-                "total": "5.00",
-                "currency": "EUR"},
-            "description": "This is the payment transaction description."}]})
-
-    if payment.create():
-        print("Payment created successfully")
-    else:
-        print(payment.error)
-    
-    return jsonify({'paymentID' : payment.id})
-
-@app.route('/execute', methods=['POST'])
-def execute():
-    payment = paypalrestsdk.Payment.find(request.form['paymentID'])
-
-    if payment.execute({'payer_id' : request.form['payerID']}) :
-        print('Execute success!')
-        success = True
-    else:
-        print(payment.error)
-
-    return jsonify({'success' : success})
 
 @app.errorhandler(404)
 def not_found(error=None):
