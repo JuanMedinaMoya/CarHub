@@ -3,7 +3,8 @@ pymongo[srv]
 flask_pymongo
 flask-googlemaps
 flask
-pymongo
+pymongo==3.12.1
 requests
 imgurpython
 oauth
+python-dotenv
