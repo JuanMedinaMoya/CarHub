@@ -28,6 +28,9 @@ from werkzeug.wrappers import response
 
 app = Flask(__name__)
 
+port = int(os.environ.get('PORT', 5000))
+app.run(host='0.0.0.0', port=port, debug=True)
+
 app.config[
     "MONGO_URI"] = "mongodb+srv://CarHubAdmin:1234@carhub.n2ouf.mongodb.net/CarHubDB?retryWrites=true&w=majority"
 app.config["FOTO_UPLOADS"] = os.getcwd()
