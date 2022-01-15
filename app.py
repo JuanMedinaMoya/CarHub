@@ -1987,7 +1987,7 @@ def not_access_permission(error=None):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True, ssl_context="adhoc")
+    app.run( debug=True)
     
     
 ## API PAYPAL
