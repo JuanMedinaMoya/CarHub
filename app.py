@@ -1916,56 +1916,6 @@ def visibilidad(lugar, fechayhora):
 
     return str(visibilidad)
 
-#------------------------------------------------------------------
-#  _____    __     _______        _      
-# |  __ \ /\\ \   / /  __ \ /\   | |     
-# | |__) /  \\ \_/ /| |__) /  \  | |     
-# |  ___/ /\ \\   / |  ___/ /\ \ | |     
-# | |  / ____ \| |  | |  / ____ \| |____ 
-# |_| /_/    \_\_|  |_| /_/    \_\______|
-#------------------------------------------------------------------
-
-@app.route('/payment', methods=['POST'])
-def payment():
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"},
-        "redirect_urls": {
-            "return_url": "http://localhost:5000/payment/execute",
-            "cancel_url": "http://localhost:5000/"},
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "item",
-                    "sku": "item",
-                    "price": "5.00",
-                    "currency": "EUR",
-                    "quantity": 1}]},
-            "amount": {
-                "total": "5.00",
-                "currency": "EUR"},
-            "description": "This is the payment transaction description."}]})
-
-    if payment.create():
-        print("Payment created successfully")
-    else:
-        print(payment.error)
-    
-    return jsonify({'paymentID' : payment.id})
-
-@app.route('/execute', methods=['POST'])
-def execute():
-    payment = paypalrestsdk.Payment.find(request.form['paymentID'])
-
-    if payment.execute({'payer_id' : request.form['payerID']}) :
-        print('Execute success!')
-        success = True
-    else:
-        print(payment.error)
-
-    return jsonify({'success' : success})
-
 @app.errorhandler(404)
 def not_found(error=None):
     response = jsonify({
