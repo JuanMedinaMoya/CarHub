@@ -445,6 +445,7 @@ def eliminar_usuario():
 @app.route('/logout')
 def logout():
     if comprobarToken() == 0 :
+        session.clear()
         return redirect("/")
     else:
         session.clear()
