@@ -140,7 +140,7 @@ def auth():
                 'fechanacimiento': "",
                 'telefono': "",
                 'coche': "",
-                'paypal': ""
+                'paypal': "PGGWRL5R8ZNSL"
             })
             usuario = Usuarios.find_one({"correo": email})   
             session["username"] = arraystr[0]
@@ -253,7 +253,7 @@ def registro():
             'fechanacimiento': d_fechanacimiento,
             'telefono': telefono,
             'coche': "",
-            'paypal': ""
+            'paypal': "PGGWRL5R8ZNSL"
         })
         session["username"] = username
         session["creador"] = False
