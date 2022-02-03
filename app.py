@@ -7,7 +7,6 @@ from inspect import formatannotation
 from itertools import chain
 
 import pymongo
-import requests
 from authlib.integrations.flask_client import OAuth
 from bson import json_util
 from bson.objectid import ObjectId
@@ -17,8 +16,8 @@ from flask import (Flask, Response, flash, json, jsonify, redirect,
 from flask.templating import render_template_string
 from flask_googlemaps import GoogleMaps, Map
 from flask_pymongo import PyMongo
-import requests
-from google.auth.transport import requests
+import requests as req
+from google.auth.transport import requests as googlereq
 from google.oauth2 import id_token
 from google.auth.transport.requests import Request
 import google.oauth2.id_token
@@ -31,7 +30,6 @@ from werkzeug.utils import redirect
 from werkzeug.wrappers import response
 from datetime import datetime
 from bson.timestamp import Timestamp
-
 app = Flask(__name__)
 
 
@@ -113,7 +111,7 @@ def auth():
         token = google.authorize_access_token()['id_token']
 
         CLIENT_ID="195417323379-cfskdhqvf71gkoajilafthirmlvgt3da.apps.googleusercontent.com"
-        id_info = id_token.verify_oauth2_token(token,requests.Request(),CLIENT_ID,10)
+        id_info = id_token.verify_oauth2_token(token,googlereq.Request(),CLIENT_ID,10)
 
         session["token"] = token
 
@@ -1492,7 +1490,7 @@ def buscagasolineras(locationdata):
     payload = {}
     headers = {}
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = req.request("GET", url, headers=headers, data=payload)
 
     return (response.text)
 
@@ -1505,7 +1503,7 @@ def getLatitud(lugar):
         "fields": 'geometry',
         "key": API_KEY_MAPS
     })
-    json_data_place = requests.get(url).json()
+    json_data_place = req.get(url).json()
     latitud = str(
         json_data_place['candidates'][0]['geometry']['location']['lat'])
     return latitud
@@ -1519,7 +1517,7 @@ def getLongitud(lugar):
         "fields": 'geometry',
         "key": API_KEY_MAPS
     })
-    json_data_place = requests.get(url).json()
+    json_data_place = req.get(url).json()
     longitud = str(
         json_data_place['candidates'][0]['geometry']['location']['lng'])
     return longitud
@@ -1535,7 +1533,7 @@ def ruta(origen, destino):  # devuelve el json con toda la informacion
         "language": "es",
         "key": API_KEY_MAPS
     })
-    json_data = requests.get(url).json()
+    json_data = req.get(url).json()
 
     return json_data
 
@@ -1566,7 +1564,7 @@ def localidad(lat, lon):
             "language": "es",
             "key": API_KEY_MAPS
         })
-    json_data = requests.get(url).json()
+    json_data = req.get(url).json()
     for r in json_data['results']:
         if r['types'][0] == 'locality':
             return r['place_id']
@@ -1593,7 +1591,7 @@ def infotiempo(lugar):
         "lon": getLongitud(lugar),
         "appid": API_KEY_TIEMPO
     })
-    json_data = requests.get(url).json()
+    json_data = req.get(url).json()
     return json_data
 
 @app.route('/daily/<lugar>', methods=['GET'])
@@ -1694,7 +1692,7 @@ def comprobarToken():
             idtoken=session['token']
             CLIENT_ID = '195417323379-cfskdhqvf71gkoajilafthirmlvgt3da.apps.googleusercontent.com'
             try:
-                id_token.verify_oauth2_token(idtoken, requests.Request(), CLIENT_ID,10)
+                id_token.verify_oauth2_token(idtoken, googlereq.Request(), CLIENT_ID,10)
             except ValueError:
                 return 0
         else: 
