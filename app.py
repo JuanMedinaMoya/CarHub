@@ -16,7 +16,7 @@ from flask_googlemaps import Map
 import requests
 import urllib
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport.requests import Request
 import google.oauth2.id_token
 from datetime import datetime
 from imgurpython import ImgurClient
