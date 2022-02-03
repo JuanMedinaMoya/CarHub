@@ -16,7 +16,7 @@ from flask_googlemaps import Map
 import requests
 import urllib
 from google.oauth2 import id_token
-from google.auth.transport.requests import Request
+from google.auth.transport import requests
 import google.oauth2.id_token
 from datetime import datetime
 from imgurpython import ImgurClient
@@ -76,7 +76,21 @@ TrayectosPrueba = mongo.db.TrayectosPrueba
 
 
 
-#CLIENTE
+
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+#  _    _  _____ _    _         _____  _____ ____   _____
+# | |  | |/ ____| |  | |  /\   |  __ \|_   _/ __ \ / ____|
+# | |  | | (___ | |  | | /  \  | |__) | | || |  | | (___
+# | |  | |\___ \| |  | |/ /\ \ |  _  /  | || |  | |\___ \
+# | |__| |____) | |__| / ____ \| | \ \ _| || |__| |____) |
+#  \____/|_____/ \____/_/    \_\_|  \_\_____\____/|_____/
+#
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+
 
 
 @app.route('/')
@@ -99,7 +113,6 @@ def auth():
         id_info = id_token.verify_oauth2_token(token,requests.Request(),CLIENT_ID,10)
 
         session["token"] = token
-        session["idtoken"] = id_info
 
         resp = google.get('userinfo')
         resp.raise_for_status()
@@ -245,110 +258,6 @@ def registro():
         session["creador"] = False
         return redirect("/")
 
-
-@app.route('/crearviaje', methods=['POST', 'GET'])
-def crearViaje():
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        if request.method == 'GET':
-            return render_template('crearViaje.html')
-        else:
-            usuario = Usuarios.find_one({"username": session["username"]})
-            conductor = ObjectId(usuario['_id'])
-            origenstr = request.form['origen']
-            destinostr = request.form['destino']
-            horasalida = request.form['horasalida']
-            d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
-            precio = request.form['precio']
-            numeropasajeros = request.form['numeropasajeros']
-            finalizado = 0
-            pasajeros = []
-            origen = {
-                'type':
-                "Point",
-                'coordinates':
-                [float(getLatitud(origenstr)),
-                float(getLongitud(origenstr))]
-            }
-            destino = {
-                'type':
-                "Point",
-                'coordinates':
-                [float(getLatitud(destinostr)),
-                float(getLongitud(destinostr))]
-            }
-            if origenstr == destinostr:
-                error = "Error: origen y destino iguales"
-                return render_template('crearViaje.html',
-                                    error=error,
-                                    origen=origenstr,
-                                    destino=destinostr,
-                                    horasalida=horasalida,
-                                    precio=precio,
-                                    numeropasajeros=numeropasajeros)
-            else:
-                id = Trayectos.insert({
-                    'conductor': conductor,
-                    'origenstr': origenstr,
-                    'origen': origen,
-                    'destinostr': destinostr,
-                    'destino': destino,
-                    'horasalida': d_horasalida,
-                    'precio': int(precio),
-                    'numeropasajeros': int(numeropasajeros),
-                    'finalizado': finalizado,
-                    'pasajeros': pasajeros
-                })
-                return redirect('/trayecto/'+str(id))
-
-
-@app.route('/editarviaje/<id>', methods=['POST'])
-def editarViaje(id):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        trayecto = Trayectos.find_one({'_id': ObjectId(id)})
-        origenstr = request.form['origen']
-        destinostr = request.form['destino']
-        horasalida = request.form['horasalida']
-        d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
-        numeropasajeros = request.form['numeropasajeros']
-        precio = request.form['precio']
-
-        origen = {
-            'type':
-            "Point",
-            'coordinates':
-            [float(getLatitud(origenstr)),
-            float(getLongitud(origenstr))]
-        }
-
-        destino = {
-            'type':
-            "Point",
-            'coordinates':
-            [float(getLatitud(destinostr)),
-            float(getLongitud(destinostr))]
-        }
-        if origenstr == destinostr:
-            error = "Error: origen y destino iguales"
-            return render_template('editarViaje.html',
-                                error=error,
-                                trayecto=trayecto)
-        else:
-            Trayectos.update_one({'_id': ObjectId(id)}, {
-                '$set': {
-                    'origenstr': origenstr,
-                    'origen': origen,
-                    'destinostr': destinostr,
-                    'destino': destino,
-                    'horasalida': d_horasalida,
-                    'precio': int(precio),
-                    'numeropasajeros': int(numeropasajeros)
-                }
-            })
-        return mostrarViaje(id)
 
 
 @app.route('/perfil', methods=['POST', 'GET'])
@@ -541,6 +450,435 @@ def logout():
         return redirect("/")
 
 
+
+
+#-----------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------
+#
+#   _____ ____  _   ___      ________ _____   _____         _____ _____ ____  _   _ ______  _____
+#  / ____/ __ \| \ | \ \    / /  ____|  __ \ / ____|  /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
+# | |   | |  | |  \| |\ \  / /| |__  | |__) | (___   /  \ | |      | || |  | |  \| | |__  | (___
+# | |   | |  | | . ` | \ \/ / |  __| |  _  / \___ \ / /\ \| |      | || |  | | . ` |  __|  \___ \
+# | |___| |__| | |\  |  \  /  | |____| | \ \ ____) / ____ \ |____ _| || |__| | |\  | |____ ____) |
+#  \_____\____/|_| \_|   \/   |______|_|  \_\_____/_/    \_\_____|_____\____/|_| \_|______|_____/
+#
+#-----------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------
+
+
+@app.route('/crear_conversacion/<usuario1>/<usuario2>', methods=['POST'])
+def crear_conversacion(usuario1, usuario2):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        listMensajes = []
+        id1 = Usuarios.find_one({'username': usuario1})['_id']
+        id2 = Usuarios.find_one({'username': usuario2})['_id']
+        if id1 and id2 and id1 != id2:
+            conversacion = Conversaciones.find_one({
+                '$or': [{
+                    'user1': ObjectId(id1),
+                    'user2': ObjectId(id2)
+                }, {
+                    'user1': ObjectId(id2),
+                    'user2': ObjectId(id1)
+                }]
+            })
+            if conversacion == None:  # Si no ha creado ya una conversacion
+                id = Conversaciones.insert_one({
+                    'user1': ObjectId(id1),
+                    'user2': ObjectId(id2),
+                    'listMensajes': listMensajes
+                })
+                response = {'mensaje': 'Conversacion creada con exito'}
+            else:
+                response = {'mensaje': 'Conversacion ya existente'}
+        else:  # No encuentra los usuarios
+            return not_found()
+        return response
+
+
+@app.route('/mostrar_conversaciones', methods=['GET'])
+def mostrar_conversaciones():
+        conversaciones = Conversaciones.find()
+        response = json_util.dumps(conversaciones)
+        return Response(response, mimetype="application/json")
+
+
+@app.route('/buscar_conversacion_id/<id>', methods=['GET'])
+def buscar_conversacion_id(id):
+    conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
+    response = json_util.dumps(conversacion)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/borrar_conversacion/<id>', methods=['DELETE'])
+def borrar_conversacion(id):
+    if Conversaciones.count_documents({'_id': ObjectId(id)}) == 1:
+        Conversaciones.delete_one({'_id': ObjectId(id)})
+        response = jsonify({
+            'mensaje':
+            'La conversacion con id: ' + id +
+            ' fue eliminada satisfactoriamente.'
+        })
+    else:
+        return not_found()
+    return response
+
+
+@app.route('/enviar_mensaje/<idc>/<idu>', methods=['PATCH'])
+def enviar_mensaje(idc, idu):
+    contenido = request.json['contenido']
+    conver_incluido = Conversaciones.count_documents({
+        '_id':
+        ObjectId(idc),
+        '$or': [{
+            'user1': ObjectId(idu)
+        }, {
+            'user2': ObjectId(idu)
+        }]
+    }) == 1
+    if contenido and conver_incluido:
+        Conversaciones.update_one({'_id': ObjectId(idc)}, {
+            '$push': {
+                'listMensajes': {
+                    'idUser': ObjectId(idu),
+                    'contenido': contenido,
+                    'fecha': datetime.utcnow()
+                }
+            }
+        })
+        response = {'mensaje': 'El mensaje ha sido enviado satisfactoriamente'}
+    else:
+        return not_found()
+    return response
+
+
+@app.route('/buscar_conversaciones_usuario/<usuario>', methods=['GET'])
+def buscar_conversaciones_usuario(usuario):
+    id = Usuarios.find_one({'username': usuario})['_id']
+    conversaciones = Conversaciones.find(
+        {'$or': [{
+            'user1': ObjectId(id)
+        }, {
+            'user2': ObjectId(id)
+        }]})
+    response = json_util.dumps(conversaciones)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/mis_conversaciones/<usuario>', methods=['GET'])
+def mis_conversaciones(usuario):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        if not 'username' in session or usuario != session['username']:
+            return not_access_permission()
+
+        id = Usuarios.find_one({'username': usuario})['_id']
+        mis_conversaciones = conversaciones = Conversaciones.find(
+            {'$or': [{
+                'user1': ObjectId(id)
+            }, {
+                'user2': ObjectId(id)
+            }]})
+        listConversaciones = []
+        for c in mis_conversaciones:
+            contact = c['user2'] if c['user1'] == ObjectId(id) else c['user1']
+            contact = Usuarios.find_one({'_id': contact}, {
+                '_id': 0,
+                'foto': 1,
+                'username': 1
+            })
+            listConversaciones.append({
+                '_id': c['_id'],
+                'username': contact['username'],
+                'profile_picture': contact['foto']
+            })
+        return render_template('misConversaciones.html',
+                            listConversaciones=listConversaciones,
+                            len=len(listConversaciones))
+
+
+@app.route('/conversacion/<contact>/<username>')
+def crear_obtener_chat(contact, username):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        id1 = Usuarios.find_one({'username': username})['_id']
+        id2 = Usuarios.find_one({'username': contact})['_id']
+        conversacion = Conversaciones.find_one({
+            '$or': [{
+                'user1': ObjectId(id1),
+                'user2': ObjectId(id2)
+            }, {
+                'user1': ObjectId(id2),
+                'user2': ObjectId(id1)
+            }]
+        })
+        if conversacion == None:
+            crear_conversacion(contact, username)
+            conversacion = Conversaciones.find_one({
+                '$or': [{
+                    'user1': ObjectId(id1),
+                    'user2': ObjectId(id2)
+                }, {
+                    'user1': ObjectId(id2),
+                    'user2': ObjectId(id1)
+                }]
+            })
+
+        return redirect('/conversacion/chat/' + str(conversacion['_id']))
+
+
+@app.route('/conversacion/chat/<id_conversacion>')
+def entrar_conversacion(id_conversacion):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        if Conversaciones.count_documents({'_id': ObjectId(id_conversacion)}) == 1:
+            conversacion = Conversaciones.find_one(
+                {'_id': ObjectId(id_conversacion)})
+            id = Usuarios.find_one({'username': session["username"]})['_id']
+            contact = conversacion['user2'] if conversacion[
+                'user1'] == id else conversacion['user1']
+            contact = Usuarios.find_one({'_id': contact}, {
+                'foto': 1,
+                'username': 1
+            })
+            return render_template('chat.html',
+                                id=id,
+                                id2=contact['_id'],
+                                contact=contact['username'],
+                                profile_picture=contact['foto'],
+                                listMensajes=conversacion['listMensajes'],
+                                id_conversacion=id_conversacion,
+                                len_mensajes=len(conversacion['listMensajes']))
+        else:
+            return not_found()
+
+
+@app.route('/enviarMensaje', methods=['POST'])
+def enviarMensaje():
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        contenido = request.form['contenido']
+        id_conversacion = request.form['id_conversacion']
+        id = Usuarios.find_one({'username': session["username"]})['_id']
+        contenido = contenido.strip()
+        if contenido != '':
+            Conversaciones.update_one({'_id': ObjectId(id_conversacion)}, {
+                '$push': {
+                    'listMensajes': {
+                        'idUser': id,
+                        'contenido': contenido,
+                        'fecha': datetime.utcnow()
+                    }
+                }
+            })
+
+        return ('4', 200)
+
+
+@app.route('/recibirMensajes', methods=['POST'])
+def recibirMensajes():
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        id_conversacion = request.form['id_conversacion']
+        currentTotal = int(request.form['currentTotal'])
+        listMensajes = Conversaciones.find_one({'_id': ObjectId(id_conversacion)
+                                                })['listMensajes']
+        listMensajes = listMensajes[currentTotal:len(
+            listMensajes
+        )]
+        rendered = getHTMLListaMensajes(listMensajes)
+        return rendered    
+
+def getHTMLListaMensajes(listMensajes):
+    id = Usuarios.find_one({'username': session["username"]})['_id']
+    listInHtml = '''{% for m in listMensajes %}
+            {% if m['idUser'] == id %}
+            <div class="row justify-content-end">
+                <div class="col-auto">
+                    <div class="alert-success text-end px-5 py-2 ms-5 mb-4">
+                        <p class="text-break">
+                            {{ m['contenido'] }}
+                        </p>
+                        <span>{{ m['fecha']|datetime }}</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row ">
+                <div class="col-auto justify-content-start">
+                    <div class="alert-dark text-start mb-4 px-5 py-2 me-5">
+                        <p class="text-break">
+                            {{ m['contenido'] }}
+                        </p>
+                        <span class="">{{ m['fecha']|datetime }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            '''
+    return render_template_string(listInHtml, listMensajes=listMensajes, id=id)
+
+@app.template_filter('datetime')
+def date_format(value):
+    months = ('Enero','Febrero',"Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+    month = months[value.month-1]
+    hora = str(value.hour).zfill(2)
+    minutos = str(value.minute).zfill(2)
+    return "{} de {} del {} a las {}:{}hs".format(value.day, month, value.year, hora, minutos)
+
+
+#------------------------------------------------------------------
+
+#------------------------------------------------------------------
+#  _______ _____        __     ________ _____ _______ ____   _____
+# |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
+#    | |  | |__) |   /  \\ \_/ /| |__ | |       | | | |  | | (___
+#    | |  |  _  /   / /\ \\   / |  __|| |       | | | |  | |\___ \
+#    | |  | | \ \  / ____ \| |  | |___| |____   | | | |__| |____) |
+#    |_|  |_|  \_\/_/    \_\_|  |______\_____|  |_|  \____/|_____/
+#
+#------------------------------------------------------------------
+
+#------------------------------------------------------------------
+
+
+@app.route('/crearviaje', methods=['POST', 'GET'])
+def crearViaje():
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        if request.method == 'GET':
+            return render_template('crearViaje.html')
+        else:
+            usuario = Usuarios.find_one({"username": session["username"]})
+            conductor = ObjectId(usuario['_id'])
+            origenstr = request.form['origen']
+            destinostr = request.form['destino']
+            horasalida = request.form['horasalida']
+            d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
+            precio = request.form['precio']
+            numeropasajeros = request.form['numeropasajeros']
+            finalizado = 0
+            pasajeros = []
+            origen = {
+                'type':
+                "Point",
+                'coordinates':
+                [float(getLatitud(origenstr)),
+                float(getLongitud(origenstr))]
+            }
+            destino = {
+                'type':
+                "Point",
+                'coordinates':
+                [float(getLatitud(destinostr)),
+                float(getLongitud(destinostr))]
+            }
+            if origenstr == destinostr:
+                error = "Error: origen y destino iguales"
+                return render_template('crearViaje.html',
+                                    error=error,
+                                    origen=origenstr,
+                                    destino=destinostr,
+                                    horasalida=horasalida,
+                                    precio=precio,
+                                    numeropasajeros=numeropasajeros)
+            else:
+                id = Trayectos.insert({
+                    'conductor': conductor,
+                    'origenstr': origenstr,
+                    'origen': origen,
+                    'destinostr': destinostr,
+                    'destino': destino,
+                    'horasalida': d_horasalida,
+                    'precio': int(precio),
+                    'numeropasajeros': int(numeropasajeros),
+                    'finalizado': finalizado,
+                    'pasajeros': pasajeros
+                })
+                return redirect('/trayecto/'+str(id))
+
+
+@app.route('/editarviaje/<id>', methods=['POST'])
+def editarViaje(id):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        trayecto = Trayectos.find_one({'_id': ObjectId(id)})
+        origenstr = request.form['origen']
+        destinostr = request.form['destino']
+        horasalida = request.form['horasalida']
+        d_horasalida = datetime.strptime(horasalida, '%Y-%m-%dT%H:%M')
+        numeropasajeros = request.form['numeropasajeros']
+        precio = request.form['precio']
+
+        origen = {
+            'type':
+            "Point",
+            'coordinates':
+            [float(getLatitud(origenstr)),
+            float(getLongitud(origenstr))]
+        }
+
+        destino = {
+            'type':
+            "Point",
+            'coordinates':
+            [float(getLatitud(destinostr)),
+            float(getLongitud(destinostr))]
+        }
+        if origenstr == destinostr:
+            error = "Error: origen y destino iguales"
+            return render_template('editarViaje.html',
+                                error=error,
+                                trayecto=trayecto)
+        else:
+            Trayectos.update_one({'_id': ObjectId(id)}, {
+                '$set': {
+                    'origenstr': origenstr,
+                    'origen': origen,
+                    'destinostr': destinostr,
+                    'destino': destino,
+                    'horasalida': d_horasalida,
+                    'precio': int(precio),
+                    'numeropasajeros': int(numeropasajeros)
+                }
+            })
+        return mostrarViaje(id)
+
+
+
+@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST','GET'])
+def finalizarTrayecto(idtrayecto):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        Trayectos.update_one({'_id': ObjectId(idtrayecto)},
+                            {'$set': {
+                                'finalizado': 1
+                            }})
+        return redirect('/trayecto/'+idtrayecto)
+
+@app.route('/borrartrayecto/<id>', methods=['POST','GET'])
+def borrarTrayecto(id):
+    if comprobarToken() == 0 :
+        return redirect("/")
+    else:
+        trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
+        return redirect('/mis_viajes_creados/'+session["username"]+'/1')
+
+
+
 @app.route('/busqueda', methods=['POST'])
 def busquedatrayecto_post():
     if comprobarToken() == 0 :
@@ -565,9 +903,7 @@ def busquedatrayecto_post():
                         numeropasajeros + '/1')
 
 
-@app.route(
-    '/busqueda/<origen>/<mostrarlocalidadorigen>/<radioorigen>/<destino>/<mostrarlocalidaddestino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>',
-    methods=['GET'])
+@app.route('/busqueda/<origen>/<mostrarlocalidadorigen>/<radioorigen>/<destino>/<mostrarlocalidaddestino>/<radiodestino>/<horasalida>/<numpasajeros>/<pagina>', methods=['GET'])
 def busquedatrayecto_get(origen, mostrarlocalidadorigen, radioorigen, destino,
                          mostrarlocalidaddestino, radiodestino, horasalida,
                          numpasajeros, pagina):
@@ -909,232 +1245,6 @@ def anadirPasajero(idtrayecto,numreservas):
         return redirect('/trayecto/'+idtrayecto)
 
 
-@app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
-def valorar(idtrayecto, idusuario):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        if request.method == 'GET':
-            username = session["username"]
-            usuarioact = Usuarios.find_one({"username": username})
-            trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
-            usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
-            return render_template('valorar.html',
-                                usuario=usuariovalorado,
-                                trayecto=trayecto,
-                                usuarioact=usuarioact)
-        else:
-            username = session["username"]
-            usuarioact = Usuarios.find_one({"username": username})
-            trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
-            usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
-            valoracion = request.form['valoracion']
-            comentario = request.form['comentario']
-
-            Valoraciones.insert({
-                'valorado': usuariovalorado['_id'],
-                'trayecto': trayecto['_id'],
-                'valorador': usuarioact['_id'],
-                'puntuacion': int(valoracion),
-                'comentario': comentario
-            })
-            return redirect('/perfilId/' + str(usuariovalorado["_id"])
-                            ) 
-
-
-def estavalorado(conductor, usuario):
-    v = Valoraciones.find_one({
-        'valorado': conductor['_id'],
-        'valorador': usuario['_id']
-    })
-    print(v)
-    print(conductor['_id'])
-    print(usuario['_id'])
-    if v == None:
-        return False
-    else:
-        return True
-
-@app.route('/finalizartrayecto/<idtrayecto>', methods=['POST','GET'])
-def finalizarTrayecto(idtrayecto):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        Trayectos.update_one({'_id': ObjectId(idtrayecto)},
-                            {'$set': {
-                                'finalizado': 1
-                            }})
-        return redirect('/trayecto/'+idtrayecto)
-
-@app.route('/borrartrayecto/<id>', methods=['POST','GET'])
-def borrarTrayecto(id):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
-        return redirect('/mis_viajes_creados/'+session["username"]+'/1')
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-#  _    _  _____ _    _         _____  _____ ____   _____
-# | |  | |/ ____| |  | |  /\   |  __ \|_   _/ __ \ / ____|
-# | |  | | (___ | |  | | /  \  | |__) | | || |  | | (___
-# | |  | |\___ \| |  | |/ /\ \ |  _  /  | || |  | |\___ \
-# | |__| |____) | |__| / ____ \| | \ \ _| || |__| |____) |
-#  \____/|_____/ \____/_/    \_\_|  \_\_____\____/|_____/
-#
-#------------------------------------------------------------
-
-#CRUD
-
-
-@app.route('/crear_usuario', methods=['POST'])
-def crear_usuario():
-    username = request.json['username']
-    nombre = request.json['nombre']
-    apellidos = request.json['apellidos']
-    coche = request.json['coche']
-    correo = request.json['correo']
-    contrasena = request.json['contrasena']
-    dni = request.json['dni']
-    fechanacimiento = request.json['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
-    telefono = request.json['telefono']
-    paypal = request.json['paypal']
-    foto = request.json['foto']
-
-    if nombre and apellidos and correo and contrasena and dni and fechanacimiento and telefono:
-        hashed_contrasena = generate_password_hash(contrasena)
-        id = Usuarios.insert({
-            'username': username,
-            'nombre': nombre,
-            'apellidos': apellidos,
-            'coche': coche,
-            'correo': correo,
-            'contrasena': hashed_contrasena,
-            'dni': dni,
-            'fechanacimiento': d_fechanacimiento,
-            'telefono': telefono,
-            'paypal': paypal,
-            'foto': foto
-        })
-        resp = jsonify("Usuario añadido")
-        return resp
-    else:
-        return not_found()
-
-
-@app.route('/mostrar_usuarios', methods=['GET'])
-def mostrar_usuarios():
-    usuarios = Usuarios.find()
-    resp = json_util.dumps(usuarios)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/borrar_usuario/<id>', methods=['DELETE'])
-def borrar_usuario(id):
-    usuario = Usuarios.delete_one({'_id': ObjectId(id)})
-    resp = jsonify("Usuario eliminado")
-    return resp
-
-
-@app.route('/actualizar_usuario/<id>', methods=['PUT'])
-def actualizar_usuario(id):
-    username = request.json['username']
-    nombre = request.json['nombre']
-    apellidos = request.json['apellidos']
-    coche = request.json['coche']
-    correo = request.json['correo']
-    contrasena = request.json['contrasena']
-    dni = request.json['dni']
-    fechanacimiento = request.json['fechanacimiento']
-    d_fechanacimiento = datetime.strptime(fechanacimiento, '%d/%m/%Y')
-    telefono = request.json['telefono']
-    paypal = request.json['paypal']
-    foto = request.json['foto']
-    hashed_contrasena = generate_password_hash(contrasena)
-
-    Usuarios.update_one({'_id': ObjectId(id)}, {
-        '$set': {
-            'username': username,
-            'nombre': nombre,
-            'apellidos': apellidos,
-            'coche': coche,
-            'correo': correo,
-            'contrasena': hashed_contrasena,
-            'dni': dni,
-            'fechanacimiento': d_fechanacimiento,
-            'telefono': telefono,
-            'paypal': paypal,
-            'foto': foto
-        }
-    })
-    resp = jsonify("Usuario actualizado")
-    return resp
-
-
-#OP CONSULTA O BUSQ PARAMETRIZADA
-
-
-@app.route('/buscar_usuario_id/<id>', methods=['GET'])
-def buscar_usuario_id(id):
-    usuario = Usuarios.find_one({'_id': ObjectId(id)})
-    resp = json_util.dumps(usuario)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/buscar_usuario_username/<filtro>', methods=['GET'])
-def buscar_usuario_username(filtro):
-    usuarios = Usuarios.find({'username': {'$regex': filtro}})
-    resp = json_util.dumps(usuarios)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/buscar_usuario_nombre_apellidos/<filtro>', methods=['GET'])
-def buscar_usuario_nombre_apellidos(filtro):
-    if ' ' in filtro:
-        palabras = filtro.split(' ', 1)
-        usuarios = Usuarios.find({
-            "$or": [{
-                'nombre': {
-                    '$regex': palabras[0]
-                }
-            }, {
-                'apellidos': {
-                    '$regex': palabras[1]
-                }
-            }]
-        })  # Usuarios.find({'apellidos':{'$regex':filtro}})
-        resp = json_util.dumps(usuarios)
-        return Response(resp, mimetype='application/json')
-    else:
-        usuarios = Usuarios.find({
-            "$or": [{
-                'nombre': {
-                    '$regex': filtro
-                }
-            }, {
-                'apellidos': {
-                    '$regex': filtro
-                }
-            }]
-        })  # Usuarios.find({'apellidos':{'$regex':filtro}})
-        resp = json_util.dumps(usuarios)
-        return Response(resp, mimetype='application/json')
-
-
-#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
 
 
 @app.route('/mis_viajes/<usuario>', methods=['GET'])
@@ -1232,439 +1342,6 @@ def mis_viajes_creados(usuario, pagina):
                             trayectos=trayectos)
 
 
-#-------------------------------------------------------------------------------------------------
-#
-#   _____ ____  _   ___      ________ _____   _____         _____ _____ ____  _   _ ______  _____
-#  / ____/ __ \| \ | \ \    / /  ____|  __ \ / ____|  /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
-# | |   | |  | |  \| |\ \  / /| |__  | |__) | (___   /  \ | |      | || |  | |  \| | |__  | (___
-# | |   | |  | | . ` | \ \/ / |  __| |  _  / \___ \ / /\ \| |      | || |  | | . ` |  __|  \___ \
-# | |___| |__| | |\  |  \  /  | |____| | \ \ ____) / ____ \ |____ _| || |__| | |\  | |____ ____) |
-#  \_____\____/|_| \_|   \/   |______|_|  \_\_____/_/    \_\_____|_____\____/|_| \_|______|_____/
-#
-#-------------------------------------------------------------------------------------------------
-
-
-@app.route('/crear_conversacion/<usuario1>/<usuario2>', methods=['POST'])
-def crear_conversacion(usuario1, usuario2):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        listMensajes = []
-        id1 = Usuarios.find_one({'username': usuario1})['_id']
-        id2 = Usuarios.find_one({'username': usuario2})['_id']
-        if id1 and id2 and id1 != id2:
-            conversacion = Conversaciones.find_one({
-                '$or': [{
-                    'user1': ObjectId(id1),
-                    'user2': ObjectId(id2)
-                }, {
-                    'user1': ObjectId(id2),
-                    'user2': ObjectId(id1)
-                }]
-            })
-            if conversacion == None:  # Si no ha creado ya una conversacion
-                id = Conversaciones.insert_one({
-                    'user1': ObjectId(id1),
-                    'user2': ObjectId(id2),
-                    'listMensajes': listMensajes
-                })
-                response = {'mensaje': 'Conversacion creada con exito'}
-            else:
-                response = {'mensaje': 'Conversacion ya existente'}
-        else:  # No encuentra los usuarios
-            return not_found()
-        return response
-
-
-@app.route('/mostrar_conversaciones', methods=['GET'])
-def mostrar_conversaciones():
-        conversaciones = Conversaciones.find()
-        response = json_util.dumps(conversaciones)
-        return Response(response, mimetype="application/json")
-
-
-@app.route('/buscar_conversacion_id/<id>', methods=['GET'])
-def buscar_conversacion_id(id):
-    conversacion = Conversaciones.find_one({'_id': ObjectId(id)})
-    response = json_util.dumps(conversacion)
-    return Response(response, mimetype="application/json")
-
-
-@app.route('/borrar_conversacion/<id>', methods=['DELETE'])
-def borrar_conversacion(id):
-    if Conversaciones.count_documents({'_id': ObjectId(id)}) == 1:
-        Conversaciones.delete_one({'_id': ObjectId(id)})
-        response = jsonify({
-            'mensaje':
-            'La conversacion con id: ' + id +
-            ' fue eliminada satisfactoriamente.'
-        })
-    else:
-        return not_found()
-    return response
-
-
-@app.route('/enviar_mensaje/<idc>/<idu>', methods=['PATCH'])
-def enviar_mensaje(idc, idu):
-    contenido = request.json['contenido']
-    conver_incluido = Conversaciones.count_documents({
-        '_id':
-        ObjectId(idc),
-        '$or': [{
-            'user1': ObjectId(idu)
-        }, {
-            'user2': ObjectId(idu)
-        }]
-    }) == 1
-    if contenido and conver_incluido:
-        Conversaciones.update_one({'_id': ObjectId(idc)}, {
-            '$push': {
-                'listMensajes': {
-                    'idUser': ObjectId(idu),
-                    'contenido': contenido,
-                    'fecha': datetime.utcnow()
-                }
-            }
-        })
-        response = {'mensaje': 'El mensaje ha sido enviado satisfactoriamente'}
-    else:
-        return not_found()
-    return response
-
-
-@app.route('/buscar_conversaciones_usuario/<usuario>', methods=['GET'])
-def buscar_conversaciones_usuario(usuario):
-    id = Usuarios.find_one({'username': usuario})['_id']
-    conversaciones = Conversaciones.find(
-        {'$or': [{
-            'user1': ObjectId(id)
-        }, {
-            'user2': ObjectId(id)
-        }]})
-    response = json_util.dumps(conversaciones)
-    return Response(response, mimetype="application/json")
-
-
-@app.route('/mis_conversaciones/<usuario>', methods=['GET'])
-def mis_conversaciones(usuario):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        if not 'username' in session or usuario != session['username']:
-            return not_access_permission()
-
-        id = Usuarios.find_one({'username': usuario})['_id']
-        mis_conversaciones = conversaciones = Conversaciones.find(
-            {'$or': [{
-                'user1': ObjectId(id)
-            }, {
-                'user2': ObjectId(id)
-            }]})
-        listConversaciones = []
-        for c in mis_conversaciones:
-            contact = c['user2'] if c['user1'] == ObjectId(id) else c['user1']
-            contact = Usuarios.find_one({'_id': contact}, {
-                '_id': 0,
-                'foto': 1,
-                'username': 1
-            })
-            listConversaciones.append({
-                '_id': c['_id'],
-                'username': contact['username'],
-                'profile_picture': contact['foto']
-            })
-        return render_template('misConversaciones.html',
-                            listConversaciones=listConversaciones,
-                            len=len(listConversaciones))
-
-
-@app.route('/conversacion/<contact>/<username>')
-def crear_obtener_chat(contact, username):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        id1 = Usuarios.find_one({'username': username})['_id']
-        id2 = Usuarios.find_one({'username': contact})['_id']
-        conversacion = Conversaciones.find_one({
-            '$or': [{
-                'user1': ObjectId(id1),
-                'user2': ObjectId(id2)
-            }, {
-                'user1': ObjectId(id2),
-                'user2': ObjectId(id1)
-            }]
-        })
-        if conversacion == None:
-            crear_conversacion(contact, username)
-            conversacion = Conversaciones.find_one({
-                '$or': [{
-                    'user1': ObjectId(id1),
-                    'user2': ObjectId(id2)
-                }, {
-                    'user1': ObjectId(id2),
-                    'user2': ObjectId(id1)
-                }]
-            })
-
-        return redirect('/conversacion/chat/' + str(conversacion['_id']))
-
-
-@app.route('/conversacion/chat/<id_conversacion>')
-def entrar_conversacion(id_conversacion):
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        if Conversaciones.count_documents({'_id': ObjectId(id_conversacion)}) == 1:
-            conversacion = Conversaciones.find_one(
-                {'_id': ObjectId(id_conversacion)})
-            id = Usuarios.find_one({'username': session["username"]})['_id']
-            contact = conversacion['user2'] if conversacion[
-                'user1'] == id else conversacion['user1']
-            contact = Usuarios.find_one({'_id': contact}, {
-                'foto': 1,
-                'username': 1
-            })
-            return render_template('chat.html',
-                                id=id,
-                                id2=contact['_id'],
-                                contact=contact['username'],
-                                profile_picture=contact['foto'],
-                                listMensajes=conversacion['listMensajes'],
-                                id_conversacion=id_conversacion,
-                                len_mensajes=len(conversacion['listMensajes']))
-        else:
-            return not_found()
-
-
-@app.route('/enviarMensaje', methods=['POST'])
-def enviarMensaje():
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        contenido = request.form['contenido']
-        id_conversacion = request.form['id_conversacion']
-        id = Usuarios.find_one({'username': session["username"]})['_id']
-        contenido = contenido.strip()
-        if contenido != '':
-            Conversaciones.update_one({'_id': ObjectId(id_conversacion)}, {
-                '$push': {
-                    'listMensajes': {
-                        'idUser': id,
-                        'contenido': contenido,
-                        'fecha': datetime.utcnow()
-                    }
-                }
-            })
-
-        return ('4', 200)
-
-
-@app.route('/recibirMensajes', methods=['POST'])
-def recibirMensajes():
-    if comprobarToken() == 0 :
-        return redirect("/")
-    else:
-        id_conversacion = request.form['id_conversacion']
-        currentTotal = int(request.form['currentTotal'])
-        listMensajes = Conversaciones.find_one({'_id': ObjectId(id_conversacion)
-                                                })['listMensajes']
-        listMensajes = listMensajes[currentTotal:len(
-            listMensajes
-        )]
-        rendered = getHTMLListaMensajes(listMensajes)
-        return rendered    
-
-def getHTMLListaMensajes(listMensajes):
-    id = Usuarios.find_one({'username': session["username"]})['_id']
-    listInHtml = '''{% for m in listMensajes %}
-            {% if m['idUser'] == id %}
-            <div class="row justify-content-end">
-                <div class="col-auto">
-                    <div class="alert-success text-end px-5 py-2 ms-5 mb-4">
-                        <p class="text-break">
-                            {{ m['contenido'] }}
-                        </p>
-                        <span>{{ m['fecha']|datetime }}</span>
-                    </div>
-                </div>
-            </div>
-            {% else %}
-            <div class="row ">
-                <div class="col-auto justify-content-start">
-                    <div class="alert-dark text-start mb-4 px-5 py-2 me-5">
-                        <p class="text-break">
-                            {{ m['contenido'] }}
-                        </p>
-                        <span class="">{{ m['fecha']|datetime }}</span>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            {% endfor %}
-            '''
-    return render_template_string(listInHtml, listMensajes=listMensajes, id=id)
-
-@app.template_filter('datetime')
-def date_format(value):
-    months = ('Enero','Febrero',"Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
-    month = months[value.month-1]
-    hora = str(value.hour).zfill(2)
-    minutos = str(value.minute).zfill(2)
-    return "{} de {} del {} a las {}:{}hs".format(value.day, month, value.year, hora, minutos)
-
-
-#------------------------------------------------------------------
-#  _______ _____        __     ________ _____ _______ ____   _____
-# |__   __|  __ \     /\\ \   / /  ____/ ____|__   __/ __ \ / ____|
-#    | |  | |__) |   /  \\ \_/ /| |__ | |       | | | |  | | (___
-#    | |  |  _  /   / /\ \\   / |  __|| |       | | | |  | |\___ \
-#    | |  | | \ \  / ____ \| |  | |___| |____   | | | |__| |____) |
-#    |_|  |_|  \_\/_/    \_\_|  |______\_____|  |_|  \____/|_____/
-#
-#------------------------------------------------------------------
-
-#CRUD
-
-
-@app.route('/mostrar_trayectos', methods=['GET'])
-def mostrar_trayectos():
-    trayectos = Trayectos.find()
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/borrar_trayecto/<id>', methods=['DELETE'])
-def borrar_trayecto(id):
-    trayectos = Trayectos.delete_one({'_id': ObjectId(id)})
-    resp = jsonify("Trayecto eliminado")
-    return resp
-
-
-@app.route('/actualizar_trayecto/<id>', methods=['PUT'])
-def actualizar_trayecto(id):
-    origen = request.json['origen']
-    destino = request.json['destino']
-    horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    precio = request.json['precio']
-    numeropasajeros = request.json['numeropasajeros']
-    finalizado = request.json['finalizado']
-
-    Trayectos.update_one({'_id': ObjectId(id)}, {
-        '$set': {
-            'origen': origen,
-            'destino': destino,
-            'horasalida': d_horasalida,
-            'precio': precio,
-            'numeropasajeros': numeropasajeros,
-            'finalizado': finalizado
-        }
-    })
-    resp = jsonify("Trayecto actualizado")
-    return resp
-
-
-#OP CONSULTA O BUSQ PARAMETRIZADA
-
-
-@app.route('/buscar_trayecto_id/<id>', methods=['GET'])
-def buscar_trayecto_id(id):
-    trayecto = Trayectos.find_one({'_id': ObjectId(id)})
-    resp = json_util.dumps(trayecto)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/buscar_trayecto_origen/<origen>', methods=['GET'])
-def buscar_trayecto_origen(origen):
-    trayectos = Trayectos.find({'origen': origen})
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/buscar_trayecto_destino/<destino>', methods=['GET'])
-def buscar_trayecto_destino(destino):
-    trayectos = Trayectos.find({'destino': destino})
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/buscar_trayecto_origendestino/<origen>/<destino>',
-           methods=['GET'])
-def buscar_trayecto_origendestino(origen, destino):
-    trayectos = Trayectos.find({'origen': origen, 'destino': destino})
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
-
-
-@app.route('/finalizar_trayecto/<idtrayecto>', methods=['PUT'])
-def finalizar_trayecto(idtrayecto):
-    Trayectos.update_one({'_id': ObjectId(idtrayecto)},
-                         {'$set': {
-                             'finalizado': 1
-                         }})
-    resp = jsonify("Trayecto finalizado")
-    return resp
-
-
-@app.route('/buscar_trayecto_completo', methods=['GET'])
-def buscar_trayecto_completo():
-    origen = request.json['origen']
-    destino = request.json['destino']
-    horasalida = request.json['horasalida']
-    d_horasalida = datetime.strptime(horasalida, '%d/%m/%Y %H:%M')
-    numeropasajeros = request.json['numeropasajeros']
-
-    trayectos = Trayectos.find({
-        'origen': origen,
-        'destino': destino,
-        'horasalida': d_horasalida,
-        'numeropasajeros': numeropasajeros
-    }).sort('horasalida', 1)
-    resp = json_util.dumps(trayectos)
-    return Response(resp, mimetype='application/json')
-
-
-#OP CONSULTA CON RELACIONES ENTRE LAS ENTIDADES
-
-
-@app.route('/anadir_pasajero/<idtrayecto>/<idpasajero>', methods=['PATCH'])
-def anadir_pasajero(idtrayecto, idpasajero):
-    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
-    numpasajeros = trayecto['numeropasajeros']
-    conductor = trayecto['conductor']
-    pasajeros = trayecto['pasajeros']
-    finalizado = trayecto['finalizado']
-    if numpasajeros > 0 and ObjectId(
-            idpasajero) not in pasajeros and finalizado == 0 and ObjectId(
-                conductor) != ObjectId(idpasajero):
-        pasajeros.append(ObjectId(idpasajero))
-        Trayectos.update_one({'_id': ObjectId(idtrayecto)}, {
-            '$set': {
-                'pasajeros': pasajeros,
-                'numeropasajeros': numpasajeros - 1
-            }
-        })
-        usuario = Usuarios.find_one({'username': usuario})['username']
-        resp = jsonify("Pasajero añadido")
-        return redirect('/mis_viajes/' + usuario)
-    else:
-        resp = jsonify("No se puede añadir pasajero")
-    return resp
-
-
-@app.route('/pasajeros_trayecto/<idtrayecto>', methods=['GET'])
-def pasajeros_trayecto(idtrayecto):
-    trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
-    pasajeros = trayecto['pasajeros']
-    pasajerosPerfil = []
-    if pasajeros:
-        for id in pasajeros:
-            usuario = Usuarios.find_one({'_id': ObjectId(id)})
-            pasajerosPerfil.append(usuario)
-        resp = json_util.dumps(pasajerosPerfil)
-        return Response(resp, mimetype='application/json')
-    else:
-        return not_found()
 
 
 @app.route('/mostrar_editar_trayecto/<idtrayecto>', methods=['GET'])
@@ -1674,6 +1351,7 @@ def mostrar_editar_trayecto(idtrayecto):
     else:
         trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
         return render_template('editarViaje.html', trayecto=trayecto)
+
 
 @app.route('/salir_trayecto/<usuario>/<idtrayecto>', methods=['GET'])
 def salir_trayecto(usuario, idtrayecto):
@@ -1697,9 +1375,9 @@ def salir_trayecto(usuario, idtrayecto):
         return redirect('/mis_viajes/' + usuario + '/' + str(1))
     
 
+#---------------------------------------------------------------------------------------
 
-
-#------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 # __      __     _      ____  _____            _____ _____ ____  _   _ ______  _____
 # \ \    / /\   | |    / __ \|  __ \     /\   / ____|_   _/ __ \| \ | |  ____|/ ____|
 #  \ \  / /  \  | |   | |  | | |__) |   /  \ | |      | || |  | |  \| | |__  | (___
@@ -1707,71 +1385,58 @@ def salir_trayecto(usuario, idtrayecto):
 #    \  / ____ \| |___| |__| | | \ \  / ____ \ |____ _| || |__| | |\  | |____ ____) |
 #     \/_/    \_\______\____/|_|  \_\/_/    \_\_____|_____\____/|_| \_|______|_____/
 #
-#------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
 
-#CRUD
+#---------------------------------------------------------------------------------------
 
 
-@app.route('/crear_valoracion/<idvalorado>/<idtrayecto>/<idvalorador>',
-           methods=['POST'])
-def crear_valoracion(idvalorado, idtrayecto, idvalorador):
+
+@app.route('/valorar/<idtrayecto>/<idusuario>', methods=['GET', 'POST'])
+def valorar(idtrayecto, idusuario):
     if comprobarToken() == 0 :
         return redirect("/")
     else:
-        valorado = ObjectId(idvalorado)
-        trayecto = ObjectId(idtrayecto)
-        valorador = ObjectId(idvalorador)
-        puntuacion = request.json['puntuacion']
-        comentario = request.json['comentario']
+        if request.method == 'GET':
+            username = session["username"]
+            usuarioact = Usuarios.find_one({"username": username})
+            trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+            usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+            return render_template('valorar.html',
+                                usuario=usuariovalorado,
+                                trayecto=trayecto,
+                                usuarioact=usuarioact)
+        else:
+            username = session["username"]
+            usuarioact = Usuarios.find_one({"username": username})
+            trayecto = Trayectos.find_one({'_id': ObjectId(idtrayecto)})
+            usuariovalorado = Usuarios.find_one({'_id': ObjectId(idusuario)})
+            valoracion = request.form['valoracion']
+            comentario = request.form['comentario']
 
-        if puntuacion and comentario:
-            id = Valoraciones.insert({
-                'valorado': valorado,
-                'trayecto': trayecto,
-                'valorador': valorador,
-                'puntuacion': puntuacion,
+            Valoraciones.insert({
+                'valorado': usuariovalorado['_id'],
+                'trayecto': trayecto['_id'],
+                'valorador': usuarioact['_id'],
+                'puntuacion': int(valoracion),
                 'comentario': comentario
             })
-        else:
-            id = Valoraciones.insert({
-                'valorado': valorado,
-                'trayecto': trayecto,
-                'valorador': valorador,
-                'puntuacion': puntuacion
-            })
-        resp = jsonify("Valoracion añadida")
-        resp.status_code = 200
-        return resp
+            return redirect('/perfilId/' + str(usuariovalorado["_id"])
+                            ) 
 
 
-@app.route('/mostrar_valoraciones', methods=['GET'])
-def mostrar_valoraciones():
-    valoraciones = Valoraciones.find()
-    resp = json_util.dumps(valoraciones)
-    return Response(resp, mimetype='application/json')
+def estavalorado(conductor, usuario):
+    v = Valoraciones.find_one({
+        'valorado': conductor['_id'],
+        'valorador': usuario['_id']
+    })
+    print(v)
+    print(conductor['_id'])
+    print(usuario['_id'])
+    if v == None:
+        return False
+    else:
+        return True
 
-
-@app.route('/borrar_valoracion/<id>', methods=['DELETE'])
-def borrar_valoracion(id):
-    valoraciones = Valoraciones.delete_one({'_id': ObjectId(id)})
-    resp = jsonify("Valoracion eliminada")
-    return resp
-
-
-@app.route('/actualizar_valoracion/<id>', methods=['PUT'])
-def actualizar_valoracion(id):
-
-    puntuacion = request.json['puntuacion']
-    comentario = request.json['comentario']
-
-    Valoraciones.update_one(
-        {'_id': ObjectId(id)},
-        {'$set': {
-            'puntuacion': puntuacion,
-            'comentario': comentario
-        }})
-    resp = jsonify("Valoración actualizada")
-    return resp
 
 
 def media_valoraciones(id):
@@ -1798,6 +1463,7 @@ def num_valoraciones(id):
 
     return total
 
+#------------------------------------------------------------------
 
 #------------------------------------------------------------------
 #           _____ _____      __  __          _____   _____
@@ -1808,6 +1474,7 @@ def num_valoraciones(id):
 # /_/    \_\_|   |_____|    |_|  |_/_/    \_\_|    |_____/
 #------------------------------------------------------------------
 
+#------------------------------------------------------------------
 
 @app.route('/buscagasolineras/<locationdata>', methods=['GET'])
 def buscagasolineras(locationdata):
@@ -2037,4 +1704,3 @@ if __name__ == '__main__':
     app.run( debug=True)
     
     
-## API PAYPAL
